@@ -366,13 +366,40 @@
     }
 
     // ==================== TEXT TO SPEECH (ja-JP) ====================
+    // ==================== TEXT TO SPEECH (ja-JP) ====================
+    let jpVoice = null;
+
+    function loadVoices() {
+      if (!('speechSynthesis' in window)) return;
+      const voices = window.speechSynthesis.getVoices();
+      jpVoice = voices.find(v => v.lang === 'ja-JP' || v.lang === 'ja_JP' || v.lang.startsWith('ja'));
+    }
+
+    if ('speechSynthesis' in window) {
+      loadVoices();
+      window.speechSynthesis.onvoiceschanged = loadVoices;
+    }
+
     function speakJP(text) {
       if (!('speechSynthesis' in window)) return;
-      window.speechSynthesis.cancel();
-      const utter = new SpeechSynthesisUtterance(text);
-      utter.lang = 'ja-JP';
-      utter.rate = 0.9;
-      window.speechSynthesis.speak(utter);
+
+      const playAudio = () => {
+        const utter = new SpeechSynthesisUtterance(text);
+        utter.lang = 'ja-JP';
+        if (!jpVoice) loadVoices();
+        if (jpVoice) utter.voice = jpVoice;
+        utter.rate = 0.9;
+        utter.volume = 1.0;
+        window.speechSynthesis.speak(utter);
+      };
+
+      // เรียก cancel เฉพาะตอนที่ยังมีเสียงค้างอยู่ เพื่อป้องกันบั๊กเสียงเงียบบน iOS
+      if (window.speechSynthesis.speaking || window.speechSynthesis.pending) {
+        window.speechSynthesis.cancel();
+        setTimeout(playAudio, 60);
+      } else {
+        playAudio();
+      }
     }
 
     // ==================== TAB 1: FLASHCARDS LOGIC ====================
