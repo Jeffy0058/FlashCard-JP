@@ -1,25 +1,37 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="th" class="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="theme-color" content="#0f172a" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <title>Nihongo Pocket v2 - JLPT N5 Trainer</title>
+  <title>Nihongo Pocket × Sniper — แอปฝึกภาษาญี่ปุ่นส่วนตัว</title>
+
+  <!-- Google Fonts: Noto Sans JP & Prompt -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Tone.js สำหรับเสียงเอฟเฟกต์ตอบถูก/ผิด -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Prompt:wght@300;400;500;600&display=swap');
     body {
       font-family: 'Prompt', 'Noto Sans JP', sans-serif;
-      background-color: #090d16;
+      background-color: #060911;
       color: #f8fafc;
       user-select: none;
       -webkit-tap-highlight-color: transparent;
+      overflow-x: hidden;
     }
     .jp-font {
       font-family: 'Noto Sans JP', sans-serif;
     }
+    /* 3D Flip Card Animation */
     .perspective {
       perspective: 1000px;
     }
@@ -45,301 +57,606 @@
     .recording-pulse {
       animation: pulse-ring 1.5s infinite;
     }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-7px); }
+      40% { transform: translateX(7px); }
+      60% { transform: translateX(-5px); }
+      80% { transform: translateX(5px); }
+    }
+    .animate-shake {
+      animation: shake 0.35s ease-in-out;
+    }
+    @keyframes popIn {
+      0% { transform: scale(0.92); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .animate-pop {
+      animation: popIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    /* Custom subtle scrollbar */
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 9999px;
+    }
   </style>
 </head>
 <body class="flex justify-center min-h-screen bg-slate-950">
 
-  <!-- Mobile App Container -->
-  <div class="w-full max-w-md bg-slate-900 min-h-screen flex flex-col justify-between relative shadow-2xl border-x border-slate-800">
-    
-    <!-- Top Header -->
-    <header class="px-5 py-4 bg-slate-900/95 backdrop-blur border-b border-slate-800 sticky top-0 z-20 flex justify-between items-center">
+  <!-- Mobile-First App Container (max-w-lg) -->
+  <div class="w-full max-w-lg bg-slate-900 min-h-screen flex flex-col justify-between relative shadow-2xl border-x border-slate-800/90">
+
+    <!-- ==================== TOP HEADER ==================== -->
+    <header class="px-4 py-3.5 bg-slate-900/95 backdrop-blur-md border-b border-slate-800 sticky top-0 z-20 flex justify-between items-center gap-2">
       <div>
-        <h1 class="text-lg font-semibold text-indigo-400 tracking-wide flex items-center gap-2">
-          <span>🇯🇵</span> Nihongo Pocket <span class="text-[10px] bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded-md">v2.0</span>
+        <h1 class="text-base sm:text-lg font-bold text-white tracking-tight flex items-center gap-1.5">
+          <span>🇯🇵</span>
+          <span>Nihongo Pocket <span class="text-indigo-400">× Sniper</span></span>
         </h1>
-        <p class="text-xs text-slate-400">100 Kanji N5 & 4-Mode Quiz</p>
+        <p class="text-[11px] text-slate-400">JLPT N5 &amp; Katakana Weak-Spot Trainer</p>
       </div>
+
       <div class="flex items-center gap-2">
-        <span class="bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-xs px-2.5 py-1 rounded-full font-medium" id="mastered-badge">
-          จำได้แล้ว 0 คำ
+        <!-- Mastered Counter Badge -->
+        <span id="mastered-badge" class="bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-xs px-2.5 py-1.5 rounded-full font-semibold whitespace-nowrap">
+          จำได้แล้ว 0/265 คำ
         </span>
+
+        <!-- Backup JSON Button -->
+        <button id="open-backup-btn" type="button" title="สำรอง/ย้ายข้อมูล (JSON)" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-sm transition active:scale-95">
+          💾
+        </button>
       </div>
     </header>
 
-    <!-- Main Content Area -->
-    <main class="flex-1 p-5 overflow-y-auto pb-24">
+    <!-- ==================== MAIN CONTENT AREA ==================== -->
+    <main class="flex-1 p-4 sm:p-5 overflow-y-auto pb-24">
 
       <!-- ==================== TAB 1: FLASHCARDS ==================== -->
-      <section id="tab-flashcard" class="space-y-5">
-        <div class="flex justify-between items-center">
-          <div class="flex gap-2">
-            <button onclick="setCardFilter('all')" id="filter-all" class="text-xs px-3 py-1.5 rounded-lg bg-indigo-600 text-white font-medium">ทั้งหมด</button>
-            <button onclick="setCardFilter('learning')" id="filter-learning" class="text-xs px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 font-medium">กำลังท่อง</button>
+      <section id="tab-flashcard" class="space-y-4">
+        <!-- Filter Pills + Add Custom Card Button -->
+        <div class="flex flex-wrap justify-between items-center gap-2">
+          <div class="flex gap-1.5">
+            <button onclick="setCardFilter('all')" id="filter-all" class="text-xs px-3 py-1.5 rounded-xl bg-indigo-600 text-white font-medium transition">
+              ทั้งหมด
+            </button>
+            <button onclick="setCardFilter('learning')" id="filter-learning" class="text-xs px-3 py-1.5 rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 font-medium transition">
+              กำลังท่อง
+            </button>
+            <button onclick="setCardFilter('weak')" id="filter-weak" class="text-xs px-3 py-1.5 rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 font-medium transition">
+              🔥 จุดอ่อน/ย้ำบ่อย
+            </button>
           </div>
-          <button onclick="toggleAddModal(true)" class="text-xs bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-lg font-medium flex items-center gap-1">
-            + เพิ่มคำศัพท์
+          <button onclick="toggleAddModal(true)" class="text-xs bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-xl font-semibold flex items-center gap-1 shadow-md shadow-emerald-600/20 transition active:scale-95">
+            <span>+ เพิ่มคำศัพท์</span>
           </button>
         </div>
 
-        <div class="flex justify-between text-xs text-slate-400 px-1">
-          <span id="card-counter">การ์ดที่ 1 / 15</span>
-          <span id="card-status-tag" class="text-amber-400">สถานะ: กำลังท่อง</span>
+        <!-- Category Quick Filter for Flashcards -->
+        <div class="flex items-center gap-2">
+          <select id="fc-cat-filter" onchange="setCardCategoryFilter(this.value)" class="w-full bg-slate-950/90 border border-slate-800 focus:border-indigo-500 rounded-xl px-3 py-2 text-xs text-slate-200 outline-none">
+            <option value="all">หมวดหมู่: รวมทั้งหมด (265+ คำ)</option>
+            <option value="custom">⭐ คำศัพท์ที่เพิ่มเอง (Custom)</option>
+            <option value="time">1. ตัวเลข วัน และเวลา</option>
+            <option value="verbs">2. คำกริยาพื้นฐาน N5</option>
+            <option value="adj">3. คำคุณศัพท์ い และ な</option>
+            <option value="places">4. สถานที่และทิศทาง</option>
+            <option value="people">5. ครอบครัวและผู้คน</option>
+            <option value="daily">6. อาหารและของใช้</option>
+            <option value="katakana_n5">7. คำทับศัพท์คาตาคานะ N5</option>
+            <option value="greetings">8. คำทักทาย คำถาม และคำเชื่อม</option>
+          </select>
+        </div>
+
+        <!-- Progress & Weight Indicator -->
+        <div class="flex justify-between items-center text-xs text-slate-400 px-1">
+          <span id="card-counter">การ์ดที่ 1 / 265</span>
+          <div class="flex items-center gap-2">
+            <span id="card-weight-tag" class="px-2 py-0.5 rounded bg-slate-800 text-slate-300 font-medium">น้ำหนัก: 4</span>
+            <span id="card-status-tag" class="text-amber-400 font-medium">กำลังท่อง</span>
+          </div>
         </div>
 
         <!-- 3D Flip Card -->
-        <div class="perspective w-full h-72 cursor-pointer" onclick="flipCard()">
+        <div class="perspective w-full h-76 sm:h-80 cursor-pointer" style="height: 19rem;" onclick="flipCard()">
           <div id="flashcard-inner" class="flip-card-inner relative w-full h-full">
+
             <!-- Front -->
-            <div class="flip-card-front absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-800/90 border border-slate-700 rounded-2xl p-6 flex flex-col justify-between items-center shadow-lg">
-              <div class="w-full flex justify-between items-center text-xs text-slate-400">
-                <span class="bg-slate-700/70 px-2.5 py-1 rounded-md">JLPT N5</span>
-                <button onclick="event.stopPropagation(); speakCurrentCard()" class="px-3 py-1.5 bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-300 rounded-full transition">
-                  🔊 ฟังเสียง
-                </button>
+            <div class="flip-card-front absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-800/95 border border-slate-700 rounded-3xl p-5 flex flex-col justify-between items-center shadow-xl">
+              <div class="w-full flex justify-between items-center text-xs text-slate-400 gap-2">
+                <span class="bg-slate-700/80 text-slate-200 px-2.5 py-1 rounded-lg truncate max-w-[140px]" id="card-category">JLPT N5</span>
+
+                <div class="flex items-center gap-1.5">
+                  <!-- Furigana Toggle Button on Card Front -->
+                  <button id="fc-furigana-btn" onclick="event.stopPropagation(); toggleCardFurigana()" class="px-2.5 py-1.5 bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 border border-emerald-500/30 rounded-full text-[11px] font-medium transition" title="เปิด/ปิดตัวช่วยอ่าน">
+                    👁️ ซ่อนคำอ่าน
+                  </button>
+                  <button onclick="event.stopPropagation(); speakCurrentCard()" class="px-3 py-1.5 bg-indigo-600/25 hover:bg-indigo-600/40 text-indigo-300 border border-indigo-500/30 rounded-full text-xs font-medium transition active:scale-95" title="ฟังเสียง">
+                    🔊 ฟังเสียง
+                  </button>
+                </div>
               </div>
-              <div class="text-center my-auto">
-                <div id="card-kanji" class="jp-font text-5xl font-bold text-white mb-3 tracking-wider">食べる</div>
-                <div id="card-kana" class="jp-font text-xl text-indigo-300">たべる</div>
+
+              <div class="text-center my-auto px-2">
+                <div id="card-kanji" class="jp-font text-4xl sm:text-5xl font-bold text-white mb-3 tracking-wider">食べる</div>
+                <div id="card-kana" class="jp-font text-lg sm:text-xl text-indigo-300 min-h-[1.75rem]">たべる</div>
               </div>
-              <p class="text-xs text-slate-500">แตะที่การ์ดเพื่อพลิกดูความหมาย</p>
+
+              <p class="text-[11px] text-slate-500">แตะที่การ์ดเพื่อพลิกดูความหมายและทริคจำ</p>
             </div>
 
             <!-- Back -->
-            <div class="flip-card-back absolute inset-0 bg-gradient-to-br from-indigo-950 to-slate-900 border border-indigo-500/40 rounded-2xl p-6 flex flex-col justify-between items-center shadow-lg">
+            <div class="flip-card-back absolute inset-0 bg-gradient-to-br from-indigo-950 via-slate-900 to-slate-900 border border-indigo-500/40 rounded-3xl p-5 flex flex-col justify-between items-center shadow-xl">
               <div class="w-full flex justify-between items-center text-xs text-indigo-300">
-                <span id="card-romaji">คำอ่าน: ทาเบรุ (taberu)</span>
-                <button onclick="event.stopPropagation(); speakCurrentCard()" class="p-2 bg-indigo-600/30 text-indigo-200 rounded-full">
-                  🔊
+                <span id="card-romaji" class="font-medium">คำอ่าน: ทาเบรุ (taberu)</span>
+                <button onclick="event.stopPropagation(); speakCurrentCard()" class="px-3 py-1.5 bg-indigo-600/30 hover:bg-indigo-600/50 text-indigo-200 rounded-full text-xs transition">
+                  🔊 ฟังเสียง
                 </button>
               </div>
-              <div class="text-center my-auto space-y-3 w-full">
-                <div id="card-meaning" class="text-3xl font-bold text-emerald-400">กิน</div>
-                <div class="bg-slate-900/70 p-3 rounded-xl border border-slate-800 text-left">
-                  <p id="card-example-jp" class="jp-font text-sm text-white font-medium">朝ご飯を食べます</p>
-                  <p id="card-example-th" class="text-xs text-slate-400 mt-1">อะสะโกะฮัง โอะ ทาเบมัส (กินข้าวเช้า)</p>
+
+              <div class="text-center my-auto space-y-2.5 w-full">
+                <div id="card-meaning" class="text-2xl sm:text-3xl font-bold text-emerald-400">กิน</div>
+                <div class="bg-slate-950/75 p-3 rounded-2xl border border-slate-800 text-left space-y-1">
+                  <p id="card-example-jp" class="jp-font text-xs sm:text-sm text-white font-medium">朝ご飯を食べます</p>
+                  <p id="card-example-th" class="text-[11px] sm:text-xs text-slate-400">อะสะโกะฮัง โอะ ทาเบมัส (กินข้าวเช้า)</p>
                 </div>
+                <p id="card-tip-back" class="text-[11px] text-indigo-200/90 bg-indigo-500/10 border border-indigo-500/20 rounded-xl px-3 py-1.5 text-left">
+                  💡 กริยากลุ่ม 2 (ทะเบะรุ)
+                </p>
               </div>
-              <p class="text-xs text-slate-400">แตะเพื่อพลิกกลับ</p>
+
+              <p class="text-[11px] text-slate-400">แตะเพื่อพลิกกลับ</p>
             </div>
+
           </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-3 pt-2">
-          <button onclick="markCard(false)" class="py-3 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-300 font-medium text-sm transition">
-            🔄 ทบทวนอีกครั้ง
+        <!-- Card Mastery & Weak-Spot Controls -->
+        <div class="grid grid-cols-2 gap-2.5 pt-1">
+          <button onclick="boostCurrentFlashcard()" class="py-3 px-2 rounded-2xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 text-amber-300 font-semibold text-xs sm:text-sm transition active:scale-95">
+            ⚡ ไม่ชัวร์ (ย้ำอีก +4)
           </button>
-          <button onclick="markCard(true)" class="py-3 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 font-medium text-sm transition">
+          <button onclick="markCard(true)" class="py-3 px-2 rounded-2xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/40 text-emerald-300 font-semibold text-xs sm:text-sm transition active:scale-95">
             ✅ จำได้แล้ว
           </button>
         </div>
 
+        <!-- Navigation Controls -->
         <div class="flex justify-between items-center pt-1">
-          <button onclick="prevCard()" class="text-sm text-slate-400 hover:text-white px-4 py-2 bg-slate-800/60 rounded-lg">← ก่อนหน้า</button>
-          <button onclick="randomCard()" class="text-xs text-indigo-400 hover:text-indigo-300 px-3 py-2">🎲 สุ่มการ์ด</button>
-          <button onclick="nextCard()" class="text-sm text-slate-400 hover:text-white px-4 py-2 bg-slate-800/60 rounded-lg">ถัดไป →</button>
+          <button onclick="prevCard()" class="text-xs sm:text-sm text-slate-300 hover:text-white px-4 py-2 bg-slate-800/80 hover:bg-slate-700 rounded-xl transition">← ก่อนหน้า</button>
+          <button onclick="randomWeightedCard()" class="text-xs text-indigo-300 hover:text-indigo-200 px-3 py-2 bg-indigo-500/10 border border-indigo-500/30 rounded-xl font-medium transition">🎯 สุ่มเน้นตัวอ่อน</button>
+          <button onclick="nextCard()" class="text-xs sm:text-sm text-slate-300 hover:text-white px-4 py-2 bg-slate-800/80 hover:bg-slate-700 rounded-xl transition">ถัดไป →</button>
         </div>
       </section>
 
       <!-- ==================== TAB 2: SPEAKING PRACTICE ==================== -->
-      <section id="tab-speak" class="hidden space-y-5">
-        <div class="bg-slate-800/70 border border-slate-700 rounded-2xl p-5 text-center space-y-4">
-          <span class="text-xs bg-indigo-500/20 text-indigo-300 px-3 py-1 rounded-full">ฝึกออกเสียงภาษาญี่ปุ่น</span>
-          
-          <div class="py-3">
-            <div id="speak-kanji" class="jp-font text-4xl font-bold text-white mb-2">日本語を話します</div>
-            <div id="speak-kana" class="jp-font text-lg text-indigo-300 mb-1">にほんごをはなします</div>
-            <div id="speak-romaji" class="text-xs text-slate-400">นิฮงโกะ โอะ ฮานาชิมัส</div>
-            <div id="speak-meaning" class="text-sm text-emerald-400 font-medium mt-2">"พูดภาษาญี่ปุ่น"</div>
+      <section id="tab-speak" class="hidden space-y-4">
+        <!-- Category Filter for Speaking -->
+        <div class="flex items-center justify-between gap-2">
+          <select id="speak-cat-select" onchange="setSpeakCategory(this.value)" class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 outline-none">
+            <option value="all">ฝึกพูด: รวมคำศัพท์ N5 ทั้งหมด + คำที่เพิ่มเอง</option>
+            <option value="weak">🔥 เฉพาะคำศัพท์จุดอ่อน (น้ำหนัก 5+)</option>
+            <option value="greetings">คำทักทาย &amp; ประโยคสนทนาพื้นฐาน</option>
+            <option value="verbs">คำกริยาพื้นฐาน N5</option>
+            <option value="adj">คำคุณศัพท์ い / な</option>
+            <option value="time">ตัวเลข วัน และเวลา</option>
+            <option value="places">สถานที่และทิศทาง</option>
+            <option value="people">ครอบครัวและผู้คน</option>
+            <option value="daily">อาหารและของใช้</option>
+            <option value="katakana_n5">คำทับศัพท์คาตาคานะ N5</option>
+            <option value="custom">⭐ คำศัพท์ที่เพิ่มเอง</option>
+          </select>
+        </div>
+
+        <div class="bg-slate-800/70 border border-slate-700 rounded-3xl p-5 text-center space-y-4 shadow-lg">
+          <span class="text-xs bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-3 py-1 rounded-full font-medium">
+            ฝึกออกเสียงภาษาญี่ปุ่น (ja-JP)
+          </span>
+
+          <div class="py-2">
+            <div id="speak-kanji" class="jp-font text-3xl sm:text-4xl font-bold text-white mb-2">食べる</div>
+            <div id="speak-kana" class="jp-font text-lg text-indigo-300 mb-1">たべる</div>
+            <div id="speak-romaji" class="text-xs text-slate-400">taberu</div>
+            <div id="speak-meaning" class="text-sm sm:text-base text-emerald-400 font-semibold mt-2">"กิน / รับประทาน"</div>
           </div>
 
-          <div class="flex justify-center gap-3">
-            <button onclick="speakTargetSentence()" class="px-4 py-2 rounded-xl bg-slate-700 hover:bg-slate-600 text-xs font-medium flex items-center gap-1.5">
-              🔊 ฟังต้นฉบับ
+          <div class="flex flex-wrap justify-center gap-2">
+            <button onclick="speakTargetSentence()" class="px-3.5 py-2 rounded-xl bg-slate-700 hover:bg-slate-600 text-xs font-medium flex items-center gap-1.5 transition active:scale-95">
+              🔊 ฟังสำเนียงต้นฉบับ
             </button>
-            <button onclick="nextSpeakItem()" class="px-4 py-2 rounded-xl bg-slate-700 hover:bg-slate-600 text-xs font-medium">
-              ⏭️ คำถัดไป
+            <button onclick="randomSpeakItem()" class="px-3.5 py-2 rounded-xl bg-indigo-600/25 hover:bg-indigo-600/40 text-indigo-200 border border-indigo-500/30 text-xs font-medium transition active:scale-95">
+              🎲 สุ่มคำใหม่
+            </button>
+            <button onclick="nextSpeakItem()" class="px-3.5 py-2 rounded-xl bg-slate-700 hover:bg-slate-600 text-xs font-medium transition active:scale-95">
+              ⏭️ ถัดไป
             </button>
           </div>
         </div>
 
-        <div class="bg-slate-800/40 border border-slate-800 rounded-2xl p-6 flex flex-col items-center text-center space-y-4">
-          <button id="mic-btn" onclick="startSpeechRecognition()" class="w-20 h-20 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white flex items-center justify-center text-3xl shadow-lg transition">
+        <!-- Microphone Section -->
+        <div class="bg-slate-800/40 border border-slate-800 rounded-3xl p-6 flex flex-col items-center text-center space-y-4">
+          <button id="mic-btn" onclick="startSpeechRecognition()" class="w-20 h-20 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white flex items-center justify-center text-3xl shadow-xl shadow-indigo-600/30 transition active:scale-95">
             🎙️
           </button>
-          <p id="mic-status" class="text-sm text-slate-300 font-medium">แตะที่ไมค์แล้วพูดออกเสียงภาษาญี่ปุ่น</p>
-          
-          <div id="speech-result-box" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-4 hidden">
-            <p class="text-xs text-slate-400 mb-1">เสียงที่ระบบได้ยิน:</p>
-            <p id="speech-heard" class="jp-font text-lg font-bold text-white mb-2">-</p>
-            <div id="speech-feedback" class="text-sm font-medium py-1.5 px-3 rounded-lg"></div>
+          <p id="mic-status" class="text-xs sm:text-sm text-slate-300 font-medium">แตะที่ไมค์แล้วพูดออกเสียงภาษาญี่ปุ่น</p>
+
+          <!-- Result Box -->
+          <div id="speech-result-box" class="w-full bg-slate-950 border border-slate-800 rounded-2xl p-4 hidden space-y-2 animate-pop">
+            <p class="text-xs text-slate-400">เสียงที่ระบบได้ยิน:</p>
+            <p id="speech-heard" class="jp-font text-lg font-bold text-white">-</p>
+            <div id="speech-feedback" class="text-xs sm:text-sm font-medium py-2 px-3 rounded-xl"></div>
           </div>
         </div>
       </section>
 
-      <!-- ==================== TAB 3: KANA & 100 KANJI CHART ==================== -->
+      <!-- ==================== TAB 3: CHARTS & SEARCHABLE N5 VAULT ==================== -->
       <section id="tab-chars" class="hidden space-y-4">
-        <div class="grid grid-cols-3 gap-2 bg-slate-800 p-1 rounded-xl">
-          <button onclick="switchCharSet('hiragana')" id="btn-hiragana" class="py-2 text-xs font-medium rounded-lg bg-indigo-600 text-white">Hiragana (46)</button>
-          <button onclick="switchCharSet('katakana')" id="btn-katakana" class="py-2 text-xs font-medium rounded-lg text-slate-300">Katakana (46)</button>
-          <button onclick="switchCharSet('kanji')" id="btn-kanji" class="py-2 text-xs font-medium rounded-lg text-slate-300">Kanji N5 (100)</button>
+        <!-- 4 Sub-tabs -->
+        <div class="grid grid-cols-4 gap-1 bg-slate-950 p-1 rounded-2xl border border-slate-800">
+          <button onclick="switchCharSet('katakana')" id="btn-katakana" class="py-2 px-1 text-[11px] sm:text-xs font-semibold rounded-xl bg-indigo-600 text-white transition">
+            Katakana
+          </button>
+          <button onclick="switchCharSet('hiragana')" id="btn-hiragana" class="py-2 px-1 text-[11px] sm:text-xs font-semibold rounded-xl text-slate-400 hover:text-white transition">
+            Hiragana
+          </button>
+          <button onclick="switchCharSet('kanji')" id="btn-kanji" class="py-2 px-1 text-[11px] sm:text-xs font-semibold rounded-xl text-slate-400 hover:text-white transition">
+            Kanji N5
+          </button>
+          <button onclick="switchCharSet('vault')" id="btn-vault" class="py-2 px-1 text-[11px] sm:text-xs font-semibold rounded-xl text-slate-400 hover:text-white transition">
+            คลังศัพท์ N5
+          </button>
         </div>
 
-        <!-- Kanji Search Bar (Visible only in Kanji mode) -->
-        <div id="kanji-search-wrap" class="hidden">
-          <input id="kanji-search" type="text" oninput="filterKanjiGrid()" placeholder="🔍 ค้นหาคันจิ, คำอ่าน หรือความหมายไทย..." class="w-full bg-slate-800 border border-slate-700 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-indigo-500" />
+        <!-- Sub-view A: Katakana Heatmap & Thai Mnemonic Inspector -->
+        <div id="subview-katakana" class="space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-400 px-1">
+            <span>แตะตัวอักษรเพื่อฟังเสียง &amp; ดูทริคจำภาพ</span>
+            <div class="flex items-center gap-2">
+              <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-400"></span>แม่น</span>
+              <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-amber-400"></span>ย้ำ</span>
+              <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-rose-500"></span>อ่อน</span>
+            </div>
+          </div>
+
+          <!-- Selected Katakana Inspector Card -->
+          <div id="kana-inspector" class="bg-slate-950 border border-indigo-500/30 rounded-2xl p-3.5 space-y-2 shadow-lg">
+            <div class="flex items-center justify-between gap-3">
+              <div class="flex items-center gap-3">
+                <div id="insp-kana-char" class="jp-font w-12 h-12 rounded-xl bg-slate-900 border border-slate-700 flex items-center justify-center text-2xl font-black text-white shrink-0">
+                  ツ
+                </div>
+                <div>
+                  <div class="flex items-center gap-2">
+                    <span id="insp-kana-title" class="text-sm font-bold text-indigo-300">tsu — สึ (แถว T)</span>
+                    <span id="insp-kana-weight" class="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-300">น้ำหนัก: 4</span>
+                  </div>
+                  <p id="insp-kana-mnemonic" class="text-xs text-slate-200 mt-0.5 leading-relaxed">
+                    จุด 2 จุดเรียงแนวนอน + ลากเส้นลงจากบนลงล่าง (หน้ายิ้มมองพื้น)
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex items-center justify-between gap-2 pt-1.5 border-t border-slate-800/80">
+              <span id="insp-kana-twin" class="text-[11px] text-amber-300/90">
+                👯 ระวังตัวหน้าคล้าย: シ (shi), ソ (so), ン (n)
+              </span>
+              <div class="flex items-center gap-1.5 shrink-0">
+                <button onclick="speakInspectedKana()" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-[11px] text-slate-200 border border-slate-700">
+                  🔊 ฟังเสียง
+                </button>
+                <button onclick="boostInspectedKana()" class="px-2.5 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-[11px] font-semibold text-amber-300 border border-amber-500/40">
+                  +4 ย้ำ
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Katakana 5-Col Grid -->
+          <div id="katakana-chart-grid" class="grid grid-cols-5 gap-1.5"></div>
         </div>
 
-        <p class="text-xs text-slate-400 text-center">แตะที่ตัวอักษรเพื่อฟังเสียงอ่านภาษาญี่ปุ่น</p>
+        <!-- Sub-view B: Hiragana Chart -->
+        <div id="subview-hiragana" class="hidden space-y-3">
+          <p class="text-xs text-slate-400 text-center">แตะที่ตัวอักษร Hiragana เพื่อฟังเสียงอ่าน</p>
+          <div id="hiragana-chart-grid" class="grid grid-cols-5 gap-1.5"></div>
+        </div>
 
-        <div id="char-grid" class="grid grid-cols-5 gap-2"></div>
+        <!-- Sub-view C: Kanji N5 Core Chart -->
+        <div id="subview-kanji" class="hidden space-y-3">
+          <div class="flex items-center justify-between gap-2">
+            <input id="kanji-search-input" oninput="renderKanjiGrid()" type="text" placeholder="ค้นหาคันจิ / ความหมาย / เสียงอ่าน..." class="w-full bg-slate-950 border border-slate-800 focus:border-indigo-500 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 outline-none" />
+          </div>
+          <p class="text-[11px] text-slate-400 text-center">แตะการ์ดคันจิเพื่อฟังเสียงและดูสูตรจำภาพภาษาไทย</p>
+          <div id="kanji-chart-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-2"></div>
+        </div>
+
+        <!-- Sub-view D: Searchable N5 Vocabulary Vault (265+ Words) -->
+        <div id="subview-vault" class="hidden space-y-3">
+          <div class="space-y-2">
+            <input id="vault-search-input" oninput="renderVocabVault()" type="text" placeholder="ค้นหา คันจิ / ฮิรางานะ / โรมันจิ / คำแปล..." class="w-full bg-slate-950 border border-slate-800 focus:border-indigo-500 rounded-xl px-3 py-2 text-xs text-white placeholder-slate-500 outline-none" />
+            <div class="flex gap-2">
+              <select id="vault-cat-filter" onchange="renderVocabVault()" class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-2 text-xs text-slate-200 outline-none">
+                <option value="all">ทุกหมวดหมู่</option>
+                <option value="custom">⭐ คำที่เพิ่มเอง</option>
+                <option value="time">ตัวเลข วัน และเวลา</option>
+                <option value="verbs">คำกริยาพื้นฐาน N5</option>
+                <option value="adj">คำคุณศัพท์ い / な</option>
+                <option value="places">สถานที่และทิศทาง</option>
+                <option value="people">ครอบครัวและผู้คน</option>
+                <option value="daily">อาหารและของใช้</option>
+                <option value="katakana_n5">คำทับศัพท์คาตาคานะ N5</option>
+                <option value="greetings">คำทักทายและคำถาม</option>
+              </select>
+              <select id="vault-status-filter" onchange="renderVocabVault()" class="bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-2 text-xs text-slate-200 outline-none">
+                <option value="all">ทุกสถานะ</option>
+                <option value="weak">🔥 ตัวอ่อน (5+)</option>
+                <option value="mastered">✅ จำได้แล้ว</option>
+                <option value="learning">🔄 กำลังท่อง</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="vault-stats-line" class="text-[11px] text-slate-400 px-1">
+            แสดง 265 คำ
+          </div>
+
+          <div id="vault-list-container" class="space-y-2 max-h-[58vh] overflow-y-auto pr-1"></div>
+        </div>
       </section>
 
-      <!-- ==================== TAB 4: 4-MODE QUIZ ==================== -->
+      <!-- ==================== TAB 4: SNIPER QUIZ ==================== -->
       <section id="tab-quiz" class="hidden space-y-4">
-        <!-- 4 Quiz Mode Selector Buttons -->
-        <div class="grid grid-cols-4 gap-1.5 bg-slate-800 p-1.5 rounded-xl">
-          <button onclick="setQuizMode('hiragana')" id="qmode-hiragana" class="py-2 px-1 text-[11px] font-medium rounded-lg bg-indigo-600 text-white">
-            あ Hiragana
+        <!-- Mode Selector Pills -->
+        <div class="grid grid-cols-2 gap-1.5">
+          <button data-qmode="tn" class="qmode-pill py-2 px-2.5 rounded-xl text-xs font-semibold bg-indigo-600 text-white shadow-md shadow-indigo-600/20 text-left flex items-center gap-1.5 transition">
+            <span>🎯</span>
+            <span>Katakana แถว T–N</span>
           </button>
-          <button onclick="setQuizMode('katakana')" id="qmode-katakana" class="py-2 px-1 text-[11px] font-medium rounded-lg text-slate-300">
-            ア Katakana
+          <button data-qmode="lookalike" class="qmode-pill py-2 px-2.5 rounded-xl text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 text-left flex items-center gap-1.5 transition">
+            <span>👯</span>
+            <span>คู่แฝดหน้าคล้าย</span>
           </button>
-          <button onclick="setQuizMode('kanji')" id="qmode-kanji" class="py-2 px-1 text-[11px] font-medium rounded-lg text-slate-300">
-            漢 Kanji 100
+          <button data-qmode="kana_all" class="qmode-pill py-2 px-2.5 rounded-xl text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 text-left flex items-center gap-1.5 transition">
+            <span>🎌</span>
+            <span>Katakana ทั้งหมด</span>
           </button>
-          <button onclick="setQuizMode('sentence')" id="qmode-sentence" class="py-2 px-1 text-[11px] font-medium rounded-lg text-slate-300">
-            🧩 เรียงประโยค
+          <button data-qmode="vocab_n5" class="qmode-pill py-2 px-2.5 rounded-xl text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 text-left flex items-center gap-1.5 transition">
+            <span>📚</span>
+            <span>คำศัพท์ N5 (265+)</span>
           </button>
         </div>
 
-        <!-- Score Bar -->
-        <div class="flex justify-between items-center bg-slate-800/60 px-4 py-2.5 rounded-xl border border-slate-800">
-          <span class="text-xs text-slate-300" id="quiz-mode-label">โหมด: ทายตัวอักษร Hiragana</span>
-          <span class="text-sm font-semibold text-emerald-400" id="quiz-score">คะแนน: 0</span>
-        </div>
-
-        <!-- MULTIPLE CHOICE CONTAINER (Modes 1, 2, 3) -->
-        <div id="quiz-mc-container" class="space-y-4">
-          <div class="bg-slate-800 border border-slate-700 rounded-2xl p-6 text-center space-y-2">
-            <span id="quiz-type-badge" class="text-xs text-indigo-300 bg-indigo-500/20 px-2.5 py-1 rounded-md">ทายเสียงอ่าน</span>
-            <div id="quiz-question" class="jp-font text-5xl font-bold text-white py-3">あ</div>
-            <div id="quiz-subhint" class="jp-font text-xs text-slate-400"></div>
-            <button onclick="speakQuizQuestion()" class="text-xs text-indigo-400 hover:text-indigo-300 pt-1 inline-block">🔊 กดฟังเสียง</button>
+        <!-- Sub-controls Bar (Dynamic based on Katakana vs Vocab mode) -->
+        <div class="bg-slate-950/90 border border-slate-800 rounded-2xl p-2.5 flex flex-wrap items-center justify-between gap-2">
+          <!-- Katakana Sub-controls -->
+          <div id="quiz-kana-subcontrols" class="flex items-center justify-between w-full gap-2">
+            <span class="text-[11px] text-slate-400">รูปแบบตอบ:</span>
+            <div class="inline-flex bg-slate-900 p-0.5 rounded-xl border border-slate-800">
+              <button id="q-input-choice" onclick="setQuizKanaInputMode('choice')" class="px-3 py-1 rounded-lg text-xs font-medium bg-slate-800 text-white transition">
+                ตัวเลือกดักทาง
+              </button>
+              <button id="q-input-type" onclick="setQuizKanaInputMode('type')" class="px-3 py-1 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition">
+                พิมพ์โรมันจิ
+              </button>
+            </div>
           </div>
 
-          <div id="quiz-options" class="grid grid-cols-2 gap-2.5"></div>
-        </div>
-
-        <!-- SENTENCE SCRAMBLE CONTAINER (Mode 4) -->
-        <div id="quiz-sentence-container" class="hidden space-y-4">
-          <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 text-center space-y-2">
-            <span class="text-xs text-amber-300 bg-amber-500/20 px-2.5 py-1 rounded-md">เรียงคำให้เป็นประโยคที่ถูกต้อง</span>
-            <p id="sent-meaning" class="text-lg font-bold text-white pt-2">"ฉันกินขนมปังทุกเช้า"</p>
-            <p id="sent-romaji" class="text-xs text-slate-400">คำใบ้: วาตาชิ วะ ไมอาสะ ปัง โอะ ทาเบมัส</p>
-            <button onclick="speakCurrentSentence()" class="text-xs text-indigo-400 hover:text-indigo-300 pt-1">🔊 ฟังเสียงประโยค</button>
-          </div>
-
-          <!-- Selected Answer Slots -->
-          <div class="bg-slate-950/80 border-2 border-dashed border-slate-700 rounded-2xl p-4 min-h-[76px] flex flex-wrap gap-2 items-center justify-center" id="sent-answer-box">
-            <span class="text-xs text-slate-500">แตะคำด้านล่างเพื่อเรียงเป็นประโยค...</span>
-          </div>
-
-          <!-- Word Bank Pool -->
-          <div class="flex flex-wrap gap-2 justify-center py-2" id="sent-word-pool"></div>
-
-          <!-- Action Buttons -->
-          <div class="grid grid-cols-2 gap-3 pt-1">
-            <button onclick="resetSentenceBuilder()" class="py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium">
-              🔄 ล้างเรียงใหม่
-            </button>
-            <button onclick="checkSentenceAnswer()" class="py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium">
-              ✅ ตรวจคำตอบ
+          <!-- Vocab N5 Sub-controls -->
+          <div id="quiz-vocab-subcontrols" class="hidden flex items-center justify-between w-full gap-2">
+            <select id="quiz-vocab-cat" onchange="nextQuizQuestion()" class="flex-1 bg-slate-900 border border-slate-800 rounded-xl px-2.5 py-1.5 text-xs text-slate-200 outline-none">
+              <option value="all">ทุกหมวด N5 (สุ่มเน้นตัวอ่อน)</option>
+              <option value="weak">🔥 เฉพาะตัวอ่อนสุด (น้ำหนัก 5+)</option>
+              <option value="time">ตัวเลข วัน และเวลา</option>
+              <option value="verbs">คำกริยาพื้นฐาน N5</option>
+              <option value="adj">คำคุณศัพท์ い / な</option>
+              <option value="places">สถานที่และทิศทาง</option>
+              <option value="people">ครอบครัวและผู้คน</option>
+              <option value="daily">อาหารและของใช้</option>
+              <option value="katakana_n5">คำทับศัพท์คาตาคานะ N5</option>
+              <option value="greetings">คำทักทายและคำถาม</option>
+            </select>
+            <button id="quiz-furi-btn" onclick="toggleQuizFurigana()" class="px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 whitespace-nowrap">
+              Furigana: เปิด
             </button>
           </div>
         </div>
 
-        <div id="quiz-feedback" class="text-center text-sm font-medium min-h-[28px]"></div>
+        <!-- Quiz Arena Card -->
+        <div id="quiz-arena" class="bg-gradient-to-b from-slate-800/90 to-slate-900 border border-slate-700/80 rounded-3xl p-5 text-center space-y-3 shadow-xl relative overflow-hidden">
+          <div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-rose-500"></div>
+
+          <!-- Top Metadata -->
+          <div class="flex justify-between items-center text-xs">
+            <span id="quiz-badge-left" class="bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-2.5 py-1 rounded-lg font-medium">
+              แถว T
+            </span>
+            <div class="flex items-center gap-2">
+              <span id="quiz-weight-pill" class="bg-amber-500/15 text-amber-300 border border-amber-500/30 px-2.5 py-1 rounded-lg font-semibold">
+                น้ำหนัก: 4/20
+              </span>
+              <span id="quiz-streak-pill" class="bg-slate-950 text-slate-300 border border-slate-800 px-2.5 py-1 rounded-lg font-semibold">
+                🔥 0
+              </span>
+            </div>
+          </div>
+
+          <!-- Target Display -->
+          <div onclick="speakQuizTarget()" class="py-4 px-3 rounded-2xl bg-slate-950/90 border border-slate-800 cursor-pointer group">
+            <div id="quiz-furi-display" class="jp-font text-sm text-indigo-300 min-h-[1.25rem] mb-1"></div>
+            <div id="quiz-question-main" class="jp-font text-5xl sm:text-6xl font-black text-white py-1 group-hover:scale-105 transition-transform">
+              ツ
+            </div>
+            <div class="text-[11px] text-slate-500 mt-1">🔊 แตะเพื่อฟังเสียง</div>
+          </div>
+
+          <!-- Feedback Line -->
+          <div id="quiz-feedback-line" class="min-h-[1.75rem] text-xs sm:text-sm font-medium text-slate-300 flex items-center justify-center">
+            เลือกเสียงอ่านที่ถูกต้อง
+          </div>
+
+          <!-- Thai Visual Mnemonic Hint Box (Shown on Wrong Answer or Manual Hint) -->
+          <div id="quiz-mnemonic-box" class="hidden p-3 rounded-2xl bg-indigo-950/70 border border-indigo-500/40 text-left text-xs text-indigo-100 space-y-1 animate-pop">
+            <div class="font-bold text-indigo-300 flex items-center gap-1">
+              <span>💡 ทริคจำภาพ / จุดสังเกต:</span>
+            </div>
+            <p id="quiz-mnemonic-text" class="text-slate-200 leading-relaxed"></p>
+          </div>
+
+          <!-- 4-Choice Options -->
+          <div id="quiz-choices-grid" class="grid grid-cols-2 gap-2.5 pt-1"></div>
+
+          <!-- Romaji Typing Input Form -->
+          <form id="quiz-type-form" onsubmit="submitQuizTyping(event)" class="hidden pt-1">
+            <div class="flex gap-2">
+              <input id="quiz-romaji-input" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="พิมพ์เสียงอ่าน เช่น tsu, shi, n..." class="flex-1 bg-slate-950 border-2 border-slate-700 focus:border-indigo-500 rounded-2xl px-3 py-2.5 text-center text-base font-bold text-white placeholder-slate-500 outline-none" />
+              <button type="submit" class="px-4 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold">
+                ตรวจ
+              </button>
+            </div>
+          </form>
+
+          <!-- Bottom Quiz Action Buttons -->
+          <div class="pt-3 border-t border-slate-800/80 flex items-center justify-between gap-2">
+            <button onclick="toggleQuizHint()" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium border border-slate-700 transition">
+              💡 ดูทริคจำ
+            </button>
+
+            <button onclick="boostCurrentQuizTarget()" class="px-3 py-2 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/40 text-xs font-semibold transition active:scale-95">
+              ⚠️ ไม่ชัวร์ / ขอย้ำตัวนี้อีก (+4)
+            </button>
+
+            <button id="quiz-next-btn" onclick="nextQuizQuestion()" class="hidden px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-md transition">
+              ถัดไป →
+            </button>
+          </div>
+        </div>
       </section>
 
     </main>
 
-    <!-- Modal: Add Custom Flashcard -->
-    <div id="add-modal" class="fixed inset-0 bg-black/75 z-50 hidden flex items-center justify-center p-4">
-      <div class="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-sm p-5 space-y-4">
+    <!-- ==================== MODAL: ADD CUSTOM FLASHCARD ==================== -->
+    <div id="add-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+      <div class="bg-slate-900 border border-slate-700 rounded-3xl w-full max-w-sm p-5 space-y-4 shadow-2xl animate-pop">
         <div class="flex justify-between items-center">
-          <h3 class="text-base font-semibold text-white">เพิ่มคำศัพท์ใหม่</h3>
-          <button onclick="toggleAddModal(false)" class="text-slate-400 hover:text-white">✕</button>
+          <h3 class="text-base font-bold text-white flex items-center gap-1.5">
+            <span>➕</span> เพิ่มคำศัพท์ใหม่
+          </h3>
+          <button onclick="toggleAddModal(false)" class="text-slate-400 hover:text-white p-1">✕</button>
         </div>
-        <div class="space-y-3 text-sm">
+
+        <div class="space-y-3 text-xs sm:text-sm">
           <div>
             <label class="text-xs text-slate-400">คำศัพท์ (Kanji หรือ Kana)*</label>
-            <input id="inp-kanji" type="text" placeholder="เช่น 勉強する" class="w-full mt-1 bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-500" />
+            <input id="inp-kanji" type="text" placeholder="เช่น 勉強する" class="w-full mt-1 bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-indigo-500" />
           </div>
           <div>
-            <label class="text-xs text-slate-400">คำอ่าน Hiragana*</label>
-            <input id="inp-kana" type="text" placeholder="เช่น べんきょうする" class="w-full mt-1 bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-500" />
+            <label class="text-xs text-slate-400">คำอ่าน Hiragana / Katakana*</label>
+            <input id="inp-kana" type="text" placeholder="เช่น べんきょうする" class="w-full mt-1 bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-indigo-500" />
           </div>
           <div>
             <label class="text-xs text-slate-400">คำอ่านไทย / Romaji</label>
-            <input id="inp-romaji" type="text" placeholder="เช่น เบ็งเคียวสุรุ (benkyou suru)" class="w-full mt-1 bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-500" />
+            <input id="inp-romaji" type="text" placeholder="เช่น เบ็งเคียวสุรุ (benkyou suru)" class="w-full mt-1 bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-indigo-500" />
           </div>
           <div>
             <label class="text-xs text-slate-400">ความหมายภาษาไทย*</label>
-            <input id="inp-meaning" type="text" placeholder="เช่น เรียน, ศึกษา" class="w-full mt-1 bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-indigo-500" />
+            <input id="inp-meaning" type="text" placeholder="เช่น เรียน, ศึกษา" class="w-full mt-1 bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-indigo-500" />
+          </div>
+          <div>
+            <label class="text-xs text-slate-400">ทริคจำ / ตัวอย่างประโยค (ไม่บังคับ)</label>
+            <input id="inp-tip" type="text" placeholder="เช่น 毎日勉強します (เรียนทุกวัน)" class="w-full mt-1 bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-indigo-500" />
           </div>
         </div>
+
         <div class="flex gap-2 pt-2">
-          <button onclick="toggleAddModal(false)" class="flex-1 py-2 rounded-lg bg-slate-800 text-slate-300 text-sm">ยกเลิก</button>
-          <button onclick="saveCustomCard()" class="flex-1 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium">บันทึก</button>
+          <button onclick="toggleAddModal(false)" class="flex-1 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs sm:text-sm font-medium">ยกเลิก</button>
+          <button onclick="saveCustomCard()" class="flex-1 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs sm:text-sm font-semibold shadow-lg shadow-indigo-600/25">บันทึกคำศัพท์</button>
         </div>
       </div>
     </div>
 
-    <!-- Bottom Navigation Bar -->
-    <nav class="fixed bottom-0 w-full max-w-md bg-slate-900/95 backdrop-blur border-t border-slate-800 grid grid-cols-4 py-2 z-30">
-      <button onclick="switchTab('flashcard')" id="nav-flashcard" class="flex flex-col items-center py-1 text-indigo-400">
+    <!-- ==================== MODAL: BACKUP & GITHUB SYNC (JSON) ==================== -->
+    <div id="backup-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+      <div class="bg-slate-900 border border-slate-700 rounded-3xl w-full max-w-sm p-5 space-y-4 shadow-2xl animate-pop">
+        <div class="flex justify-between items-center">
+          <div class="flex items-center gap-2">
+            <span class="text-xl">💾</span>
+            <div>
+              <h3 class="text-base font-bold text-white">สำรอง &amp; ย้ายข้อมูล (JSON)</h3>
+              <p class="text-[11px] text-slate-400">ซิงก์คำศัพท์ที่เพิ่มเอง สถานะจำได้ และค่าน้ำหนักจุดอ่อน</p>
+            </div>
+          </div>
+          <button onclick="toggleBackupModal(false)" class="text-slate-400 hover:text-white p-1">✕</button>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <button onclick="exportBackupJSON()" class="py-2.5 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold transition">
+            ⬇️ ดาวน์โหลด JSON
+          </button>
+          <label class="py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold text-center cursor-pointer transition">
+            ⬆️ นำเข้าไฟล์ JSON
+            <input id="import-json-file" type="file" accept=".json" onchange="importBackupJSON(event)" class="hidden" />
+          </label>
+        </div>
+
+        <div class="space-y-1.5">
+          <label class="text-[11px] text-slate-400 block">โค้ดสำรองข้อมูล (คัดลอกไปวางเครื่องอื่นได้):</label>
+          <textarea id="backup-json-box" rows="4" readonly class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-[10px] font-mono text-slate-300 outline-none"></textarea>
+          <button onclick="copyBackupJSON()" class="w-full py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium border border-slate-700 transition">
+            📋 คัดลอกโค้ดสำรองลงคลิปบอร์ด
+          </button>
+        </div>
+
+        <div class="pt-2 border-t border-slate-800 flex justify-between items-center">
+          <button id="reset-trigger-btn" onclick="handleResetProgress()" class="text-[11px] text-rose-400 hover:text-rose-300 font-medium">
+            🗑️ รีเซ็ตสถิติความจำทั้งหมด
+          </button>
+          <button onclick="toggleBackupModal(false)" class="text-xs text-slate-400 hover:text-white">ปิดหน้าต่าง</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== TOAST NOTIFICATION ==================== -->
+    <div id="toast" class="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 pointer-events-none opacity-0 translate-y-2 transition-all duration-200 w-max max-w-[90vw]">
+      <div class="bg-slate-800/95 backdrop-blur-md border border-slate-700 text-white px-4 py-2 rounded-2xl shadow-2xl text-xs font-medium text-center">
+        <span id="toast-msg">บันทึกเรียบร้อย</span>
+      </div>
+    </div>
+
+    <!-- ==================== BOTTOM NAVIGATION BAR (4 TABS) ==================== -->
+    <nav class="fixed bottom-0 w-full max-w-lg bg-slate-900/95 backdrop-blur-md border-t border-slate-800 grid grid-cols-4 py-2 z-30">
+      <button onclick="switchTab('flashcard')" id="nav-flashcard" class="flex flex-col items-center py-1 text-indigo-400 transition">
         <span class="text-xl">🎴</span>
-        <span class="text-[11px] mt-0.5 font-medium">คำศัพท์</span>
+        <span class="text-[11px] mt-0.5 font-semibold">แฟลชการ์ด</span>
       </button>
-      <button onclick="switchTab('speak')" id="nav-speak" class="flex flex-col items-center py-1 text-slate-400">
+      <button onclick="switchTab('speak')" id="nav-speak" class="flex flex-col items-center py-1 text-slate-400 hover:text-slate-200 transition">
         <span class="text-xl">🎙️</span>
         <span class="text-[11px] mt-0.5 font-medium">ฝึกพูด</span>
       </button>
-      <button onclick="switchTab('chars')" id="nav-chars" class="flex flex-col items-center py-1 text-slate-400">
+      <button onclick="switchTab('chars')" id="nav-chars" class="flex flex-col items-center py-1 text-slate-400 hover:text-slate-200 transition">
         <span class="text-xl jp-font font-bold">あ</span>
-        <span class="text-[11px] mt-0.5 font-medium">ตัวอักษร</span>
+        <span class="text-[11px] mt-0.5 font-medium">คลัง &amp; ตาราง</span>
       </button>
-      <button onclick="switchTab('quiz')" id="nav-quiz" class="flex flex-col items-center py-1 text-slate-400">
+      <button onclick="switchTab('quiz')" id="nav-quiz" class="flex flex-col items-center py-1 text-slate-400 hover:text-slate-200 transition">
         <span class="text-xl">🎯</span>
-        <span class="text-[11px] mt-0.5 font-medium">ควิซ 4 โหมด</span>
+        <span class="text-[11px] mt-0.5 font-medium">ควิซจุดอ่อน</span>
       </button>
     </nav>
 
   </div>
 
   <script>
-    // ==================== DATA: JLPT N5 VOCABULARY ====================
-    const defaultVocab = [
-      { id: 1, kanji: "食べる", kana: "たべる", romaji: "ทาเบรุ (taberu)", meaning: "กิน", exJp: "朝ご飯を食べます", exTh: "อะสะโกะฮัง โอะ ทาเบมัส (กินข้าวเช้า)", mastered: false },
-      { id: 2, kanji: "飲む", kana: "のむ", romaji: "โนะมุ (nomu)", meaning: "ดื่ม", exJp: "水を飲みます", exTh: "มิซึ โอะ โนะมิมัส (ดื่มน้ำ)", mastered: false },
-      { id: 3, kanji: "行く", kana: "いく", romaji: "อิคุ (iku)", meaning: "ไป", exJp: "学校へ行きます", exTh: "กักโค เอะ อิคิมัส (ไปโรงเรียน)", mastered: false },
-      { id: 4, kanji: "来る", kana: "くる", romaji: "คุรุ (kuru)", meaning: "มา", exJp: "友達が来ます", exTh: "โทโมดาจิ กะ คิมัส (เพื่อนจะมา)", mastered: false },
-      { id: 5, kanji: "帰る", kana: "かえる", romaji: "คาเอรุ (kaeru)", meaning: "กลับ", exJp: "家へ帰ります", exTh: "อิเอะ เอะ คาเอริมัส (กลับบ้าน)", mastered: false },
-      { id: 6, kanji: "見る", kana: "みる", romaji: "มิรุ (miru)", meaning: "ดู, มอง", exJp: "テレビを見ます", exTh: "เทเรบิ โอะ มิมัส (ดูทีวี)", mastered: false },
-      { id: 7, kanji: "聞く", kana: "きく", romaji: "คิคุ (kiku)", meaning: "ฟัง, ถาม", exJp: "音楽を聞きます", exTh: "องกะคุ โอะ คิคิมัส (ฟังเพลง)", mastered: false },
-      { id: 8, kanji: "話す", kana: "はなす", romaji: "ฮานาสุ (hanasu)", meaning: "พูด, คุย", exJp: "日本語を話します", exTh: "นิฮงโกะ โอะ ฮานาชิมัส (พูดภาษาญี่ปุ่น)", mastered: false },
-      { id: 9, kanji: "読む", kana: "よむ", romaji: "โยหมุ (yomu)", meaning: "อ่าน", exJp: "本を読みます", exTh: "ฮง โอะ โยมีมัส (อ่านหนังสือ)", mastered: false },
-      { id: 10, kanji: "書く", kana: "かく", romaji: "คาคุ (kaku)", meaning: "เขียน", exJp: "手紙を書きます", exTh: "เทกามิ โอะ คาคิมัส (เขียนจดหมาย)", mastered: false },
-      { id: 11, kanji: "買う", kana: "かう", romaji: "คาอุ (kau)", meaning: "ซื้อ", exJp: "服を買います", exTh: "ฟุคุ โอะ ไคมัส (ซื้อเสื้อผ้า)", mastered: false },
-      { id: 12, kanji: "起きる", kana: "おきる", romaji: "โอคิรุ (okiru)", meaning: "ตื่นนอน", exJp: "毎日6時に起きます", exTh: "ไมนิจิ โรคุจิ นิ โอคิมัส (ตื่น 6 โมงทุกวัน)", mastered: false },
-      { id: 13, kanji: "寝る", kana: "ねる", romaji: "เนรุ (neru)", meaning: "นอน", exJp: "夜11時に寝ます", exTh: "โยรุ จูอิจิจิ นิ เนมัส (นอนตอน 5 ทุ่ม)", mastered: false },
-      { id: 14, kanji: "勉強する", kana: "べんきょうする", romaji: "เบ็งเคียวสุรุ (benkyou suru)", meaning: "เรียน, ศึกษา", exJp: "毎日勉強します", exTh: "ไมนิจิ เบ็งเคียวชิมัส (เรียนทุกวัน)", mastered: false },
-      { id: 15, kanji: "仕事", kana: "しごと", romaji: "ชิโกะโตะ (shigoto)", meaning: "งาน, อาชีพ", exJp: "仕事をします", exTh: "ชิโกะโตะ โอะ ชิมัส (ทำงาน)", mastered: false }
-    ];
-
-    // ==================== DATA: HIRAGANA (46) & KATAKANA (46) ====================
-    const hiraganaList = [
+    // =========================================================================
+    // 1. DATA: HIRAGANA, KATAKANA (WITH THAI MNEMONICS & LOOKALIKES), KANJI N5
+    // =========================================================================
+    const HIRAGANA_DATA = [
       { c: "あ", r: "a" }, { c: "い", r: "i" }, { c: "う", r: "u" }, { c: "え", r: "e" }, { c: "お", r: "o" },
       { c: "か", r: "ka" }, { c: "き", r: "ki" }, { c: "く", r: "ku" }, { c: "け", r: "ke" }, { c: "こ", r: "ko" },
       { c: "さ", r: "sa" }, { c: "し", r: "shi" }, { c: "す", r: "su" }, { c: "せ", r: "se" }, { c: "そ", r: "so" },
@@ -352,222 +669,542 @@
       { c: "わ", r: "wa" }, { c: "", r: "" }, { c: "を", r: "wo" }, { c: "", r: "" }, { c: "ん", r: "n" }
     ];
 
-    const katakanaList = [
-      { c: "ア", r: "a" }, { c: "イ", r: "i" }, { c: "ウ", r: "u" }, { c: "エ", r: "e" }, { c: "オ", r: "o" },
-      { c: "カ", r: "ka" }, { c: "キ", r: "ki" }, { c: "ク", r: "ku" }, { c: "ケ", r: "ke" }, { c: "コ", r: "ko" },
-      { c: "サ", r: "sa" }, { c: "シ", r: "shi" }, { c: "ス", r: "su" }, { c: "セ", r: "se" }, { c: "ソ", r: "so" },
-      { c: "タ", r: "ta" }, { c: "チ", r: "chi" }, { c: "ツ", r: "tsu" }, { c: "テ", r: "te" }, { c: "ト", r: "to" },
-      { c: "ナ", r: "na" }, { c: "ニ", r: "ni" }, { c: "ヌ", r: "nu" }, { c: "ネ", r: "ne" }, { c: "ノ", r: "no" },
-      { c: "ハ", r: "ha" }, { c: "ヒ", r: "hi" }, { c: "フ", r: "fu" }, { c: "ヘ", r: "he" }, { c: "ホ", r: "ho" },
-      { c: "マ", r: "ma" }, { c: "ミ", r: "mi" }, { c: "ム", r: "mu" }, { c: "メ", r: "me" }, { c: "モ", r: "mo" },
-      { c: "ヤ", r: "ya" }, { c: "", r: "" }, { c: "ユ", r: "yu" }, { c: "", r: "" }, { c: "ヨ", r: "yo" },
-      { c: "ラ", r: "ra" }, { c: "リ", r: "ri" }, { c: "ル", r: "ru" }, { c: "レ", r: "re" }, { c: "ロ", r: "ro" },
-      { c: "ワ", r: "wa" }, { c: "", r: "" }, { c: "ヲ", r: "wo" }, { c: "", r: "" }, { c: "ン", r: "n" }
+    const KATAKANA_DATA = [
+      // Row A
+      { id: 'a',  kana: 'ア', romaji: 'a',   thai: 'อะ (a)',   accept: ['a'], row: 'A', isLower: false, lookalikes: ['ma', 'mu', 'te'], mnemonic: 'เหมือนตัว A เอียงข้าง หรือขวานจามลงมา' },
+      { id: 'i',  kana: 'イ', romaji: 'i',   thai: 'อิ (i)',   accept: ['i'], row: 'A', isLower: false, lookalikes: ['to', 'ri', 'no'], mnemonic: 'เหมือนคนยืนตัวตรง (I = ฉัน)' },
+      { id: 'u',  kana: 'ウ', romaji: 'u',   thai: 'อุ (u)',   accept: ['u'], row: 'A', isLower: false, lookalikes: ['wa', 'fu', 'ra'], mnemonic: 'เหมือนตัว う ในฮิรางานะที่ตัดเส้นโค้งให้เป็นเหลี่ยม' },
+      { id: 'e',  kana: 'エ', romaji: 'e',   thai: 'เอะ (e)',  accept: ['e'], row: 'A', isLower: false, lookalikes: ['ko', 'ni', 'yu'], mnemonic: 'เหมือนตัว I พิมพ์ใหญ่ หรือรางรถไฟ (Eki = สถานี)' },
+      { id: 'o',  kana: 'オ', romaji: 'o',   thai: 'โอะ (o)',  accept: ['o'], row: 'A', isLower: false, lookalikes: ['ho', 'na', 'chi'], mnemonic: 'เหมือนนักร้องโอเปร่ากำลังกางแขนร้องเพลง' },
+      // Row K
+      { id: 'ka', kana: 'カ', romaji: 'ka',  thai: 'คะ (ka)',  accept: ['ka'], row: 'K', isLower: false, lookalikes: ['ya', 'na', 'ku'], mnemonic: 'เหมือนตัว か ในฮิรางานะที่ตัดจุดด้านขวาออก' },
+      { id: 'ki', kana: 'キ', romaji: 'ki',  thai: 'คิ (ki)',  accept: ['ki'], row: 'K', isLower: false, lookalikes: ['sa', 'se', 'te'], mnemonic: 'เหมือนลูกกุญแจ (Key) ดอกบนของตัว き' },
+      { id: 'ku', kana: 'ク', romaji: 'ku',  thai: 'คุ (ku)',  accept: ['ku'], row: 'K', isLower: false, lookalikes: ['ke', 'ta', 'wa'], mnemonic: 'เหมือนปากนกกุ๊กกู (Cuckoo) หรือมุมซ้ายของ く' },
+      { id: 'ke', kana: 'ケ', romaji: 'ke',  thai: 'เคะ (ke)', accept: ['ke'], row: 'K', isLower: false, lookalikes: ['ku', 'ta', 'te'], mnemonic: 'เหมือนตัว K เอียงข้าง' },
+      { id: 'ko', kana: 'コ', romaji: 'ko',  thai: 'โคะ (ko)', accept: ['ko'], row: 'K', isLower: false, lookalikes: ['yo', 'yu', 'ro'], mnemonic: 'เหมือนมุมสี่เหลี่ยม (Corner) หรือตัว こ แนวตั้ง' },
+      // Row S
+      { id: 'sa', kana: 'サ', romaji: 'sa',  thai: 'ซะ (sa)',  accept: ['sa'], row: 'S', isLower: false, lookalikes: ['se', 'ki', 'na'], mnemonic: 'เหมือนรั้วไม้กั้นหรือซามูไรสะพายดาบ' },
+      { id: 'shi',kana: 'シ', romaji: 'shi', thai: 'ชิ (shi)', accept: ['shi', 'si'], row: 'S', isLower: false, lookalikes: ['tsu', 'n', 'so'], mnemonic: 'จุด 2 จุดเรียงแนวตั้ง + ลากเส้นขึ้นจากล่างขึ้นบน (หน้ายิ้มมองขึ้น)' },
+      { id: 'su', kana: 'ス', romaji: 'su',  thai: 'สึ (su)',  accept: ['su'], row: 'S', isLower: false, lookalikes: ['nu', 'fu', 'ma'], mnemonic: 'เหมือนคนกำลังเล่นสกีหรือวิ่งซุปเปอร์แมน' },
+      { id: 'se', kana: 'セ', romaji: 'se',  thai: 'เซะ (se)', accept: ['se'], row: 'S', isLower: false, lookalikes: ['sa', 'hi', 'ya'], mnemonic: 'เหมือนตัว せ ในฮิรางานะที่ตัดเส้นตั้งขวาออก' },
+      { id: 'so', kana: 'ソ', romaji: 'so',  thai: 'โซะ (so)', accept: ['so'], row: 'S', isLower: false, lookalikes: ['n', 'shi', 'tsu'], mnemonic: 'จุดอยู่สูง + ลากเส้นลงจากบนลงล่าง (หน้าบึ้งมองลง)' },
+      // Row T (Lower Zone Starts Here)
+      { id: 'ta', kana: 'タ', romaji: 'ta',  thai: 'ทะ (ta)',  accept: ['ta'], row: 'T', isLower: true, lookalikes: ['ku', 'nu', 'ke'], mnemonic: 'คือส่วนซ้ายบนของ た หรือมองเป็นคนกางแขน' },
+      { id: 'chi',kana: 'チ', romaji: 'chi', thai: 'จิ (chi)', accept: ['chi', 'ti'], row: 'T', isLower: true, lookalikes: ['te', 'na', 'o'], mnemonic: 'คล้ายเลข 5 หรือคนยืนเต้นเชียร์ (Cheer)' },
+      { id: 'tsu',kana: 'ツ', romaji: 'tsu', thai: 'สึ (tsu)', accept: ['tsu', 'tu'], row: 'T', isLower: true, lookalikes: ['shi', 'so', 'n'], mnemonic: 'จุด 2 จุดเรียงแนวนอน + ลากเส้นลงจากบนลงล่าง (หน้ายิ้มมองพื้น)' },
+      { id: 'te', kana: 'テ', romaji: 'te',  thai: 'เทะ (te)', accept: ['te'], row: 'T', isLower: true, lookalikes: ['chi', 'na', 'ki'], mnemonic: 'เหมือนเสาโทรศัพท์ (Telephone)' },
+      { id: 'to', kana: 'ト', romaji: 'to',  thai: 'โทะ (to)', accept: ['to'], row: 'T', isLower: true, lookalikes: ['i', 'hi', 're'], mnemonic: 'เหมือนเสาโทเทม (Totem) หรือกิ่งไม้มีหนามตำ' },
+      // Row N
+      { id: 'na', kana: 'ナ', romaji: 'na',  thai: 'นะ (na)',  accept: ['na'], row: 'N', isLower: true, lookalikes: ['me', 'no', 'chi'], mnemonic: 'คือส่วนซ้ายบนของ な (ไม้กางเขนเอียง)' },
+      { id: 'ni', kana: 'ニ', romaji: 'ni',  thai: 'นิ (ni)',  accept: ['ni'], row: 'N', isLower: true, lookalikes: ['mi', 'ko', 'e'], mnemonic: 'เหมือนเลข 2 ในคันจิ (二 = นิ)' },
+      { id: 'nu', kana: 'ヌ', romaji: 'nu',  thai: 'นุ (nu)',  accept: ['nu'], row: 'N', isLower: true, lookalikes: ['su', 'ta', 'me'], mnemonic: 'เหมือนตะเกียบคีบเส้นบะหมี่ (Noodles)' },
+      { id: 'ne', kana: 'ネ', romaji: 'ne',  thai: 'เนะ (ne)', accept: ['ne'], row: 'N', isLower: true, lookalikes: ['ho', 'te', 'na'], mnemonic: 'เอา ね ในฮิรางานะมาดัดให้เป็นเส้นตรงทั้งหมด' },
+      { id: 'no', kana: 'ノ', romaji: 'no',  thai: 'โนะ (no)', accept: ['no'], row: 'N', isLower: true, lookalikes: ['me', 'na', 'so'], mnemonic: 'ขีดเฉียงเส้นเดียว เหมือนเครื่องหมายห้าม (No)' },
+      // Row H
+      { id: 'ha', kana: 'ハ', romaji: 'ha',  thai: 'ฮะ (ha)',  accept: ['ha'], row: 'H', isLower: true, lookalikes: ['ru', 'ho', 'he'], mnemonic: 'เหมือนหลังคาบ้าน หรือเลข 8 (ฮาจิ)' },
+      { id: 'hi', kana: 'ヒ', romaji: 'hi',  thai: 'ฮิ (hi)',  accept: ['hi'], row: 'H', isLower: true, lookalikes: ['se', 'to', 're'], mnemonic: 'เหมือนคนยิ้มยิงฟัน "ฮิๆ" (Hehe) / ตัว ひ แบบเหลี่ยม' },
+      { id: 'fu', kana: 'フ', romaji: 'fu',  thai: 'ฟุ (fu)',  accept: ['fu', 'hu'], row: 'H', isLower: true, lookalikes: ['wa', 'ra', 'wo'], mnemonic: 'เหมือนมุมขวาของภูเขาไฟฟูจิ (Fuji)' },
+      { id: 'he', kana: 'ヘ', romaji: 'he',  thai: 'เฮะ (he)', accept: ['he'], row: 'H', isLower: true, lookalikes: ['ha', 're', 'no'], mnemonic: 'เหมือนตัว へ ในฮิรางานะเป๊ะๆ!' },
+      { id: 'ho', kana: 'ホ', romaji: 'ho',  thai: 'โฮะ (ho)', accept: ['ho'], row: 'H', isLower: true, lookalikes: ['ne', 'o', 'ha'], mnemonic: 'เหมือนไม้กางเขนมีขาตั้ง (Holy cross) / ส่วนขวาของ ほ' },
+      // Row M
+      { id: 'ma', kana: 'マ', romaji: 'ma',  thai: 'มะ (ma)',  accept: ['ma'], row: 'M', isLower: true, lookalikes: ['mu', 'a', 'su'], mnemonic: 'หยิบมาแค่มุมบนของ ま' },
+      { id: 'mi', kana: 'ミ', romaji: 'mi',  thai: 'มิ (mi)',  accept: ['mi'], row: 'M', isLower: true, lookalikes: ['ni', 'shi', 'yo'], mnemonic: 'ขีดเฉียง 3 เส้น เหมือนหนวดแมวร้อง "มิ้ว"' },
+      { id: 'mu', kana: 'ム', romaji: 'mu',  thai: 'มุ (mu)',  accept: ['mu'], row: 'M', isLower: true, lookalikes: ['ma', 'a', 'ro'], mnemonic: 'เหมือนจมูกวัวร้อง "มู" (Moo)' },
+      { id: 'me', kana: 'メ', romaji: 'me',  thai: 'เมะ (me)', accept: ['me'], row: 'M', isLower: true, lookalikes: ['na', 'no', 'nu'], mnemonic: 'เหมือนรอยแผลเป็นกากบาทบนตา (เมะ = ตา)' },
+      { id: 'mo', kana: 'モ', romaji: 'mo',  thai: 'โมะ (mo)', accept: ['mo'], row: 'M', isLower: true, lookalikes: ['yo', 'ni', 'mi'], mnemonic: 'เหมือน も ที่ตัดส่วนโค้งด้านล่างออก' },
+      // Row Y
+      { id: 'ya', kana: 'ヤ', romaji: 'ya',  thai: 'ยะ (ya)',  accept: ['ya'], row: 'Y', isLower: true, lookalikes: ['ka', 'se', 'ma'], mnemonic: 'เหมือน や ที่ตัดจุดออกและหักมุมให้เหลี่ยม' },
+      { id: 'yu', kana: 'ユ', romaji: 'yu',  thai: 'ยุ (yu)',  accept: ['yu'], row: 'Y', isLower: true, lookalikes: ['ko', 'yo', 'ro'], mnemonic: 'เหมือนตัว U ตะแคงข้าง' },
+      { id: 'yo', kana: 'ヨ', romaji: 'yo',  thai: 'โยะ (yo)', accept: ['yo'], row: 'Y', isLower: true, lookalikes: ['ko', 'yu', 'mo'], mnemonic: 'เหมือนตัว E กลับด้าน (โยโย่)' },
+      // Row R
+      { id: 'ra', kana: 'ラ', romaji: 'ra',  thai: 'ระ (ra)',  accept: ['ra'], row: 'R', isLower: true, lookalikes: ['fu', 'wa', 'wo'], mnemonic: 'เหมือนชามราเม็งมีฝาปิด (Ramen)' },
+      { id: 'ri', kana: 'リ', romaji: 'ri',  thai: 'ริ (ri)',  accept: ['ri'], row: 'R', isLower: true, lookalikes: ['i', 'ru', 're'], mnemonic: 'เหมือนตัว り ในฮิรางานะเป๊ะๆ แค่เส้นตรงขึ้น' },
+      { id: 'ru', kana: 'ル', romaji: 'ru',  thai: 'รุ (ru)',  accept: ['ru'], row: 'R', isLower: true, lookalikes: ['re', 'ha', 'ri'], mnemonic: 'เหมือนรากไม้ 2 แฉก (Root)' },
+      { id: 're', kana: 'レ', romaji: 're',  thai: 'เระ (re)', accept: ['re'], row: 'R', isLower: true, lookalikes: ['ru', 'hi', 'to'], mnemonic: 'เหมือนเครื่องหมายถูก (Right) / ขาขวาของ ル' },
+      { id: 'ro', kana: 'ロ', romaji: 'ro',  thai: 'โระ (ro)', accept: ['ro'], row: 'R', isLower: true, lookalikes: ['ko', 'yu', 'mu'], mnemonic: 'สี่เหลี่ยมจัตุรัส เหมือนทางแยกถนน (Road)' },
+      // Row W & N
+      { id: 'wa', kana: 'ワ', romaji: 'wa',  thai: 'วะ (wa)',  accept: ['wa'], row: 'W', isLower: true, lookalikes: ['fu', 'u', 'ra'], mnemonic: 'เหมือนแก้วไวน์ (Wine) / ส่วนซ้ายของ わ' },
+      { id: 'wo', kana: 'ヲ', romaji: 'wo',  thai: 'โอะ (wo)', accept: ['wo', 'o'], row: 'W', isLower: true, lookalikes: ['fu', 'ra', 'wa'], mnemonic: 'เหมือนตัว フ ที่มีขีดกลางพาดผ่าน (N5 แทบไม่ได้ใช้)' },
+      { id: 'n',  kana: 'ン', romaji: 'n',   thai: 'อึน (n)', accept: ['n', 'nn'], row: 'W', isLower: true, lookalikes: ['so', 'shi', 'tsu'], mnemonic: '1 จุดอยู่ต่ำกว่า + ลากเส้นขึ้น (เหมือนคนตาเดียวกำลังยิ้มมองขึ้น)' }
     ];
 
-    // ==================== DATA: 100 JLPT N5 KANJI ====================
-    const kanjiN5List = [
-      { c: "一", read: "いち / ひと", r: "หนึ่ง (1)" },
-      { c: "二", read: "に / ふた", r: "สอง (2)" },
-      { c: "三", read: "さん / み", r: "สาม (3)" },
-      { c: "四", read: "よん / し", r: "สี่ (4)" },
-      { c: "五", read: "ご / いつ", r: "ห้า (5)" },
-      { c: "六", read: "ろく / む", r: "หก (6)" },
-      { c: "七", read: "なな / しち", r: "เจ็ด (7)" },
-      { c: "八", read: "はち / や", r: "แปด (8)" },
-      { c: "九", read: "きゅう / ここの", r: "เก้า (9)" },
-      { c: "十", read: "じゅう / とお", r: "สิบ (10)" },
-      { c: "百", read: "ひゃく", r: "ร้อย (100)" },
-      { c: "千", read: "せん", r: "พัน (1,000)" },
-      { c: "万", read: "まん", r: "หมื่น (10,000)" },
-      { c: "円", read: "えん / まる", r: "เยน / วงกลม" },
-      { c: "日", read: "にち / ひ", r: "วัน / ดวงอาทิตย์" },
-      { c: "月", read: "げつ / つき", r: "เดือน / ดวงจันทร์" },
-      { c: "火", read: "か / ひ", r: "ไฟ / วันอังคาร" },
-      { c: "水", read: "すい / みず", r: "น้ำ / วันพุธ" },
-      { c: "木", read: "もく / き", r: "ต้นไม้ / วันพฤหัส" },
-      { c: "金", read: "きん / かね", r: "ทอง / เงิน" },
-      { c: "土", read: "ど / つち", r: "ดิน / วันเสาร์" },
-      { c: "曜", read: "よう", r: "วันในสัปดาห์" },
-      { c: "本", read: "ほん / もと", r: "หนังสือ / ต้นกำเนิด" },
-      { c: "人", read: "じん / ひと", r: "คน / มนุษย์" },
-      { c: "今", read: "こん / いま", r: "ตอนนี้ / ปัจจุบัน" },
-      { c: "寺", read: "じ / てら", r: "วัด" },
-      { c: "時", read: "じ / とき", r: "เวลา / ชั่วโมง" },
-      { c: "半", read: "はん / なかば", r: "ครึ่ง" },
-      { c: "分", read: "ふん / わける", r: "นาที / แบ่ง / เข้าใจ" },
-      { c: "何", read: "なに / なん", r: "อะไร" },
-      { c: "先", read: "せん / さき", r: "ก่อน / ข้างหน้า" },
-      { c: "生", read: "せい / いきる", r: "เกิด / ชีวิต / ดิบ" },
-      { c: "学", read: "がく / まなぶ", r: "เรียน / วิชา" },
-      { c: "校", read: "こう", r: "โรงเรียน" },
-      { c: "友", read: "ゆう / とも", r: "เพื่อน" },
-      { c: "父", read: "ふ / ちち", r: "พ่อ" },
-      { c: "母", read: "ぼ / はは", r: "แม่" },
-      { c: "男", read: "だん / おとこ", r: "ผู้ชาย" },
-      { c: "女", read: "じょ / おんな", r: "ผู้หญิง" },
-      { c: "子", read: "し / こ", r: "เด็ก / ลูก" },
-      { c: "小", read: "しょう / ちいさい", r: "เล็ก" },
-      { c: "中", read: "ちゅう / なか", r: "กลาง / ข้างใน" },
-      { c: "大", read: "だい / おおきい", r: "ใหญ่" },
-      { c: "上", read: "じょう / うえ", r: "บน / ขึ้น" },
-      { c: "下", read: "か / した", r: "ล่าง / ลง" },
-      { c: "左", read: "さ / ひだり", r: "ซ้าย" },
-      { c: "右", read: "う / みぎ", r: "ขวา" },
-      { c: "前", read: "ぜん / まえ", r: "ข้างหน้า / ก่อน" },
-      { c: "後", read: "ご / うしろ / あと", r: "ข้างหลัง / หลังจาก" },
-      { c: "外", read: "がい / そと", r: "ข้างนอก / ต่างประเทศ" },
-      { c: "国", read: "こく / くに", r: "ประเทศ" },
-      { c: "語", read: "ご / かたる", r: "ภาษา / คำพูด" },
-      { c: "名", read: "めい / な", r: "ชื่อ / ชื่อเสียง" },
-      { c: "年", read: "ねん / とし", r: "ปี" },
-      { c: "午", read: "ご", r: "เที่ยงวัน" },
-      { c: "毎", read: "まい", r: "ทุกๆ (เช่น ทุกวัน)" },
-      { c: "週", read: "しゅう", r: "สัปดาห์" },
-      { c: "間", read: "かん / あいだ", r: "ระหว่าง / ช่วงเวลา" },
-      { c: "東", read: "とう / ひがし", r: "ทิศตะวันออก" },
-      { c: "西", read: "せい / にし", r: "ทิศตะวันตก" },
-      { c: "南", read: "なん / みなみ", r: "ทิศใต้" },
-      { c: "北", read: "ほく / きた", r: "ทิศเหนือ" },
-      { c: "口", read: "こう / くち", r: "ปาก / ทางออก" },
-      { c: "出", read: "しゅつ / でる", r: "ออก / เอาออก" },
-      { c: "入", read: "にゅう / はいる", r: "เข้า / ใส่" },
-      { c: "山", read: "さん / やま", r: "ภูเขา" },
-      { c: "川", read: "せん / かわ", r: "แม่น้ำ" },
-      { c: "空", read: "くう / そら", r: "ท้องฟ้า / ว่างเปล่า" },
-      { c: "天", read: "てん", r: "สวรรค์ / ท้องฟ้า" },
-      { c: "気", read: "き / け", r: "จิตใจ / อากาศ / พลัง" },
-      { c: "雨", read: "う / あめ", r: "ฝน" },
-      { c: "電", read: "でん", r: "ไฟฟ้า" },
-      { c: "車", read: "しゃ / くるま", r: "รถยนต์ / ยานพาหนะ" },
-      { c: "駅", read: "えき", r: "สถานีรถไฟ" },
-      { c: "道", read: "どう / みち", r: "ถนน / เส้นทาง" },
-      { c: "社", read: "しゃ / やしろ", r: "บริษัท / ศาลเจ้า" },
-      { c: "会", read: "かい / あう", r: "พบปะ / สมาคม" },
-      { c: "店", read: "てん / みせ", r: "ร้านค้า" },
-      { c: "休", read: "きゅう / やすむ", r: "พักผ่อน / หยุด" },
-      { c: "見", read: "けん / みる", r: "ดู / มองเห็น" },
-      { c: "聞", read: "ぶん / きく", r: "ฟัง / ได้ยิน / ถาม" },
-      { c: "読", read: "どく / よむ", r: "อ่าน" },
-      { c: "書", read: "しょ / かく", r: "เขียน" },
-      { c: "話", read: "わ / はなす", r: "พูดคุย / เรื่องราว" },
-      { c: "食", read: "しょく / たべる", r: "กิน / อาหาร" },
-      { c: "飲", read: "いん / のむ", r: "ดื่ม" },
-      { c: "買", read: "ばい / かう", r: "ซื้อ" },
-      { c: "行", read: "こう / いく", r: "ไป / แถว" },
-      { c: "来", read: "らい / くる", r: "มา / ถัดไป" },
-      { c: "帰", read: "き / かえる", r: "กลับบ้าน" },
-      { c: "立", read: "りつ / たつ", r: "ยืน / ตั้งขึ้น" },
-      { c: "良", read: "りょう / いい", r: "ดี" },
-      { c: "高", read: "こう / たかい", r: "สูง / แพง" },
-      { c: "安", read: "あん / やすい", r: "ราคาถูก / สงบปลอดภัย" },
-      { c: "新", read: "しん / あたらしい", r: "ใหม่" },
-      { c: "古", read: "こ / ふるい", r: "เก่า" },
-      { c: "多", read: "た / おおい", r: "มาก / เยอะ" },
-      { c: "少", read: "しょう / すくない", r: "น้อย / นิดหน่อย" },
-      { c: "長", read: "ちょう / ながい", r: "ยาว / หัวหน้า" },
-      { c: "白", read: "はく / しろい", r: "สีขาว" }
+    const KATAKANA_GRID_SLOTS = [
+      'a', 'i', 'u', 'e', 'o',
+      'ka', 'ki', 'ku', 'ke', 'ko',
+      'sa', 'shi', 'su', 'se', 'so',
+      'ta', 'chi', 'tsu', 'te', 'to',
+      'na', 'ni', 'nu', 'ne', 'no',
+      'ha', 'hi', 'fu', 'he', 'ho',
+      'ma', 'mi', 'mu', 'me', 'mo',
+      'ya', null, 'yu', null, 'yo',
+      'ra', 'ri', 'ru', 're', 'ro',
+      'wa', null, 'wo', null, 'n'
     ];
 
-    // ==================== DATA: MIXED SENTENCES (Hiragana + Katakana + Kanji) ====================
-    const sentenceQuizList = [
-      {
-        words: ["私", "は", "毎朝", "パン", "を", "食べます"],
-        kana: "わたしはまいあさパンをたべます",
-        romaji: "วาตาชิ วะ ไมอาสะ ปัง โอะ ทาเบมัส",
-        meaning: "ฉันกินขนมปังทุกเช้า"
-      },
-      {
-        words: ["友達", "と", "東京", "へ", "行きます"],
-        kana: "ともだちととうきょうへいきます",
-        romaji: "โทโมดาจิ โตะ โตเกียว เอะ อิคิมัส",
-        meaning: "ไปโตเกียวกับเพื่อน"
-      },
-      {
-        words: ["ホテル", "で", "テレビ", "を", "見ます"],
-        kana: "ホテルでテレビをみます",
-        romaji: "โฮเทรุ เดะ เทเรบิ โอะ มิมัส",
-        meaning: "ดูทีวีที่โรงแรม"
-      },
-      {
-        words: ["駅", "の", "前", "で", "コーヒー", "を", "飲みます"],
-        kana: "えきのまえでコーヒーをのみます",
-        romaji: "เอคิ โนะ มาเอะ เดะ โคฮี โอะ โนะมิมัส",
-        meaning: "ดื่มกาแฟที่หน้าสถานีรถไฟ"
-      },
-      {
-        words: ["毎日", "日本語", "を", "勉強", "します"],
-        kana: "まいにちにほんごをべんきょうします",
-        romaji: "ไมนิจิ นิฮงโกะ โอะ เบ็งเคียว ชิมัส",
-        meaning: "เรียนภาษาญี่ปุ่นทุกวัน"
-      },
-      {
-        words: ["デパート", "で", "新しい", "靴", "を", "買いました"],
-        kana: "デパートであたらしいくつをかいました",
-        romaji: "เดปาโตะ เดะ อาตาราชี่ คุตสึ โอะ ไคมาชิตะ",
-        meaning: "ซื้อรองเท้าคู่ใหม่ที่ห้างสรรพสินค้า"
-      },
-      {
-        words: ["電車", "の", "中", "で", "本", "を", "読みます"],
-        kana: "でんしゃのなかでほんをよみます",
-        romaji: "เด็นฉะ โนะ นากะ เดะ ฮง โอะ โยมีมัส",
-        meaning: "อ่านหนังสือในรถไฟ"
-      },
-      {
-        words: ["今日", "は", "天気", "が", "いい", "です"],
-        kana: "きょうはてんきがいいです",
-        romaji: "เคียว วะ เท็งกิ กะ อี้ เดส",
-        meaning: "วันนี้อากาศดี"
-      },
-      {
-        words: ["学校", "から", "家", "へ", "帰ります"],
-        kana: "がっこうからいえへかえります",
-        romaji: "กักโค คาระ อิเอะ เอะ คาเอริมัส",
-        meaning: "กลับจากโรงเรียนไปที่บ้าน"
-      },
-      {
-        words: ["スマホ", "で", "日本", "の", "音楽", "を", "聞きます"],
-        kana: "スマホでにほんのおんがくをききます",
-        romaji: "สึมาโฮะ เดะ นิฮง โนะ องกะคุ โอะ คิคิมัส",
-        meaning: "ฟังเพลงญี่ปุ่นด้วยสมาร์ตโฟน"
+    const LOOKALIKE_IDS = [
+      'tsu', 'shi', 'n', 'so', 'no', 'me', 'na', 'nu',
+      'ru', 're', 'ri', 'wa', 'fu', 'u', 'ra', 'ko', 'yu', 'yo', 'ro', 'ta', 'ku'
+    ];
+
+    // Core N5 Kanji Chart with Thai Memory Tricks
+    const KANJI_N5_DATA = [
+      { c: '一', read: 'いち', meaning: 'หนึ่ง (1)', tip: 'ขีดแนวนอน 1 ขีด = เลข 1' },
+      { c: '二', read: 'に', meaning: 'สอง (2)', tip: 'ขีดแนวนอน 2 ขีด = เลข 2' },
+      { c: '三', read: 'さん', meaning: 'สาม (3)', tip: 'ขีดแนวนอน 3 ขีด = เลข 3' },
+      { c: '四', read: 'よん / し', meaning: 'สี่ (4)', tip: 'สี่เหลี่ยมมีขา 2 ข้างอยู่ข้างใน = เลข 4' },
+      { c: '五', read: 'ご', meaning: 'ห้า (5)', tip: 'คันจิเลข 5 ออกเสียง โกะ' },
+      { c: '六', read: 'ろく', meaning: 'หก (6)', tip: 'คันจิเลข 6 ออกเสียง โระคุ' },
+      { c: '七', read: 'なな / しち', meaning: 'เจ็ด (7)', tip: 'เหมือนเลข 7 กลับหัว' },
+      { c: '八', read: 'はち', meaning: 'แปด (8)', tip: 'แยกซ้ายขวาเหมือนตัว ハ (ฮะจิ)' },
+      { c: '九', read: 'きゅう / く', meaning: 'เก้า (9)', tip: 'คันจิเลข 9 ออกเสียง คิว / คุ' },
+      { c: '十', read: 'じゅう', meaning: 'สิบ (10)', tip: 'เครื่องหมายบวก (+) = สิบ' },
+      { c: '百', read: 'ひゃく', meaning: 'ร้อย (100)', tip: 'ขีดหนึ่ง (一) อยู่บน 白 = 100' },
+      { c: '千', read: 'せん', meaning: 'พัน (1,000)', tip: 'มีขีดเฉียงบนเลขสิบ (十) = 1,000' },
+      { c: '万', read: 'まん', meaning: 'หมื่น (10,000)', tip: 'หน่วยนับหลักหมื่นของญี่ปุ่น' },
+      { c: '円', read: 'えん', meaning: 'เยน / วงกลม', tip: 'สกุลเงินเยนของญี่ปุ่น' },
+      { c: '日', read: 'にち / ひ', meaning: 'วัน / พระอาทิตย์', tip: 'กรอบสี่เหลี่ยมมีจุดตรงกลาง = ดวงอาทิตย์' },
+      { c: '月', read: 'げつ / つき', meaning: 'เดือน / พระจันทร์', tip: 'พระจันทร์เสี้ยวมีขีดพาดกลาง' },
+      { c: '火', read: 'か / ひ', meaning: 'ไฟ / อังคาร', tip: 'คนกางแขนร้องว้ายไฟไหม้!' },
+      { c: '水', read: 'すい / みず', meaning: 'น้ำ / พุธ', tip: 'สายน้ำไหลตรงกลางและแตกกระจายซ้ายขวา' },
+      { c: '木', read: 'もく / き', meaning: 'ต้นไม้ / พฤหัส', tip: 'ลำต้น กิ่งก้าน และรากไม้' },
+      { c: '金', read: 'きん / かね', meaning: 'ทอง / เงิน / ศุกร์', tip: 'หลังคาคลุมก้อนทองคำใต้ดิน' },
+      { c: '土', read: 'ど / つち', meaning: 'ดิน / เสาร์', tip: 'ไม้กางเขนปักลงบนพื้นดิน' },
+      { c: '山', read: 'さん / やま', meaning: 'ภูเขา', tip: 'ยอดเขาสูง 3 ยอดเรียงกัน' },
+      { c: '川', read: 'かわ', meaning: 'แม่น้ำ', tip: 'สายน้ำ 3 สายไหลขนานกัน' },
+      { c: '人', read: 'じん / ひと', meaning: 'คน / มนุษย์', tip: 'คนยืนก้าวขา 2 ข้าง' },
+      { c: '男', read: 'おとこ', meaning: 'ผู้ชาย', tip: 'ทุ่งนา (田) + พละกำลัง (力) = ผู้ชายทำงานในนา' },
+      { c: '女', read: 'おんな', meaning: 'ผู้หญิง', tip: 'ผู้หญิงนั่งพับเพียบอย่างอ่อนช้อย' },
+      { c: '子', read: 'こ', meaning: 'เด็ก / ลูก', tip: 'เด็กทารกห่อตัวกางแขน' },
+      { c: '目', read: 'め', meaning: 'ดวงตา', tip: 'ลูกตาตั้งขึ้น (มี 2 ขีดข้างใน)' },
+      { c: '口', read: 'くち', meaning: 'ปาก', tip: 'สี่เหลี่ยมเหมือนปากอ้า' },
+      { c: '手', read: 'て', meaning: 'มือ', tip: 'นิ้วมือและฝ่ามือ' },
+      { c: '足', read: 'あし', meaning: 'เท้า / ขา', tip: 'หัวเข่าและเท้าก้าวเดิน' },
+      { c: '上', read: 'うえ', meaning: 'ข้างบน', tip: 'ขีดสั้นชี้ขึ้นด้านบน' },
+      { c: '下', read: 'した', meaning: 'ข้างล่าง', tip: 'ขีดสั้นชี้ลงด้านล่าง' },
+      { c: '左', read: 'ひだり', meaning: 'ข้างซ้าย', tip: 'ด้านล่างซ้ายมีตัว エ (เอะ)' },
+      { c: '右', read: 'みぎ', meaning: 'ข้างขวา', tip: 'ด้านล่างขวามีปาก (口) = มือขวาตักข้าวเข้าปาก' },
+      { c: '中', read: 'なか', meaning: 'ข้างใน / กลาง', tip: 'ขีดผ่าตรงกลางกล่องสี่เหลี่ยม' },
+      { c: '大', read: 'おお(きい)', meaning: 'ใหญ่', tip: 'คนกางแขนกางขาเต็มที่ = ใหญ่' },
+      { c: '小', read: 'ちい(さい)', meaning: 'เล็ก', tip: 'คนหุบแขนแนบตัว = เล็ก' },
+      { c: '本', read: 'ほん', meaning: 'หนังสือ / ต้นกำเนิด', tip: 'ต้นไม้ (木) มีขีดโคนต้น = หนังสือ' },
+      { c: '学', read: 'がく / まな(ぶ)', meaning: 'เรียน', tip: 'เด็ก (子) นั่งเรียนใต้หลังคาโรงเรียน' },
+      { c: '校', read: 'こう', meaning: 'โรงเรียน', tip: 'ต้นไม้ (木) + 交 = อาคารเรียน' },
+      { c: '先', read: 'せん / さき', meaning: 'ก่อน / อาจารย์', tip: 'ผู้เดินนำหน้ามาก่อน (先生 = อาจารย์)' },
+      { c: '生', read: 'せい / い(きる)', meaning: 'เกิด / ชีวิต', tip: 'ต้นอ่อนงอกขึ้นมาจากดิน' },
+      { c: '食', read: 'た(べる)', meaning: 'กิน / อาหาร', tip: 'หลังคาคลุมหม้อข้าว = กิน' },
+      { c: '飲', read: 'の(む)', meaning: 'ดื่ม', tip: 'อาหาร (食) + อ้าปาก (欠) = ดื่ม' },
+      { c: '行', read: 'い(く)', meaning: 'ไป', tip: 'สี่แยกทางเดิน = เดินทางไป' },
+      { c: '来', read: 'く(る)', meaning: 'มา', tip: 'ต้นข้าวสาลีเติบโตมาหา' },
+      { c: '見', read: 'み(る)', meaning: 'ดู / มอง', tip: 'ดวงตา (目) ติดขาเดินออกไปมองดู' },
+      { c: '聞', read: 'き(く)', meaning: 'ฟัง / ถาม', tip: 'หู (耳) แนบอยู่ที่ประตู (門) เพื่อแอบฟัง' },
+      { c: '休', read: 'やす(む)', meaning: 'พักผ่อน', tip: 'คน (亻) ยืนพิงต้นไม้ (木) = พักผ่อน' }
+    ];
+
+    // =========================================================================
+    // 2. DATA: JLPT N5 VOCABULARY (265+ WORDS ACROSS 8 CATEGORIES)
+    // =========================================================================
+    const VOCAB_CATEGORIES = {
+      time: 'ตัวเลข วัน และเวลา',
+      verbs: 'คำกริยาพื้นฐาน N5',
+      adj: 'คำคุณศัพท์ い / な',
+      places: 'สถานที่และทิศทาง',
+      people: 'ครอบครัวและผู้คน',
+      daily: 'อาหารและของใช้',
+      katakana_n5: 'คำทับศัพท์คาตาคานะ N5',
+      greetings: 'คำทักทาย คำถาม และคำเชื่อม',
+      custom: '⭐ คำศัพท์ที่เพิ่มเอง'
+    };
+
+    const DEFAULT_N5_VOCAB = [
+      // --- 1. ตัวเลข วัน และเวลา (Numbers & Time) ---
+      { id: 'v_t01', word: '一', reading: 'いち', romaji: 'ichi', meaning: 'หนึ่ง (1)', cat: 'time', tip: 'ขีดแนวนอน 1 ขีด = เลข 1' },
+      { id: 'v_t02', word: '二', reading: 'に', romaji: 'ni', meaning: 'สอง (2)', cat: 'time', tip: 'ขีดแนวนอน 2 ขีด = เลข 2' },
+      { id: 'v_t03', word: '三', reading: 'さん', romaji: 'san', meaning: 'สาม (3)', cat: 'time', tip: 'ขีดแนวนอน 3 ขีด = เลข 3' },
+      { id: 'v_t04', word: '四', reading: 'よん / し', romaji: 'yon / shi', meaning: 'สี่ (4)', cat: 'time', tip: 'สี่เหลี่ยมมีขาข้างใน 2 ข้าง = เลข 4' },
+      { id: 'v_t05', word: '五', reading: 'ご', romaji: 'go', meaning: 'ห้า (5)', cat: 'time', tip: 'คันจิเลข 5 ออกเสียงว่า โกะ' },
+      { id: 'v_t06', word: '六', reading: 'ろく', romaji: 'roku', meaning: 'หก (6)', cat: 'time', tip: 'คันจิเลข 6 ออกเสียงว่า โระคุ' },
+      { id: 'v_t07', word: '七', reading: 'なな / しち', romaji: 'nana / shichi', meaning: 'เจ็ด (7)', cat: 'time', tip: 'เหมือนเลข 7 กลับหัว' },
+      { id: 'v_t08', word: '八', reading: 'はち', romaji: 'hachi', meaning: 'แปด (8)', cat: 'time', tip: 'ขีดแยกซ้ายขวาเหมือนตัว ハ (ฮะจิ)' },
+      { id: 'v_t09', word: '九', reading: 'きゅう / く', romaji: 'kyuu / ku', meaning: 'เก้า (9)', cat: 'time', tip: 'คันจิเลข 9 ออกเสียง คิว / คุ' },
+      { id: 'v_t10', word: '十', reading: 'じゅう', romaji: 'juu', meaning: 'สิบ (10)', cat: 'time', tip: 'เครื่องหมายบวก (+) = สิบ' },
+      { id: 'v_t11', word: '百', reading: 'ひゃく', romaji: 'hyaku', meaning: 'หนึ่งร้อย (100)', cat: 'time', tip: 'ขีดหนึ่ง (一) อยู่บน 白 = 100' },
+      { id: 'v_t12', word: '千', reading: 'せん', romaji: 'sen', meaning: 'หนึ่งพัน (1,000)', cat: 'time', tip: 'มีขีดเฉียงบนเลขสิบ (十) = 1,000' },
+      { id: 'v_t13', word: '万', reading: 'まん', romaji: 'man', meaning: 'หนึ่งหมื่น (10,000)', cat: 'time', tip: 'ญี่ปุ่นนับหน่วยใหญ่ทีละหมื่น (อิจิมัง)' },
+      { id: 'v_t14', word: '円', reading: 'えん', romaji: 'en', meaning: 'เยน / วงกลม', cat: 'time', tip: 'สกุลเงินญี่ปุ่น (เยน)' },
+      { id: 'v_t15', word: '今日', reading: 'きょう', romaji: 'kyou', meaning: 'วันนี้', cat: 'time', tip: '今 (ตอนนี้) + 日 (วัน) = วันนี้ (อ่านพิเศษ เคียว)' },
+      { id: 'v_t16', word: '明日', reading: 'あした', romaji: 'ashita', meaning: 'พรุ่งนี้', cat: 'time', tip: '明 (สว่าง) + 日 (วัน) = พรุ่งนี้' },
+      { id: 'v_t17', word: '昨日', reading: 'きのう', romaji: 'kinou', meaning: 'เมื่อวานนี้', cat: 'time', tip: 'อ่านพิเศษว่า คิโน่' },
+      { id: 'v_t18', word: '毎日', reading: 'まいにち', romaji: 'mainichi', meaning: 'ทุกวัน', cat: 'time', tip: '毎 (ทุกๆ) + 日 (วัน) = ทุกวัน' },
+      { id: 'v_t19', word: '今', reading: 'いま', romaji: 'ima', meaning: 'ตอนนี้ / เดี๋ยวนี้', cat: 'time', tip: 'คันจิตัวเดียวอ่านว่า อิมะ' },
+      { id: 'v_t20', word: '朝', reading: 'あさ', romaji: 'asa', meaning: 'ตอนเช้า', cat: 'time', tip: 'อะสะ = ตอนเช้า (朝ごはん = ข้าวเช้า)' },
+      { id: 'v_t21', word: '昼', reading: 'ひる', romaji: 'hiru', meaning: 'ตอนกลางวัน / เที่ยง', cat: 'time', tip: 'ฮิรุ = กลางวัน (昼ごはん = ข้าวเที่ยง)' },
+      { id: 'v_t22', word: '夜', reading: 'よる', romaji: 'yoru', meaning: 'ตอนกลางคืน', cat: 'time', tip: 'โยะรุ = กลางคืน' },
+      { id: 'v_t23', word: '晩', reading: 'ばん', romaji: 'ban', meaning: 'ตอนเย็น / ค่ำ', cat: 'time', tip: 'บัง = ตอนค่ำ (今晩は = สวัสดีตอนค่ำ)' },
+      { id: 'v_t24', word: '午前', reading: 'ごぜん', romaji: 'gozen', meaning: 'ช่วงเช้า (AM / ก่อนเที่ยง)', cat: 'time', tip: '前 (ก่อน) = ก่อนเที่ยง (AM)' },
+      { id: 'v_t25', word: '午後', reading: 'ごご', romaji: 'gogo', meaning: 'ช่วงบ่าย (PM / หลังเที่ยง)', cat: 'time', tip: '後 (หลัง) = หลังเที่ยง (PM)' },
+      { id: 'v_t26', word: '時間', reading: 'じかん', romaji: 'jikan', meaning: 'เวลา / ชั่วโมง', cat: 'time', tip: '時 (โมง) + 間 (ระหว่าง) = เวลา' },
+      { id: 'v_t27', word: '分', reading: 'ふん / ぷん', romaji: 'fun / pun', meaning: 'นาที / แบ่ง', cat: 'time', tip: 'ใช้บอกนาที เช่น 5分 (โกะฟุน)' },
+      { id: 'v_t28', word: '半', reading: 'はん', romaji: 'han', meaning: 'ครึ่ง', cat: 'time', tip: 'เช่น 一時半 (อิจิจิฮัง = บ่ายโมงครึ่ง)' },
+      { id: 'v_t29', word: '曜日', reading: 'ようび', romaji: 'youbi', meaning: 'วันในสัปดาห์', cat: 'time', tip: 'ต่อท้ายวันทั้ง 7 เช่น 月曜日 (วันจันทร์)' },
+      { id: 'v_t30', word: '月曜日', reading: 'げつようび', romaji: 'getsuyoubi', meaning: 'วันจันทร์', cat: 'time', tip: '月 (พระจันทร์) = วันจันทร์' },
+      { id: 'v_t31', word: '火曜日', reading: 'かようび', romaji: 'kayoubi', meaning: 'วันอังคาร', cat: 'time', tip: '火 (ไฟ) = วันอังคาร' },
+      { id: 'v_t32', word: '水曜日', reading: 'すいようび', romaji: 'suiyoubi', meaning: 'วันพุธ', cat: 'time', tip: '水 (น้ำ) = วันพุธ' },
+      { id: 'v_t33', word: '木曜日', reading: 'もくようび', romaji: 'mokuyoubi', meaning: 'วันพฤหัสบดี', cat: 'time', tip: '木 (ต้นไม้) = วันพฤหัสบดี' },
+      { id: 'v_t34', word: '金曜日', reading: 'きんようび', romaji: 'kinyoubi', meaning: 'วันศุกร์', cat: 'time', tip: '金 (ทอง) = วันศุกร์' },
+      { id: 'v_t35', word: '土曜日', reading: 'どようび', romaji: 'doyoubi', meaning: 'วันเสาร์', cat: 'time', tip: '土 (ดิน) = วันเสาร์' },
+      { id: 'v_t36', word: '日曜日', reading: 'にちようび', romaji: 'nichiyoubi', meaning: 'วันอาทิตย์', cat: 'time', tip: '日 (พระอาทิตย์) = วันอาทิตย์' },
+      { id: 'v_t37', word: '先週', reading: 'せんしゅう', romaji: 'senshuu', meaning: 'สัปดาห์ที่แล้ว', cat: 'time', tip: '先 (ก่อนหน้า) + 週 (สัปดาห์)' },
+      { id: 'v_t38', word: '今週', reading: 'こんしゅう', romaji: 'konshuu', meaning: 'สัปดาห์นี้', cat: 'time', tip: '今 (นี้/ตอนนี้) + 週 (สัปดาห์)' },
+      { id: 'v_t39', word: '来週', reading: 'らいしゅう', romaji: 'raishuu', meaning: 'สัปดาห์หน้า', cat: 'time', tip: '来 (ที่จะมาถึง) + 週 (สัปดาห์)' },
+      { id: 'v_t40', word: '去年', reading: 'きょねん', romaji: 'kyonen', meaning: 'ปีที่แล้ว', cat: 'time', tip: 'เคียวเน็น = ปีที่แล้ว' },
+      { id: 'v_t41', word: '今年', reading: 'ことし', romaji: 'kotoshi', meaning: 'ปีนี้', cat: 'time', tip: 'อ่านพิเศษว่า โคะโทะชิ = ปีนี้' },
+      { id: 'v_t42', word: '来年', reading: 'らいねん', romaji: 'rainen', meaning: 'ปีหน้า', cat: 'time', tip: '来 (ที่จะมา) + 年 (ปี) = ปีหน้า' },
+
+      // --- 2. คำกริยาพื้นฐาน N5 (Essential Verbs) ---
+      { id: 'v_v01', word: '食べる', reading: 'たべる', romaji: 'taberu', meaning: 'กิน / รับประทาน', cat: 'verbs', tip: 'กริยากลุ่ม 2 (ทะเบะรุ)', exJp: '朝ご飯を食べます', exTh: 'อะสะโกะฮัง โอะ ทาเบมัส (กินข้าวเช้า)' },
+      { id: 'v_v02', word: '飲む', reading: 'のむ', romaji: 'nomu', meaning: 'ดื่ม', cat: 'verbs', tip: 'คันจิ 食 + 欠 = ดื่ม (โนะมุ)', exJp: '水を飲みます', exTh: 'มิซึ โอะ โนะมิมัส (ดื่มน้ำ)' },
+      { id: 'v_v03', word: '行く', reading: 'いく', romaji: 'iku', meaning: 'ไป', cat: 'verbs', tip: 'อิคุ = ไป (รูปสุภาพ: 行きます)', exJp: '学校へ行きます', exTh: 'กักโค เอะ อิคิมัส (ไปโรงเรียน)' },
+      { id: 'v_v04', word: '来る', reading: 'くる', romaji: 'kuru', meaning: 'มา', cat: 'verbs', tip: 'คุรุ = มา (กริยากลุ่ม 3)', exJp: '友達が来ます', exTh: 'โทโมดาจิ กะ คิมัส (เพื่อนจะมา)' },
+      { id: 'v_v05', word: '帰る', reading: 'かえる', romaji: 'kaeru', meaning: 'กลับ (บ้าน/ประเทศ)', cat: 'verbs', tip: 'ระวัง! ลงท้าย る แต่อยู่กลุ่ม 1 (帰ります)', exJp: '家へ帰ります', exTh: 'อิเอะ เอะ คาเอริมัส (กลับบ้าน)' },
+      { id: 'v_v06', word: '見る', reading: 'みる', romaji: 'miru', meaning: 'ดู / มอง', cat: 'verbs', tip: '目 (ตา) + ขา = มองดู (มิรุ)', exJp: 'テレビを見ます', exTh: 'เทเรบิ โอะ มิมัส (ดูทีวี)' },
+      { id: 'v_v07', word: '聞く', reading: 'きく', romaji: 'kiku', meaning: 'ฟัง / ถาม', cat: 'verbs', tip: 'ประตู (門) มีหู (耳) ข้างใน = ฟัง', exJp: '音楽を聞きます', exTh: 'องกะคุ โอะ คิคิมัส (ฟังเพลง)' },
+      { id: 'v_v08', word: '読む', reading: 'よむ', romaji: 'yomu', meaning: 'อ่าน', cat: 'verbs', tip: 'คำพูด (言) + ขาย (売) = อ่านหนังสือ', exJp: '本を読みます', exTh: 'ฮง โอะ โยมีมัส (อ่านหนังสือ)' },
+      { id: 'v_v09', word: '書く', reading: 'かく', romaji: 'kaku', meaning: 'เขียน', cat: 'verbs', tip: 'คะคุ = เขียน', exJp: '手紙を書きます', exTh: 'เทกามิ โอะ คาคิมัส (เขียนจดหมาย)' },
+      { id: 'v_v10', word: '話す', reading: 'はなす', romaji: 'hanasu', meaning: 'พูด / คุย', cat: 'verbs', tip: 'คำพูด (言) + ลิ้น (舌) = พูดคุย', exJp: '日本語を話します', exTh: 'นิฮงโกะ โอะ ฮานาชิมัส (พูดภาษาญี่ปุ่น)' },
+      { id: 'v_v11', word: '買う', reading: 'かう', romaji: 'kau', meaning: 'ซื้อ', cat: 'verbs', tip: 'หอยเบี้ยเงินตรา (貝) อยู่ด้านล่าง = ซื้อ' },
+      { id: 'v_v12', word: '会う', reading: 'あう', romaji: 'au', meaning: 'พบ / เจอ', cat: 'verbs', tip: 'อะอุ = พบปะ (เพื่อน)' },
+      { id: 'v_v13', word: 'する', reading: 'する', romaji: 'suru', meaning: 'ทำ / เล่น (กีฬา)', cat: 'verbs', tip: 'กริยาอเนกประสงค์ ใช้คู่คำนามได้มากมาย' },
+      { id: 'v_v14', word: '勉強する', reading: 'べんきょうする', romaji: 'benkyou suru', meaning: 'เรียน / อ่านหนังสือสอบ', cat: 'verbs', tip: 'เบ็งเคียว ซุรุ = เรียนหนังสือ' },
+      { id: 'v_v15', word: '起きる', reading: 'おきる', romaji: 'okiru', meaning: 'ตื่นนอน / ลุกขึ้น', cat: 'verbs', tip: 'โอะคิรุ = ตื่นนอน' },
+      { id: 'v_v16', word: '寝る', reading: 'ねる', romaji: 'neru', meaning: 'นอน / เข้านอน', cat: 'verbs', tip: 'เนะรุ = นอนหลับ' },
+      { id: 'v_v17', word: '働く', reading: 'はたらく', romaji: 'hataraku', meaning: 'ทำงาน', cat: 'verbs', tip: 'คน (亻) + ขยับ (動) = ทำงาน' },
+      { id: 'v_v18', word: '休む', reading: 'やすむ', romaji: 'yasumu', meaning: 'พักผ่อน / หยุดงาน', cat: 'verbs', tip: 'คน (亻) ยืนพิงต้นไม้ (木) = พักผ่อน' },
+      { id: 'v_v19', word: 'ある', reading: 'ある', romaji: 'aru', meaning: 'มี / อยู่ (สิ่งไม่มีชีวิต)', cat: 'verbs', tip: 'ใช้กับสิ่งของ สถานที่ พืช' },
+      { id: 'v_v20', word: 'いる', reading: 'いる', romaji: 'iru', meaning: 'มี / อยู่ (คนและสัตว์)', cat: 'verbs', tip: 'ใช้กับสิ่งมีชีวิตที่เคลื่อนไหวได้' },
+      { id: 'v_v21', word: '分かる', reading: 'わかる', romaji: 'wakaru', meaning: 'เข้าใจ / รู้เรื่อง', cat: 'verbs', tip: 'วะคะรุ = เข้าใจ' },
+      { id: 'v_v22', word: '知る', reading: 'しる', romaji: 'shiru', meaning: 'รู้ / รู้จัก', cat: 'verbs', tip: 'มักใช้รูป 知っています (รู้จัก/รู้อยู่)' },
+      { id: 'v_v23', word: '教える', reading: 'おしえる', romaji: 'oshieru', meaning: 'สอน / บอก (ทาง/ข้อมูล)', cat: 'verbs', tip: 'โอะชิเอะรุ = สอน หรือ บอก' },
+      { id: 'v_v24', word: '習う', reading: 'ならう', romaji: 'narau', meaning: 'เรียน (จากผู้สอน)', cat: 'verbs', tip: 'นะระอุ = ร่ำเรียนจากครู' },
+      { id: 'v_v25', word: '待つ', reading: 'まつ', romaji: 'matsu', meaning: 'รอ / คอย', cat: 'verbs', tip: 'มะสึ = รอคอย' },
+      { id: 'v_v26', word: '持つ', reading: 'もつ', romaji: 'motsu', meaning: 'ถือ / มีไว้ในครอบครอง', cat: 'verbs', tip: 'มือ (扌) + วัด (寺) = ถือไว้' },
+      { id: 'v_v27', word: '取る', reading: 'とる', romaji: 'toru', meaning: 'หยิบ / เอา / ถ่าย (รูป)', cat: 'verbs', tip: 'โทะรุ = หยิบจับ' },
+      { id: 'v_v28', word: '作る', reading: 'つくる', romaji: 'tsukuru', meaning: 'ทำ / สร้าง / ประกอบอาหาร', cat: 'verbs', tip: 'สึคุรุ = ทำ (กับข้าว/สิ่งของ)' },
+      { id: 'v_v29', word: '使う', reading: 'つかう', romaji: 'tsukau', meaning: 'ใช้ / ใช้งาน', cat: 'verbs', tip: 'สึคะอุ = ใช้งาน' },
+      { id: 'v_v30', word: '入る', reading: 'はいる', romaji: 'hairu', meaning: 'เข้าไป', cat: 'verbs', tip: 'ฮะอิรุ = เข้า (กลุ่ม 1: 入ります)' },
+      { id: 'v_v31', word: '出る', reading: 'でる', romaji: 'deru', meaning: 'ออกไป', cat: 'verbs', tip: 'เดะรุ = ออก (กลุ่ม 2: 出ます)' },
+      { id: 'v_v32', word: '開ける', reading: 'あける', romaji: 'akeru', meaning: 'เปิด (ประตู/หน้าต่าง)', cat: 'verbs', tip: 'อะเคะรุ = เปิดออก' },
+      { id: 'v_v33', word: '閉める', reading: 'しめる', romaji: 'shimeru', meaning: 'ปิด (ประตู/หน้าต่าง)', cat: 'verbs', tip: 'ชิเมะรุ = ปิดลง' },
+      { id: 'v_v34', word: '乗る', reading: 'のる', romaji: 'noru', meaning: 'ขึ้น / โดยสาร (รถไฟ/รถเมล์)', cat: 'verbs', tip: 'โนะรุ = ขึ้นยานพาหนะ' },
+      { id: 'v_v35', word: '降りる', reading: 'おりる', romaji: 'oriru', meaning: 'ลง (จากรถ/บันได)', cat: 'verbs', tip: 'โอะริรุ = ลงจากรถ' },
+      { id: 'v_v36', word: '歩く', reading: 'あるく', romaji: 'aruku', meaning: 'เดิน', cat: 'verbs', tip: 'อะรุคุ = เดินเท้า' },
+      { id: 'v_v37', word: '走る', reading: 'はしる', romaji: 'hashiru', meaning: 'วิ่ง', cat: 'verbs', tip: 'ฮะชิรุ = วิ่ง' },
+      { id: 'v_v38', word: '泳ぐ', reading: 'およぐ', romaji: 'oyogu', meaning: 'ว่ายน้ำ', cat: 'verbs', tip: 'มีหยดน้ำ 3 หยด (氵) ด้านซ้าย = ว่ายน้ำ' },
+      { id: 'v_v39', word: '遊ぶ', reading: 'あそぶ', romaji: 'asobu', meaning: 'เล่น / เที่ยวเล่น', cat: 'verbs', tip: 'อะโซะบุ = เล่นสนุก' },
+      { id: 'v_v40', word: '洗う', reading: 'あらう', romaji: 'arau', meaning: 'ล้าง / ซัก', cat: 'verbs', tip: 'มีหยดน้ำ 3 หยด (氵) = ล้างมือ/ล้างหน้า' },
+      { id: 'v_v41', word: '着る', reading: 'きる', romaji: 'kiru', meaning: 'สวมใส่ (เสื้อท่อนบน)', cat: 'verbs', tip: 'คิรุ = สวมเสื้อ' },
+      { id: 'v_v42', word: '履く', reading: 'はく', romaji: 'haku', meaning: 'สวมใส่ (กางเกง/รองเท้า)', cat: 'verbs', tip: 'ฮะคุ = ใส่ท่อนล่างและรองเท้า' },
+      { id: 'v_v43', word: '住む', reading: 'すむ', romaji: 'sumu', meaning: 'อาศัยอยู่', cat: 'verbs', tip: 'คน (亻) + เจ้าของ (主) = อยู่อาศัย' },
+      { id: 'v_v44', word: '死ぬ', reading: 'しぬ', romaji: 'shinu', meaning: 'ตาย / เสียชีวิต', cat: 'verbs', tip: 'กริยาตัวเดียวในภาษาญี่ปุ่นที่ลงท้าย ぬ' },
+
+      // --- 3. คำคุณศัพท์ い และ な (Adjectives) ---
+      { id: 'v_a01', word: '大きい', reading: 'おおきい', romaji: 'ookii', meaning: 'ใหญ่ (い)', cat: 'adj', tip: 'คนกางแขนกางขา (大) = ใหญ่' },
+      { id: 'v_a02', word: '小さい', reading: 'ちいさい', romaji: 'chiisai', meaning: 'เล็ก (い)', cat: 'adj', tip: 'คนหุบแขนแนบตัว (小) = เล็ก' },
+      { id: 'v_a03', word: '新しい', reading: 'あたらしい', romaji: 'atarashii', meaning: 'ใหม่ (い)', cat: 'adj', tip: 'อะทะระชี่ = ใหม่' },
+      { id: 'v_a04', word: '古い', reading: 'ふるい', romaji: 'furui', meaning: 'เก่า (い)', cat: 'adj', tip: 'ฟุรุย = เก่า (ใช้กับสิ่งของ ไม่ใช้กับคน)' },
+      { id: 'v_a05', word: 'いい / よい', reading: 'いい / よい', romaji: 'ii / yoi', meaning: 'ดี (い)', cat: 'adj', tip: 'เวลาผันรูปอดีต/ปฏิเสธ จะกลับไปใช้ よい (よくない)' },
+      { id: 'v_a06', word: '悪い', reading: 'わるい', romaji: 'warui', meaning: 'ไม่ดี / แย่ / เลว (い)', cat: 'adj', tip: 'วะรุย = แย่ / ไม่ดี' },
+      { id: 'v_a07', word: '暑い', reading: 'あつい', romaji: 'atsui', meaning: 'ร้อน (อากาศ) (い)', cat: 'adj', tip: 'มีพระอาทิตย์ (日) อยู่บน = อากาศร้อน' },
+      { id: 'v_a08', word: '熱い', reading: 'あつい', romaji: 'atsui', meaning: 'ร้อน (สิ่งของ/น้ำ) (い)', cat: 'adj', tip: 'มีจุดไฟ 4 จุด (灬) ด้านล่าง = ของร้อน' },
+      { id: 'v_a09', word: '寒い', reading: 'さむい', romaji: 'samui', meaning: 'หนาว (อากาศ) (い)', cat: 'adj', tip: 'ซะมุย = อากาศหนาว' },
+      { id: 'v_a10', word: '冷たい', reading: 'つめたい', romaji: 'tsumetai', meaning: 'เย็น (สิ่งของ/เครื่องดื่ม) (い)', cat: 'adj', tip: 'สึเมะไต = น้ำเย็น / เย็นชา' },
+      { id: 'v_a11', word: '高い', reading: 'たかい', romaji: 'takai', meaning: 'สูง / แพง (い)', cat: 'adj', tip: 'ทะไค = ใช้ได้ทั้งความสูงและราคาแพง' },
+      { id: 'v_a12', word: '安い', reading: 'やすい', romaji: 'yasui', meaning: 'ถูก (ราคา) (い)', cat: 'adj', tip: 'ผู้หญิง (女) อยู่ในบ้าน (宀) = สบายใจ/ราคาถูก' },
+      { id: 'v_a13', word: '低い', reading: 'ひくい', romaji: 'hikui', meaning: 'ต่ำ / เตี้ย (い)', cat: 'adj', tip: 'ฮิคุย = ต่ำ / เตี้ย' },
+      { id: 'v_a14', word: '美味しい', reading: 'おいしい', romaji: 'oishii', meaning: 'อร่อย (い)', cat: 'adj', tip: 'โอะอิชี่ = อร่อย' },
+      { id: 'v_a15', word: '不味い', reading: 'まずい', romaji: 'mazui', meaning: 'ไม่อร่อย (い)', cat: 'adj', tip: 'มะซุย = ไม่อร่อย' },
+      { id: 'v_a16', word: '忙しい', reading: 'いそがしい', romaji: 'isogashii', meaning: 'ยุ่ง (ไม่มีเวลา) (い)', cat: 'adj', tip: 'อิโซะงะชี่ = งานยุ่ง' },
+      { id: 'v_a17', word: '楽しい', reading: 'たのしい', romaji: 'tanoshii', meaning: 'สนุก (い)', cat: 'adj', tip: 'ทะโนะชี่ = สนุกสนาน' },
+      { id: 'v_a18', word: '面白い', reading: 'おもしろい', romaji: 'omoshiroi', meaning: 'น่าสนใจ / ตลก (い)', cat: 'adj', tip: 'หน้า (面) + ขาว (白) = น่าสนใจ' },
+      { id: 'v_a19', word: '難しい', reading: 'むずかしい', romaji: 'muzukashii', meaning: 'ยาก (い)', cat: 'adj', tip: 'มุซึคะชี่ = ยาก' },
+      { id: 'v_a20', word: '易しい', reading: 'やさしい', romaji: 'yasashii', meaning: 'ง่าย (い)', cat: 'adj', tip: 'ยะซะชี่ = ง่าย (ถ้าเขียน 優しい แปลว่า ใจดี)' },
+      { id: 'v_a21', word: '遠い', reading: 'とおい', romaji: 'tooi', meaning: 'ไกล (い)', cat: 'adj', tip: 'โท่ย = ไกล' },
+      { id: 'v_a22', word: '近い', reading: 'ちかい', romaji: 'chikai', meaning: 'ใกล้ (い)', cat: 'adj', tip: 'จิไค = ใกล้' },
+      { id: 'v_a23', word: '早い / 速い', reading: 'はやい', romaji: 'hayai', meaning: 'เช้าตรู่ / เร็ว (い)', cat: 'adj', tip: 'ฮะไย = เร็ว หรือ เช้าเกินเวลา' },
+      { id: 'v_a24', word: '遅い', reading: 'おそい', romaji: 'osoi', meaning: 'ช้า / สาย / ดึก (い)', cat: 'adj', tip: 'โอะโซ่ย = ช้า / มาสาย' },
+      { id: 'v_a25', word: '多い', reading: 'おおい', romaji: 'ooi', meaning: 'เยอะ / มาก (い)', cat: 'adj', tip: 'โอย = จำนวนมาก' },
+      { id: 'v_a26', word: '少ない', reading: 'すくない', romaji: 'sukunai', meaning: 'น้อย (い)', cat: 'adj', tip: 'สึคุไน = จำนวนน้อย' },
+      { id: 'v_a27', word: '白い', reading: 'しろい', romaji: 'shiroi', meaning: 'สีขาว (い)', cat: 'adj', tip: 'ชิโร่ย = สีขาว' },
+      { id: 'v_a28', word: '黒い', reading: 'くろい', romaji: 'kuroi', meaning: 'สีดำ (い)', cat: 'adj', tip: 'คุโร่ย = สีดำ' },
+      { id: 'v_a29', word: '赤い', reading: 'あかい', romaji: 'akai', meaning: 'สีแดง (い)', cat: 'adj', tip: 'อะไค = สีแดง' },
+      { id: 'v_a30', word: '青い', reading: 'あおい', romaji: 'aoi', meaning: 'สีน้ำเงิน / สีฟ้า (い)', cat: 'adj', tip: 'อะโอย = สีฟ้า/น้ำเงิน' },
+      { id: 'v_a31', word: '綺麗', reading: 'きれい', romaji: 'kirei', meaning: 'สวย / สะอาด (な)', cat: 'adj', tip: 'ลงท้ายด้วย い แต่เป็นคุณศัพท์ な! (きれいな人)' },
+      { id: 'v_a32', word: '静か', reading: 'しずか', romaji: 'shizuka', meaning: 'เงียบสงบ (な)', cat: 'adj', tip: 'ชิซึคะ = เงียบ' },
+      { id: 'v_a33', word: '賑やか', reading: 'にぎやか', romaji: 'nigiyaka', meaning: 'คึกคัก / จอแจ (な)', cat: 'adj', tip: 'นิงิยะคะ = คึกคักมีชีวิตชีวา' },
+      { id: 'v_a34', word: '有名', reading: 'ゆうめい', romaji: 'yuumei', meaning: 'มีชื่อเสียง / ดัง (な)', cat: 'adj', tip: 'มี (有) + ชื่อ (名) = มีชื่อเสียง' },
+      { id: 'v_a35', word: '元気', reading: 'げんき', romaji: 'genki', meaning: 'แข็งแรง / สบายดี / ร่าเริง (な)', cat: 'adj', tip: 'เก็งคิ = สบายดี' },
+      { id: 'v_a36', word: '暇', reading: 'ひま', romaji: 'hima', meaning: 'ว่าง (มีเวลาว่าง) (な)', cat: 'adj', tip: 'ฮิมะ = ว่าง' },
+      { id: 'v_a37', word: '便利', reading: 'べんり', romaji: 'benri', meaning: 'สะดวกสบาย (な)', cat: 'adj', tip: 'เบ็นริ = สะดวก' },
+      { id: 'v_a38', word: '好き', reading: 'すき', romaji: 'suki', meaning: 'ชอบ (な)', cat: 'adj', tip: 'ผู้หญิง (女) + เด็ก (子) = ชอบ/รัก' },
+      { id: 'v_a39', word: '嫌い', reading: 'きらい', romaji: 'kirai', meaning: 'เกลียด / ไม่ชอบ (な)', cat: 'adj', tip: 'ลงท้าย い แต่เป็นคุณศัพท์ な!' },
+      { id: 'v_a40', word: '上手', reading: 'じょうず', romaji: 'jouzu', meaning: 'เก่ง / ชำนาญ (な)', cat: 'adj', tip: 'มือ (手) อยู่บน (上) = เก่ง (มักใช้ชมคนอื่น)' },
+      { id: 'v_a41', word: '下手', reading: 'へた', romaji: 'heta', meaning: 'ไม่เก่ง / อ่อนหัด (な)', cat: 'adj', tip: 'มือ (手) อยู่ล่าง (下) = ไม่เก่ง' },
+      { id: 'v_a42', word: '大丈夫', reading: 'だいじょうぶ', romaji: 'daijoubu', meaning: 'ไม่เป็นไร / โอเค (な)', cat: 'adj', tip: 'ไดโจบุ = ไม่เป็นไร' },
+
+      // --- 4. สถานที่และทิศทาง (Places & Directions) ---
+      { id: 'v_p01', word: '学校', reading: 'がっこう', romaji: 'gakkou', meaning: 'โรงเรียน', cat: 'places', tip: 'งักโค = โรงเรียน' },
+      { id: 'v_p02', word: '大学', reading: 'だいがく', romaji: 'daigaku', meaning: 'มหาวิทยาลัย', cat: 'places', tip: '大 (ใหญ่) + 学 (เรียน) = มหาวิทยาลัย' },
+      { id: 'v_p03', word: '駅', reading: 'えき', romaji: 'eki', meaning: 'สถานีรถไฟ', cat: 'places', tip: 'เอะคิ = สถานีรถไฟ' },
+      { id: 'v_p04', word: '病院', reading: 'びょういん', romaji: 'byouin', meaning: 'โรงพยาบาล', cat: 'places', tip: '病 (ป่วย) + 院 (สถาบัน) = โรงพยาบาล' },
+      { id: 'v_p05', word: '銀行', reading: 'ぎんこう', romaji: 'ginkou', meaning: 'ธนาคาร', cat: 'places', tip: '銀 (แร่เงิน) + 行 = ธนาคาร' },
+      { id: 'v_p06', word: '郵便局', reading: 'ゆうびんきょく', romaji: 'yuubinkyoku', meaning: 'ที่ทำการไปรษณีย์', cat: 'places', tip: 'ยูบิงเคียวคุ = ไปรษณีย์' },
+      { id: 'v_p07', word: '図書館', reading: 'としょかん', romaji: 'toshokan', meaning: 'ห้องสมุด', cat: 'places', tip: 'โทะโชะคัง = ห้องสมุด' },
+      { id: 'v_p08', word: '会社', reading: 'かいしゃ', romaji: 'kaisha', meaning: 'บริษัท', cat: 'places', tip: 'ไคฉะ = บริษัท' },
+      { id: 'v_p09', word: '店', reading: 'みせ', romaji: 'mise', meaning: 'ร้านค้า', cat: 'places', tip: 'มิเสะ = ร้านค้า' },
+      { id: 'v_p10', word: '家 / うち', reading: 'いえ / うち', romaji: 'ie / uchi', meaning: 'บ้าน', cat: 'places', tip: 'อิเอะ (ตัวอาคารบ้าน) / อุจิ (บ้านของฉัน)' },
+      { id: 'v_p11', word: '部屋', reading: 'へや', romaji: 'heya', meaning: 'ห้อง', cat: 'places', tip: 'เฮะยะ = ห้องพัก/ห้องนอน' },
+      { id: 'v_p12', word: 'お手洗い', reading: 'おてあらい', romaji: 'otearai', meaning: 'ห้องน้ำ (คำสุภาพ)', cat: 'places', tip: 'แปลตรงตัวว่า ที่ล้างมือ = ห้องน้ำ' },
+      { id: 'v_p13', word: '公園', reading: 'こうえん', romaji: 'kouen', meaning: 'สวนสาธารณะ', cat: 'places', tip: 'โคเอ็น = สวนสาธารณะ' },
+      { id: 'v_p14', word: '空港', reading: 'くうこう', romaji: 'kuukou', meaning: 'สนามบิน', cat: 'places', tip: '空 (ท้องฟ้า) + 港 (ท่าเรือ) = สนามบิน' },
+      { id: 'v_p15', word: '国', reading: 'くに', romaji: 'kuni', meaning: 'ประเทศ', cat: 'places', tip: 'คุนิ = ประเทศ (お国 = ประเทศของคุณ)' },
+      { id: 'v_p16', word: '日本', reading: 'にほん', romaji: 'nihon', meaning: 'ประเทศญี่ปุ่น', cat: 'places', tip: '日 (พระอาทิตย์) + 本 (ต้นกำเนิด) = ญี่ปุ่น' },
+      { id: 'v_p17', word: '上', reading: 'うえ', romaji: 'ue', meaning: 'ข้างบน', cat: 'places', tip: 'ขีดสั้นชี้ขึ้นบน = อุเอะ' },
+      { id: 'v_p18', word: '下', reading: 'した', romaji: 'shita', meaning: 'ข้างล่าง', cat: 'places', tip: 'ขีดสั้นชี้ลงล่าง = ชิตะ' },
+      { id: 'v_p19', word: '前', reading: 'まえ', romaji: 'mae', meaning: 'ข้างหน้า / ก่อน', cat: 'places', tip: 'มะเอะ = ข้างหน้า' },
+      { id: 'v_p20', word: '後ろ', reading: 'うしろ', romaji: 'ushiro', meaning: 'ข้างหลัง', cat: 'places', tip: 'อุชิโระ = ข้างหลัง' },
+      { id: 'v_p21', word: '右', reading: 'みぎ', romaji: 'migi', meaning: 'ข้างขวา', cat: 'places', tip: 'มีปาก (口) ด้านล่าง = มือขวาตักข้าวเข้าปาก' },
+      { id: 'v_p22', word: '左', reading: 'ひだり', romaji: 'hidari', meaning: 'ข้างซ้าย', cat: 'places', tip: 'มีตัว エ ด้านล่าง = ฮิดะริ (ซ้าย)' },
+      { id: 'v_p23', word: '中', reading: 'なか', romaji: 'naka', meaning: 'ข้างใน', cat: 'places', tip: 'ขีดผ่ากลางสี่เหลี่ยม = ข้างใน (นะคะ)' },
+      { id: 'v_p24', word: '外', reading: 'そと', romaji: 'soto', meaning: 'ข้างนอก', cat: 'places', tip: 'โซะโทะ = ข้างนอก' },
+      { id: 'v_p25', word: '隣', reading: 'となり', romaji: 'tonari', meaning: 'ข้างๆ / ถัดไป', cat: 'places', tip: 'โทะนะริ = ข้างๆ (ประเภทเดียวกัน)' },
+      { id: 'v_p26', word: '近く', reading: 'ちかく', romaji: 'chikaku', meaning: 'ใกล้ๆ / แถวๆ นี้', cat: 'places', tip: 'จิคะคุ = บริเวณใกล้เคียง' },
+      { id: 'v_p27', word: '山', reading: 'やま', romaji: 'yama', meaning: 'ภูเขา', cat: 'places', tip: 'ยอดเขา 3 ยอด = ยะมะ' },
+      { id: 'v_p28', word: '川', reading: 'かわ', romaji: 'kawa', meaning: 'แม่น้ำ', cat: 'places', tip: 'สายน้ำ 3 สาย = คะวะ' },
+      { id: 'v_p29', word: '海', reading: 'うみ', romaji: 'umi', meaning: 'ทะเล', cat: 'places', tip: 'อุ มิ = ทะเล' },
+      { id: 'v_p30', word: '道', reading: 'みち', romaji: 'michi', meaning: 'ถนน / ทาง', cat: 'places', tip: 'มิ จิ = ถนนหนทาง' },
+
+      // --- 5. ครอบครัว ผู้คน และร่างกาย (People & Body) ---
+      { id: 'v_m01', word: '私', reading: 'わたし', romaji: 'watashi', meaning: 'ฉัน / ผม', cat: 'people', tip: 'วะทะชิ = สรรพนามบุรุษที่ 1 มาตรฐาน' },
+      { id: 'v_m02', word: 'あなた', reading: 'あなた', romaji: 'anata', meaning: 'คุณ', cat: 'people', tip: 'อะนะตะ = คุณ (ญี่ปุ่นนิยมเรียกชื่อแทน)' },
+      { id: 'v_m03', word: '人', reading: 'ひと', romaji: 'hito', meaning: 'คน / มนุษย์', cat: 'people', tip: 'คนยืนก้าวขา = ฮิโทะ' },
+      { id: 'v_m04', word: '男', reading: 'おとこ', romaji: 'otoko', meaning: 'ผู้ชาย', cat: 'people', tip: 'ทุ่งนา (田) + พละกำลัง (力) = ผู้ชาย' },
+      { id: 'v_m05', word: '女', reading: 'おんな', romaji: 'onna', meaning: 'ผู้หญิง', cat: 'people', tip: 'อนนะ = ผู้หญิง' },
+      { id: 'v_m06', word: '子供', reading: 'こども', romaji: 'kodomo', meaning: 'เด็ก / ลูก', cat: 'people', tip: 'โคะโดะโมะ = เด็ก' },
+      { id: 'v_m07', word: '友達', reading: 'ともだち', romaji: 'tomodachi', meaning: 'เพื่อน', cat: 'people', tip: 'โทะโมะดะจิ = เพื่อน' },
+      { id: 'v_m08', word: '先生', reading: 'せんせい', romaji: 'sensei', meaning: 'คุณครู / อาจารย์ / หมอ', cat: 'people', tip: '先 (ก่อน) + 生 (เกิด) = ผู้เกิดก่อน/อาจารย์' },
+      { id: 'v_m09', word: '学生', reading: 'がくせい', romaji: 'gakusei', meaning: 'นักเรียน / นักศึกษา', cat: 'people', tip: 'งักเซ = นักเรียน' },
+      { id: 'v_m10', word: '家族', reading: 'かぞく', romaji: 'kazoku', meaning: 'ครอบครัว', cat: 'people', tip: 'คะโซะคุ = ครอบครัว' },
+      { id: 'v_m11', word: '父', reading: 'ちち', romaji: 'chichi', meaning: 'พ่อ (ของฉัน)', cat: 'people', tip: 'จิ จิ = พ่อของตัวเอง (เรียกพ่อคนอื่นว่า お父さん)' },
+      { id: 'v_m12', word: '母', reading: 'はは', romaji: 'haha', meaning: 'แม่ (ของฉัน)', cat: 'people', tip: 'ฮะ ฮะ = แม่ของตัวเอง (เรียกแม่คนอื่นว่า お母さん)' },
+      { id: 'v_m13', word: 'お父さん', reading: 'おとうさん', romaji: 'otousan', meaning: 'คุณพ่อ (ของคนอื่น/เรียกพ่อ)', cat: 'people', tip: 'โอะโต้ซัง = คุณพ่อ' },
+      { id: 'v_m14', word: 'お母さん', reading: 'おかあさん', romaji: 'okaasan', meaning: 'คุณแม่ (ของคนอื่น/เรียกแม่)', cat: 'people', tip: 'โอะค๊าซัง = คุณแม่' },
+      { id: 'v_m15', word: '兄', reading: 'あに', romaji: 'ani', meaning: 'พี่ชาย (ของฉัน)', cat: 'people', tip: 'อะ นิ = พี่ชายตัวเอง (พี่ชายคนอื่น: お兄さん)' },
+      { id: 'v_m16', word: '姉', reading: 'あね', romaji: 'ane', meaning: 'พี่สาว (ของฉัน)', cat: 'people', tip: 'อะ เนะ = พี่สาวตัวเอง (พี่สาวคนอื่น: お姉さん)' },
+      { id: 'v_m17', word: '弟', reading: 'おとうと', romaji: 'otouto', meaning: 'น้องชาย (ของฉัน)', cat: 'people', tip: 'โอะโต้โทะ = น้องชาย' },
+      { id: 'v_m18', word: '妹', reading: 'いもうと', romaji: 'imouto', meaning: 'น้องสาว (ของฉัน)', cat: 'people', tip: 'อิโม่โทะ = น้องสาว' },
+      { id: 'v_m19', word: '目', reading: 'め', romaji: 'me', meaning: 'ดวงตา', cat: 'people', tip: 'ลูกตาตั้งขึ้น = เมะ' },
+      { id: 'v_m20', word: '耳', reading: 'みみ', romaji: 'mimi', meaning: 'หู', cat: 'people', tip: 'มิ มิ = ใบหู' },
+      { id: 'v_m21', word: '口', reading: 'くち', romaji: 'kuchi', meaning: 'ปาก', cat: 'people', tip: 'สี่เหลี่ยมเหมือนปากอ้า = คุจิ' },
+      { id: 'v_m22', word: '手', reading: 'て', romaji: 'te', meaning: 'มือ', cat: 'people', tip: 'เทะ = มือ' },
+      { id: 'v_m23', word: '足', reading: 'あし', romaji: 'ashi', meaning: 'เท้า / ขา', cat: 'people', tip: 'อะ ชิ = เท้า/ขา' },
+      { id: 'v_m24', word: '頭', reading: 'あたま', romaji: 'atama', meaning: 'ศีรษะ / หัว', cat: 'people', tip: 'อะทะมะ = หัว' },
+      { id: 'v_m25', word: '名前', reading: 'なまえ', romaji: 'namae', meaning: 'ชื่อ', cat: 'people', tip: 'นะมะเอะ = ชื่อ (お名前は？ = ชื่ออะไรครับ/คะ?)' },
+      { id: 'v_m26', word: '犬', reading: 'いぬ', romaji: 'inu', meaning: 'สุนัข / หมา', cat: 'people', tip: 'ตัวใหญ่ (大) มีจุดหูตั้ง 1 จุด = อินุ (สุนัข)' },
+      { id: 'v_m27', word: '猫', reading: 'ねこ', romaji: 'neko', meaning: 'แมว', cat: 'people', tip: 'เนะโคะ = แมว' },
+
+      // --- 6. อาหารและของใช้ชีวิตประจำวัน (Food & Daily Life) ---
+      { id: 'v_d01', word: '水', reading: 'みず', romaji: 'mizu', meaning: 'น้ำเปล่า / น้ำเย็น', cat: 'daily', tip: 'มิซึ = น้ำเย็น (ถ้าเป็นน้ำร้อนใช้ お湯 โอะยุ)' },
+      { id: 'v_d02', word: 'お茶', reading: 'おちゃ', romaji: 'ocha', meaning: 'ชาเขียว / น้ำชา', cat: 'daily', tip: 'โอะฉะ = ชาญี่ปุ่น' },
+      { id: 'v_d03', word: '牛乳', reading: 'ぎゅうにゅう', romaji: 'gyuunyuu', meaning: 'นมวัว', cat: 'daily', tip: '牛 (วัว) + 乳 (นม) = นมวัว' },
+      { id: 'v_d04', word: 'ご飯', reading: 'ごはん', romaji: 'gohan', meaning: 'ข้าวสวย / มื้ออาหาร', cat: 'daily', tip: 'โกะฮัง = ข้าว' },
+      { id: 'v_d05', word: '肉', reading: 'にく', romaji: 'niku', meaning: 'เนื้อสัตว์', cat: 'daily', tip: 'นิคุ = เนื้อ' },
+      { id: 'v_d06', word: '魚', reading: 'さかな', romaji: 'sakana', meaning: 'ปลา', cat: 'daily', tip: 'ซะคะนะ = ปลา' },
+      { id: 'v_d07', word: '野菜', reading: 'やさい', romaji: 'yasai', meaning: 'ผัก', cat: 'daily', tip: 'ยะไซ = ผัก' },
+      { id: 'v_d08', word: '果物', reading: 'くだもの', romaji: 'kudamono', meaning: 'ผลไม้', cat: 'daily', tip: 'คุดะโมะโนะ = ผลไม้' },
+      { id: 'v_d09', word: '卵', reading: 'たまご', romaji: 'tamago', meaning: 'ไข่', cat: 'daily', tip: 'ทะมะโกะ = ไข่' },
+      { id: 'v_d10', word: 'お酒', reading: 'おさけ', romaji: 'osake', meaning: 'เหล้า / เครื่องดื่มแอลกอฮอล์', cat: 'daily', tip: 'โอะซะเคะ = สุรา' },
+      { id: 'v_d11', word: '本', reading: 'ほん', romaji: 'hon', meaning: 'หนังสือ', cat: 'daily', tip: 'ต้นไม้ (木) มีขีดโคนต้น = หนังสือ (ฮง)' },
+      { id: 'v_d12', word: '辞書', reading: 'じしょ', romaji: 'jisho', meaning: 'พจนานุกรม (ดิกชันนารี)', cat: 'daily', tip: 'จิโชะ = พจนานุกรม' },
+      { id: 'v_d13', word: '新聞', reading: 'しんぶん', romaji: 'shinbun', meaning: 'หนังสือพิมพ์', cat: 'daily', tip: '新 (ใหม่) + 聞 (ฟัง/ข่าว) = หนังสือพิมพ์' },
+      { id: 'v_d14', word: '鉛筆', reading: 'えんぴつ', romaji: 'enpitsu', meaning: 'ดินสอ', cat: 'daily', tip: 'เอ็มปิสึ = ดินสอ' },
+      { id: 'v_d15', word: '鞄', reading: 'かばん', romaji: 'kaban', meaning: 'กระเป๋า', cat: 'daily', tip: 'คะบัง = กระเป๋า' },
+      { id: 'v_d16', word: '傘', reading: 'かさ', romaji: 'kasa', meaning: 'ร่ม', cat: 'daily', tip: 'รูปร่างเหมือนร่มกางออก มีคน 4 คนหลบฝนข้างใต้!' },
+      { id: 'v_d17', word: '靴', reading: 'くつ', romaji: 'kutsu', meaning: 'รองเท้า', cat: 'daily', tip: 'คุสึ = รองเท้า' },
+      { id: 'v_d18', word: '時計', reading: 'とけい', romaji: 'tokei', meaning: 'นาฬิกา', cat: 'daily', tip: 'โทะเค = นาฬิกาข้อมือ/แขวน' },
+      { id: 'v_d19', word: '電話', reading: 'でんわ', romaji: 'denwa', meaning: 'โทรศัพท์', cat: 'daily', tip: '電 (ไฟฟ้า) + 話 (พูด) = โทรศัพท์' },
+      { id: 'v_d20', word: '車', reading: 'くるま', romaji: 'kuruma', meaning: 'รถยนต์', cat: 'daily', tip: 'คุรุมะ = รถยนต์' },
+      { id: 'v_d21', word: '電車', reading: 'でんしゃ', romaji: 'densha', meaning: 'รถไฟ (ไฟฟ้า)', cat: 'daily', tip: '電 (ไฟฟ้า) + 車 (รถ) = รถไฟ' },
+      { id: 'v_d22', word: '自転車', reading: 'じてんしゃ', romaji: 'jitensha', meaning: 'รถจักรยาน', cat: 'daily', tip: 'จิเท็นฉะ = จักรยาน' },
+      { id: 'v_d23', word: '飛行機', reading: 'ひこうき', romaji: 'hikouki', meaning: 'เครื่องบิน', cat: 'daily', tip: 'ฮิโคคิ = เครื่องบิน' },
+      { id: 'v_d24', word: 'お金', reading: 'おかね', romaji: 'okane', meaning: 'เงิน', cat: 'daily', tip: 'โอะคะเนะ = เงินทอง' },
+      { id: 'v_d25', word: '天気', reading: 'てんき', romaji: 'tenki', meaning: 'สภาพอากาศ', cat: 'daily', tip: '天 (ท้องฟ้า) + 気 = อากาศ' },
+      { id: 'v_d26', word: '雨', reading: 'あめ', romaji: 'ame', meaning: 'ฝน', cat: 'daily', tip: 'หน้าต่างมีเม็ดฝนตก 4 หยด = อะเมะ (ฝน)' },
+      { id: 'v_d27', word: '雪', reading: 'ゆき', romaji: 'yuki', meaning: 'หิมะ', cat: 'daily', tip: 'ยุ คิ = หิมะ' },
+      { id: 'v_d28', word: '花', reading: 'はな', romaji: 'hana', meaning: 'ดอกไม้', cat: 'daily', tip: 'ฮะนะ = ดอกไม้ (เสียงเดียวกับ จมูก 鼻)' },
+
+      // --- 7. คำทับศัพท์คาตาคานะ N5 (Katakana Vocabulary) ---
+      { id: 'v_k01', word: 'テレビ', reading: 'テレビ', romaji: 'terebi', meaning: 'โทรทัศน์ (TV)', cat: 'katakana_n5', tip: 'テ (te) + レ (re) + ビ (bi) = Television' },
+      { id: 'v_k02', word: 'カメラ', reading: 'カメラ', romaji: 'kamera', meaning: 'กล้องถ่ายรูป (Camera)', cat: 'katakana_n5', tip: 'カ (ka) + メ (me) + ラ (ra) = Camera' },
+      { id: 'v_k03', word: 'パソコン', reading: 'パソコン', romaji: 'pasokon', meaning: 'คอมพิวเตอร์ (PC)', cat: 'katakana_n5', tip: 'ย่อมาจาก Personal Computer (พะโซะคง)' },
+      { id: 'v_k04', word: 'スマホ', reading: 'スマホ', romaji: 'sumaho', meaning: 'สมาร์ทโฟน', cat: 'katakana_n5', tip: 'ย่อมาจาก Smartphone (สึมะโฮะ)' },
+      { id: 'v_k05', word: 'トイレ', reading: 'トイレ', romaji: 'toire', meaning: 'ห้องน้ำ / สุขา (Toilet)', cat: 'katakana_n5', tip: 'ト (to) + イ (i) + レ (re) = Toilet' },
+      { id: 'v_k06', word: 'ドア', reading: 'ドア', romaji: 'doa', meaning: 'ประตู (Door)', cat: 'katakana_n5', tip: 'ド (do) + ア (a) = Door' },
+      { id: 'v_k07', word: 'テーブル', reading: 'テーブル', romaji: 'teeburu', meaning: 'โต๊ะ (Table)', cat: 'katakana_n5', tip: 'テー (tee) + ブ (bu) + ル (ru) = Table' },
+      { id: 'v_k08', word: 'ベッド', reading: 'ベッド', romaji: 'beddo', meaning: 'เตียงนอน (Bed)', cat: 'katakana_n5', tip: 'ベッ (bed) + ド (do) = Bed' },
+      { id: 'v_k09', word: 'パン', reading: 'パン', romaji: 'pan', meaning: 'ขนมปัง', cat: 'katakana_n5', tip: 'パ (pa) + ン (n) = ขนมปัง (มาจากภาษาโปรตุเกส Pão)' },
+      { id: 'v_k10', word: 'コーヒー', reading: 'コーヒー', romaji: 'koohii', meaning: 'กาแฟ (Coffee)', cat: 'katakana_n5', tip: 'コー (koo) + ヒー (hii) = Coffee' },
+      { id: 'v_k11', word: 'ジュース', reading: 'ジュース', romaji: 'juusu', meaning: 'น้ำผลไม้ (Juice)', cat: 'katakana_n5', tip: 'ジュー (juu) + ス (su) = Juice' },
+      { id: 'v_k12', word: 'レストラン', reading: 'レストラン', romaji: 'resutoran', meaning: 'ร้านอาหาร / ภัตตาคาร', cat: 'katakana_n5', tip: 'レ (re) ス (su) ト (to) ラ (ra) ン (n) = Restaurant' },
+      { id: 'v_k13', word: 'ホテル', reading: 'ホテル', romaji: 'hoteru', meaning: 'โรงแรม (Hotel)', cat: 'katakana_n5', tip: 'ホ (ho) + テ (te) + ル (ru) = Hotel' },
+      { id: 'v_k14', word: 'デパート', reading: 'デパート', romaji: 'depaato', meaning: 'ห้างสรรพสินค้า', cat: 'katakana_n5', tip: 'ย่อมาจาก Department Store (เดะป้าโทะ)' },
+      { id: 'v_k15', word: 'スーパー', reading: 'スーパー', romaji: 'suupaa', meaning: 'ซูเปอร์มาร์เก็ต', cat: 'katakana_n5', tip: 'スー (suu) + パー (paa) = Supermarket' },
+      { id: 'v_k16', word: 'コンビニ', reading: 'コンビニ', romaji: 'konbini', meaning: 'ร้านสะดวกซื้อ', cat: 'katakana_n5', tip: 'ย่อมาจาก Convenience Store (คมบินิ)' },
+      { id: 'v_k17', word: 'バス', reading: 'バス', romaji: 'basu', meaning: 'รถบัส / รถเมล์ (Bus)', cat: 'katakana_n5', tip: 'バ (ba) + ス (su) = Bus' },
+      { id: 'v_k18', word: 'タクシー', reading: 'タクシー', romaji: 'takushii', meaning: 'รถแท็กซี่ (Taxi)', cat: 'katakana_n5', tip: 'タ (ta) ク (ku) シー (shii) = Taxi (ระวังตัว シ!)' },
+      { id: 'v_k19', word: 'シャツ', reading: 'シャツ', romaji: 'shatsu', meaning: 'เสื้อเชิ้ต (Shirt)', cat: 'katakana_n5', tip: 'シャ (sha) + ツ (tsu) = Shirt (ระวังตัว ツ!)' },
+      { id: 'v_k20', word: 'ペン', reading: 'ペン', romaji: 'pen', meaning: 'ปากกา (Pen)', cat: 'katakana_n5', tip: 'ペ (pe) + ン (n) = Pen' },
+      { id: 'v_k21', word: 'ノート', reading: 'ノート', romaji: 'nooto', meaning: 'สมุดจดบันทึก (Notebook)', cat: 'katakana_n5', tip: 'ノー (noo) + ト (to) = Note' },
+      { id: 'v_k22', word: 'クラス', reading: 'クラス', romaji: 'kurasu', meaning: 'ชั้นเรียน (Class)', cat: 'katakana_n5', tip: 'ク (ku) + ラ (ra) + ス (su) = Class' },
+      { id: 'v_k23', word: 'テスト', reading: 'テスト', romaji: 'tesuto', meaning: 'การสอบ / แบบทดสอบ (Test)', cat: 'katakana_n5', tip: 'テ (te) + ス (su) + ト (to) = Test' },
+      { id: 'v_k24', word: 'スポーツ', reading: 'スポーツ', romaji: 'supootsu', meaning: 'กีฬา (Sports)', cat: 'katakana_n5', tip: 'ス (su) ポー (poo) ツ (tsu) = Sports' },
+      { id: 'v_k25', word: 'サッカー', reading: 'サッカー', romaji: 'sakkaa', meaning: 'ฟุตบอล (Soccer)', cat: 'katakana_n5', tip: 'サッ (sak) + カー (kaa) = Soccer' },
+      { id: 'v_k26', word: 'アニメ', reading: 'アニメ', romaji: 'anime', meaning: 'อนิเมะ / การ์ตูนแอนิเมชัน', cat: 'katakana_n5', tip: 'ア (a) + ニ (ni) + メ (me) = Animation' },
+      { id: 'v_k27', word: 'アルバイト', reading: 'アルバイト', romaji: 'arubaito', meaning: 'งานพาร์ทไทม์ (งานพิเศษ)', cat: 'katakana_n5', tip: 'มาจากภาษาเยอรมัน Arbeit (อะรุไบโตะ)' },
+      { id: 'v_k28', word: 'プレゼント', reading: 'プレゼント', romaji: 'purezento', meaning: 'ของขวัญ (Present)', cat: 'katakana_n5', tip: 'プ (pu) レ (re) ゼ (ze) ン (n) ト (to) = Present' },
+
+      // --- 8. คำทักทาย คำถาม และคำเชื่อม (Greetings, Question Words & Basics) ---
+      { id: 'v_g01', word: 'おはようございます', reading: 'おはようございます', romaji: 'ohayou gozaimasu', meaning: 'สวัสดีตอนเช้า', cat: 'greetings', tip: 'ใช้ทักทายช่วงเช้า (กับเพื่อนสนิทใช้แค่ おはよう)' },
+      { id: 'v_g02', word: 'こんにちは', reading: 'こんにちは', romaji: 'konnichiwa', meaning: 'สวัสดีตอนกลางวัน', cat: 'greetings', tip: 'ตัว は ตัวท้ายออกเสียงว่า "วะ" (wa)' },
+      { id: 'v_g03', word: 'こんばんは', reading: 'こんばんは', romaji: 'konbanwa', meaning: 'สวัสดีตอนค่ำ', cat: 'greetings', tip: 'ตัว は ตัวท้ายออกเสียงว่า "วะ" (wa)' },
+      { id: 'v_g04', word: 'ありがとうございます', reading: 'ありがとうございます', romaji: 'arigatou gozaimasu', meaning: 'ขอบคุณมาก', cat: 'greetings', tip: 'คำขอบคุณสุภาพที่ใช้บ่อยที่สุด' },
+      { id: 'v_g05', word: 'すみません', reading: 'すみません', romaji: 'sumimasen', meaning: 'ขอโทษครับ/คะ / ขอรบกวนหน่อย', cat: 'greetings', tip: 'ใช้ได้ทั้งขอโทษและเรียกพนักงาน/คนแปลกหน้า' },
+      { id: 'v_g06', word: 'ごめんなさい', reading: 'ごめんなさい', romaji: 'gomennasai', meaning: 'ขอโทษนะ (ใช้เมื่อทำผิด)', cat: 'greetings', tip: 'ใช้ขอโทษเมื่อเราเป็นฝ่ายทำผิดพลาด' },
+      { id: 'v_g07', word: 'お願いします', reading: 'おねがいします', romaji: 'onegaishimasu', meaning: 'ขอความกรุณา / รบกวนด้วยครับ', cat: 'greetings', tip: 'ใช้เวลาสั่งอาหาร ขอความช่วยเหลือ หรือฝากตัว' },
+      { id: 'v_g08', word: 'いただきます', reading: 'いただきます', romaji: 'itadakimasu', meaning: 'จะทานแล้วนะครับ/คะ (พูดก่อนกิน)', cat: 'greetings', tip: 'พูดก่อนเริ่มรับประทานอาหารเพื่อขอบคุณ' },
+      { id: 'v_g09', word: 'ごちそうさまでした', reading: 'ごちそうさまでした', romaji: 'gochisousama deshita', meaning: 'ขอบคุณสำหรับอาหาร (พูดหลังกินเสร็จ)', cat: 'greetings', tip: 'พูดหลังทานอาหารเสร็จเรียบร้อย' },
+      { id: 'v_g10', word: '何', reading: 'なに / なん', romaji: 'nani / nan', meaning: 'อะไร', cat: 'greetings', tip: 'เช่น 何ですか (นันเดสกะ = อะไรครับ?)' },
+      { id: 'v_g11', word: '誰', reading: 'だれ', romaji: 'dare', meaning: 'ใคร', cat: 'greetings', tip: 'ดะเระ = ใคร (รูปสุภาพคือ どなた)' },
+      { id: 'v_g12', word: 'どこ', reading: 'どこ', romaji: 'doko', meaning: 'ที่ไหน', cat: 'greetings', tip: 'โดะโคะ = ที่ไหน (เช่น トイレはどこですか)' },
+      { id: 'v_g13', word: 'いつ', reading: 'いつ', romaji: 'itsu', meaning: 'เมื่อไหร่', cat: 'greetings', tip: 'อิสึ = เมื่อไหร่' },
+      { id: 'v_g14', word: 'どうして / なぜ', reading: 'どうして / なぜ', romaji: 'doushite / naze', meaning: 'ทำไม / เพราะเหตุใด', cat: 'greetings', tip: 'โดชิเทะ / นะเซะ = ทำไม' },
+      { id: 'v_g15', word: 'いくら', reading: 'いくら', romaji: 'ikura', meaning: 'ราคาเท่าไหร่', cat: 'greetings', tip: 'อิคุระ = ราคาเท่าไหร่ (ใช้ถามราคาสินค้า)' },
+      { id: 'v_g16', word: 'いくつ', reading: 'いくつ', romaji: 'ikutsu', meaning: 'กี่อัน / อายุเท่าไหร่', cat: 'greetings', tip: 'อิคุสึ = ใช้ถามจำนวนสิ่งของ หรือถามอายุ' },
+      { id: 'v_g17', word: 'これ', reading: 'これ', romaji: 'kore', meaning: 'นี่ / อันนี้ (ใกล้ผู้พูด)', cat: 'greetings', tip: 'โคะเระ = อันนี้' },
+      { id: 'v_g18', word: 'それ', reading: 'それ', romaji: 'sore', meaning: 'นั่น / อันนั้น (ใกล้ผู้ฟัง)', cat: 'greetings', tip: 'โซะเระ = อันนั้น' },
+      { id: 'v_g19', word: 'あれ', reading: 'あれ', romaji: 'are', meaning: 'โน่น / อันโน้น (ไกลทั้งคู่)', cat: 'greetings', tip: 'อะเระ = อันโน้น' },
+      { id: 'v_g20', word: 'ここ', reading: 'ここ', romaji: 'koko', meaning: 'ที่นี่ (ตรงนี้)', cat: 'greetings', tip: 'โคะโคะ = ที่นี่' },
+      { id: 'v_g21', word: 'そこ', reading: 'そこ', romaji: 'soko', meaning: 'ที่นั่น (ตรงนั้น)', cat: 'greetings', tip: 'โซะโคะ = ที่นั่น' },
+      { id: 'v_g22', word: 'あそこ', reading: 'あそこ', romaji: 'asoko', meaning: 'ที่โน่น (ตรงโน้น)', cat: 'greetings', tip: 'อะโซะโคะ = ที่โน่น' },
+      { id: 'v_g23', word: 'とても', reading: 'とても', romaji: 'totemo', meaning: 'มากๆ (ใช้กับประโยคบอกเล่า)', cat: 'greetings', tip: 'เช่น とても美味しい (อร่อยมากๆ)' },
+      { id: 'v_g24', word: 'あまり', reading: 'あまり', romaji: 'amari', meaning: 'ไม่ค่อย... (ใช้คู่รูปปฏิเสธ)', cat: 'greetings', tip: 'เช่น あまり高くない (ไม่ค่อยแพง)' },
+      { id: 'v_g25', word: 'いつも', reading: 'いつも', romaji: 'itsumo', meaning: 'เสมอ / เป็นประจำ', cat: 'greetings', tip: 'อิสึโมะ = ตลอดเวลา/เป็นประจำ' },
+      { id: 'v_g26', word: '時々', reading: 'ときどき', romaji: 'tokidoki', meaning: 'บางครั้ง / เป็นครั้งคราว', cat: 'greetings', tip: 'โทะคิโดะคิ = บางครั้ง' },
+      { id: 'v_g27', word: 'しかし / でも', reading: 'しかし / でも', romaji: 'shikashi / demo', meaning: 'แต่ / อย่างไรก็ตาม', cat: 'greetings', tip: 'ใช้เชื่อมประโยคที่ขัดแย้งกัน' },
+      { id: 'v_g28', word: 'それから', reading: 'それから', romaji: 'sorekara', meaning: 'หลังจากนั้น / แล้วก็', cat: 'greetings', tip: 'โซะเระคะระ = หลังจากนั้น' }
+    ];
+
+    // =========================================================================
+    // 3. UNIFIED STATE MANAGEMENT & LOCALSTORAGE SYNC
+    // =========================================================================
+    const STORAGE_KEY = 'nihongo_pocket_sniper_v2';
+    const DEFAULT_WEIGHT = 4;
+    const MIN_WEIGHT = 1;
+    const MAX_WEIGHT = 20;
+
+    let appState = {
+      activeTab: 'flashcard',
+      // Data collections
+      customVocab: [],
+      vocabMeta: {},      // { [id]: { mastered: bool, weight: number, mistakes: number } }
+      katakanaMeta: {},   // { [id]: { weight: number, mistakes: number } }
+
+      // Tab 1: Flashcards state
+      fcFilter: 'all',    // 'all' | 'learning' | 'weak'
+      fcCatFilter: 'all',
+      fcIndex: 0,
+      fcFlipped: false,
+      fcShowFurigana: true,
+
+      // Tab 2: Speaking state
+      speakCat: 'all',
+      speakIndex: 0,
+
+      // Tab 3: Charts & Vault state
+      charSubTab: 'katakana',
+      inspectedKanaId: 'tsu',
+
+      // Tab 4: Sniper Quiz state
+      quizMode: 'tn',             // 'tn' | 'lookalike' | 'kana_all' | 'vocab_n5'
+      quizKanaInput: 'choice',    // 'choice' | 'type'
+      quizShowFurigana: true,
+      quizTarget: null,           // either Katakana obj or Vocab obj
+      quizLastId: null,
+      quizAnswered: false,
+      quizHintVisible: false,
+      quizStreak: 0
+    };
+
+    function getAllVocab() {
+      return [...DEFAULT_N5_VOCAB, ...appState.customVocab];
+    }
+
+    function getVocabMeta(id) {
+      if (!appState.vocabMeta[id]) {
+        appState.vocabMeta[id] = { mastered: false, weight: DEFAULT_WEIGHT, mistakes: 0 };
       }
-    ];
-
-    // ==================== STATE MANAGEMENT ====================
-    let vocabList = JSON.parse(localStorage.getItem('nihongo_vocab_v1')) || defaultVocab;
-    let currentFilter = 'all';
-    let currentCardIndex = 0;
-    let isCardFlipped = false;
-    let currentSpeakIndex = 0;
-
-    // Quiz State
-    let currentQuizMode = 'hiragana';
-    let quizScore = 0;
-    let currentQuizAnswer = null;
-    let currentQuizAudioText = "";
-    let currentSentenceObj = null;
-    let selectedSentenceWords = [];
-    let availableSentencePool = [];
-
-    function saveToStorage() {
-      localStorage.setItem('nihongo_vocab_v1', JSON.stringify(vocabList));
-      updateMasteredBadge();
+      return appState.vocabMeta[id];
     }
 
-    function updateMasteredBadge() {
-      const count = vocabList.filter(v => v.mastered).length;
-      document.getElementById('mastered-badge').innerText = `จำได้แล้ว ${count}/${vocabList.length} คำ`;
-    }
-
-    function getFilteredCards() {
-      if (currentFilter === 'learning') {
-        const list = vocabList.filter(v => !v.mastered);
-        return list.length > 0 ? list : vocabList;
+    function getKanaMeta(id) {
+      if (!appState.katakanaMeta[id]) {
+        appState.katakanaMeta[id] = { weight: DEFAULT_WEIGHT, mistakes: 0 };
       }
-      return vocabList;
+      return appState.katakanaMeta[id];
     }
 
-    // ==================== TEXT TO SPEECH (iOS Safari Compatible) ====================
+    function loadAppState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && typeof parsed === 'object') {
+            if (Array.isArray(parsed.customVocab)) appState.customVocab = parsed.customVocab;
+            if (parsed.vocabMeta) appState.vocabMeta = parsed.vocabMeta;
+            if (parsed.katakanaMeta) appState.katakanaMeta = parsed.katakanaMeta;
+          }
+        }
+      } catch (e) {
+        console.warn('LocalStorage read error:', e);
+      }
+
+      // Initialize missing entries
+      KATAKANA_DATA.forEach(k => getKanaMeta(k.id));
+      getAllVocab().forEach(v => getVocabMeta(v.id));
+      saveAppState();
+    }
+
+    function saveAppState() {
+      try {
+        const payload = {
+          customVocab: appState.customVocab,
+          vocabMeta: appState.vocabMeta,
+          katakanaMeta: appState.katakanaMeta
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+      } catch (e) {
+        console.warn('LocalStorage save error:', e);
+      }
+      updateMasteredHeaderBadge();
+    }
+
+    function updateMasteredHeaderBadge() {
+      const all = getAllVocab();
+      const masteredCount = all.filter(v => getVocabMeta(v.id).mastered).length;
+      document.getElementById('mastered-badge').textContent = `จำได้แล้ว ${masteredCount}/${all.length} คำ`;
+    }
+
+    // =========================================================================
+    // 4. AUDIO ENGINE: iOS VOICE-FIXED TTS (ja-JP) & TONE.JS SFX
+    // =========================================================================
     let jpVoice = null;
 
     function loadVoices() {
@@ -585,15 +1222,20 @@
       if (!('speechSynthesis' in window) || !text) return;
 
       const playAudio = () => {
-        const utter = new SpeechSynthesisUtterance(text);
-        utter.lang = 'ja-JP';
-        if (!jpVoice) loadVoices();
-        if (jpVoice) utter.voice = jpVoice;
-        utter.rate = 0.9;
-        utter.volume = 1.0;
-        window.speechSynthesis.speak(utter);
+        try {
+          const utter = new SpeechSynthesisUtterance(text);
+          utter.lang = 'ja-JP';
+          if (!jpVoice) loadVoices();
+          if (jpVoice) utter.voice = jpVoice;
+          utter.rate = 0.9;
+          utter.volume = 1.0;
+          window.speechSynthesis.speak(utter);
+        } catch (e) {
+          // Fail silently if speech blocked
+        }
       };
 
+      // เรียก cancel เฉพาะตอนที่ยังมีเสียงค้างอยู่ เพื่อป้องกันบั๊กเสียงเงียบบน iOS
       if (window.speechSynthesis.speaking || window.speechSynthesis.pending) {
         window.speechSynthesis.cancel();
         setTimeout(playAudio, 60);
@@ -602,82 +1244,212 @@
       }
     }
 
-    // ==================== TAB 1: FLASHCARDS LOGIC ====================
-    function renderCard() {
-      const cards = getFilteredCards();
-      if (currentCardIndex >= cards.length) currentCardIndex = 0;
-      const card = cards[currentCardIndex];
+    let synth = null;
+    function playSFX(type) {
+      if (typeof Tone === 'undefined') return;
+      try {
+        if (Tone.context.state !== 'running') Tone.start();
+        if (!synth) {
+          synth = new Tone.PolySynth(Tone.Synth, {
+            oscillator: { type: 'triangle' },
+            envelope: { attack: 0.01, decay: 0.14, sustain: 0.05, release: 0.2 }
+          }).toDestination();
+          synth.volume.value = -11;
+        }
+        const now = Tone.now();
+        if (type === 'correct') {
+          synth.triggerAttackRelease(['C5', 'E5', 'G5'], '16n', now);
+        } else if (type === 'wrong') {
+          synth.triggerAttackRelease(['E3', 'Bb2'], '8n', now);
+        } else if (type === 'boost') {
+          synth.triggerAttackRelease(['A4', 'D5'], '16n', now);
+        }
+      } catch (e) {}
+    }
 
-      isCardFlipped = false;
+    // Toast Helper (Replaces alert/confirm cleanly)
+    let toastTimer = null;
+    function showToast(msg) {
+      const el = document.getElementById('toast');
+      document.getElementById('toast-msg').textContent = msg;
+      el.classList.remove('opacity-0', 'translate-y-2');
+      el.classList.add('opacity-100', 'translate-y-0');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        el.classList.remove('opacity-100', 'translate-y-0');
+        el.classList.add('opacity-0', 'translate-y-2');
+      }, 2200);
+    }
+
+    // =========================================================================
+    // 5. TAB 1: FLASHCARDS LOGIC (3D FLIP, FURIGANA TOGGLE, WEAK-SPOT BOOST)
+    // =========================================================================
+    function getFilteredFlashcards() {
+      let list = getAllVocab();
+
+      if (appState.fcCatFilter !== 'all') {
+        list = list.filter(v => v.cat === appState.fcCatFilter);
+      }
+
+      if (appState.fcFilter === 'learning') {
+        const sub = list.filter(v => !getVocabMeta(v.id).mastered);
+        if (sub.length > 0) list = sub;
+      } else if (appState.fcFilter === 'weak') {
+        const sub = list.filter(v => getVocabMeta(v.id).weight >= 5);
+        if (sub.length > 0) list = sub;
+      }
+
+      return list.length > 0 ? list : getAllVocab();
+    }
+
+    function renderFlashcard() {
+      const cards = getFilteredFlashcards();
+      if (appState.fcIndex >= cards.length) appState.fcIndex = 0;
+      const card = cards[appState.fcIndex];
+      const meta = getVocabMeta(card.id);
+
+      appState.fcFlipped = false;
       document.getElementById('flashcard-inner').classList.remove('flipped');
 
       setTimeout(() => {
-        document.getElementById('card-counter').innerText = `การ์ดที่ ${currentCardIndex + 1} / ${cards.length}`;
+        document.getElementById('card-counter').textContent = `การ์ดที่ ${appState.fcIndex + 1} / ${cards.length}`;
+        document.getElementById('card-weight-tag').textContent = `น้ำหนัก: ${meta.weight}`;
+
         const statusEl = document.getElementById('card-status-tag');
-        if (card.mastered) {
-          statusEl.innerText = "สถานะ: จำได้แล้ว ✅";
-          statusEl.className = "text-emerald-400";
+        if (meta.mastered) {
+          statusEl.textContent = 'จำได้แล้ว ✅';
+          statusEl.className = 'text-emerald-400 font-semibold';
+        } else if (meta.weight >= 6) {
+          statusEl.textContent = 'จุดอ่อน 🔥';
+          statusEl.className = 'text-rose-400 font-semibold';
         } else {
-          statusEl.innerText = "สถานะ: กำลังท่อง 🔄";
-          statusEl.className = "text-amber-400";
+          statusEl.textContent = 'กำลังท่อง 🔄';
+          statusEl.className = 'text-amber-400 font-medium';
         }
 
-        document.getElementById('card-kanji').innerText = card.kanji;
-        document.getElementById('card-kana').innerText = card.kana;
-        document.getElementById('card-romaji').innerText = `คำอ่าน: ${card.romaji}`;
-        document.getElementById('card-meaning').innerText = card.meaning;
-        document.getElementById('card-example-jp').innerText = card.exJp || card.kanji;
-        document.getElementById('card-example-th').innerText = card.exTh || card.meaning;
-      }, 150);
+        document.getElementById('card-category').textContent = VOCAB_CATEGORIES[card.cat] || 'JLPT N5';
+        document.getElementById('card-kanji').textContent = card.word;
+
+        const kanaEl = document.getElementById('card-kana');
+        if (appState.fcShowFurigana) {
+          kanaEl.textContent = card.word === card.reading ? '' : card.reading;
+        } else {
+          kanaEl.textContent = card.word === card.reading ? '' : '••• (ซ่อนคำอ่าน)';
+        }
+
+        document.getElementById('card-romaji').textContent = `${card.reading} (${card.romaji})`;
+        document.getElementById('card-meaning').textContent = card.meaning;
+        document.getElementById('card-example-jp').textContent = card.exJp || card.word;
+        document.getElementById('card-example-th').textContent = card.exTh || `${card.romaji} — ${card.meaning}`;
+        document.getElementById('card-tip-back').textContent = `💡 ${card.tip || 'ฝึกอ่านและออกเสียงซ้ำเพื่อความแม่นยำ'}`;
+      }, 120);
     }
 
     function flipCard() {
-      isCardFlipped = !isCardFlipped;
-      document.getElementById('flashcard-inner').classList.toggle('flipped', isCardFlipped);
+      appState.fcFlipped = !appState.fcFlipped;
+      document.getElementById('flashcard-inner').classList.toggle('flipped', appState.fcFlipped);
+    }
+
+    function toggleCardFurigana() {
+      appState.fcShowFurigana = !appState.fcShowFurigana;
+      const btn = document.getElementById('fc-furigana-btn');
+      if (appState.fcShowFurigana) {
+        btn.textContent = '👁️ ซ่อนคำอ่าน';
+        btn.className = 'px-2.5 py-1.5 bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 border border-emerald-500/30 rounded-full text-[11px] font-medium transition';
+      } else {
+        btn.textContent = '🙈 แสดงคำอ่าน';
+        btn.className = 'px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 rounded-full text-[11px] font-medium transition';
+      }
+      const cards = getFilteredFlashcards();
+      const card = cards[appState.fcIndex];
+      const kanaEl = document.getElementById('card-kana');
+      kanaEl.textContent = appState.fcShowFurigana
+        ? (card.word === card.reading ? '' : card.reading)
+        : (card.word === card.reading ? '' : '••• (ซ่อนคำอ่าน)');
     }
 
     function speakCurrentCard() {
-      const cards = getFilteredCards();
-      speakJP(cards[currentCardIndex].kana);
+      const cards = getFilteredFlashcards();
+      const card = cards[appState.fcIndex];
+      speakJP(card.reading);
     }
 
     function nextCard() {
-      const cards = getFilteredCards();
-      currentCardIndex = (currentCardIndex + 1) % cards.length;
-      renderCard();
+      const cards = getFilteredFlashcards();
+      appState.fcIndex = (appState.fcIndex + 1) % cards.length;
+      renderFlashcard();
     }
 
     function prevCard() {
-      const cards = getFilteredCards();
-      currentCardIndex = (currentCardIndex - 1 + cards.length) % cards.length;
-      renderCard();
+      const cards = getFilteredFlashcards();
+      appState.fcIndex = (appState.fcIndex - 1 + cards.length) % cards.length;
+      renderFlashcard();
     }
 
-    function randomCard() {
-      const cards = getFilteredCards();
-      currentCardIndex = Math.floor(Math.random() * cards.length);
-      renderCard();
+    function randomWeightedCard() {
+      const cards = getFilteredFlashcards();
+      if (cards.length <= 1) return;
+      let total = 0;
+      const weighted = cards.map((c, idx) => {
+        const w = Math.pow(getVocabMeta(c.id).weight, 1.3);
+        total += w;
+        return { idx, w };
+      });
+      let r = Math.random() * total;
+      for (const entry of weighted) {
+        r -= entry.w;
+        if (r <= 0) {
+          appState.fcIndex = entry.idx;
+          renderFlashcard();
+          return;
+        }
+      }
+      appState.fcIndex = Math.floor(Math.random() * cards.length);
+      renderFlashcard();
     }
 
     function markCard(mastered) {
-      const cards = getFilteredCards();
-      const card = cards[currentCardIndex];
-      const target = vocabList.find(v => v.id === card.id);
-      if (target) target.mastered = mastered;
-      saveToStorage();
+      const cards = getFilteredFlashcards();
+      const card = cards[appState.fcIndex];
+      const meta = getVocabMeta(card.id);
+      meta.mastered = mastered;
+      if (mastered) {
+        meta.weight = Math.max(MIN_WEIGHT, meta.weight - 2);
+        playSFX('correct');
+        showToast(`✅ จำคำว่า "${card.word}" ได้แล้ว!`);
+      }
+      saveAppState();
+      nextCard();
+    }
+
+    function boostCurrentFlashcard() {
+      const cards = getFilteredFlashcards();
+      const card = cards[appState.fcIndex];
+      const meta = getVocabMeta(card.id);
+      meta.mastered = false;
+      meta.weight = Math.min(MAX_WEIGHT, meta.weight + 4);
+      saveAppState();
+      playSFX('boost');
+      showToast(`⚡ เพิ่มน้ำหนัก "${card.word}" (+4) จะสุ่มมาถามบ่อยขึ้น!`);
       nextCard();
     }
 
     function setCardFilter(filter) {
-      currentFilter = filter;
-      currentCardIndex = 0;
-      document.getElementById('filter-all').className = filter === 'all'
-        ? "text-xs px-3 py-1.5 rounded-lg bg-indigo-600 text-white font-medium"
-        : "text-xs px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 font-medium";
-      document.getElementById('filter-learning').className = filter === 'learning'
-        ? "text-xs px-3 py-1.5 rounded-lg bg-indigo-600 text-white font-medium"
-        : "text-xs px-3 py-1.5 rounded-lg bg-slate-800 text-slate-300 font-medium";
-      renderCard();
+      appState.fcFilter = filter;
+      appState.fcIndex = 0;
+      ['all', 'learning', 'weak'].forEach(f => {
+        const btn = document.getElementById(`filter-${f}`);
+        btn.className = (f === filter)
+          ? 'text-xs px-3 py-1.5 rounded-xl bg-indigo-600 text-white font-medium transition'
+          : 'text-xs px-3 py-1.5 rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 font-medium transition';
+      });
+      renderFlashcard();
+    }
+
+    function setCardCategoryFilter(cat) {
+      appState.fcCatFilter = cat;
+      appState.fcIndex = 0;
+      renderFlashcard();
     }
 
     function toggleAddModal(show) {
@@ -685,59 +1457,102 @@
     }
 
     function saveCustomCard() {
-      const kanji = document.getElementById('inp-kanji').value.trim();
-      const kana = document.getElementById('inp-kana').value.trim();
-      const romaji = document.getElementById('inp-romaji').value.trim() || kana;
+      const word = document.getElementById('inp-kanji').value.trim();
+      const reading = document.getElementById('inp-kana').value.trim();
+      const romaji = document.getElementById('inp-romaji').value.trim() || reading;
       const meaning = document.getElementById('inp-meaning').value.trim();
+      const tip = document.getElementById('inp-tip').value.trim() || 'คำศัพท์ที่เพิ่มเอง';
 
-      if (!kanji || !kana || !meaning) {
-        alert("กรุณากรอกคำศัพท์ คำอ่าน Hiragana และความหมายให้ครบครับ");
+      if (!word || !reading || !meaning) {
+        showToast('⚠️ กรุณากรอกคำศัพท์ คำอ่าน และความหมายให้ครบ');
         return;
       }
 
-      vocabList.push({
-        id: Date.now(),
-        kanji,
-        kana,
+      const newId = 'custom_' + Date.now();
+      appState.customVocab.unshift({
+        id: newId,
+        word,
+        reading,
         romaji,
         meaning,
-        exJp: kanji,
-        exTh: meaning,
-        mastered: false
+        cat: 'custom',
+        tip,
+        exJp: word,
+        exTh: `${romaji} — ${meaning}`
       });
 
-      saveToStorage();
+      appState.vocabMeta[newId] = { mastered: false, weight: 6, mistakes: 0 };
+      saveAppState();
       toggleAddModal(false);
+
       document.getElementById('inp-kanji').value = '';
       document.getElementById('inp-kana').value = '';
       document.getElementById('inp-romaji').value = '';
       document.getElementById('inp-meaning').value = '';
-      renderCard();
+      document.getElementById('inp-tip').value = '';
+
+      appState.fcCatFilter = 'all';
+      appState.fcFilter = 'all';
+      appState.fcIndex = 0;
+      document.getElementById('fc-cat-filter').value = 'all';
+      renderFlashcard();
+      showToast(`✅ เพิ่มคำศัพท์ "${word}" เรียบร้อย!`);
     }
 
-    // ==================== TAB 2: SPEAKING PRACTICE ====================
+    // =========================================================================
+    // 6. TAB 2: SPEAKING PRACTICE (WEB SPEECH API ja-JP)
+    // =========================================================================
+    function getSpeakPool() {
+      const all = getAllVocab();
+      if (appState.speakCat === 'all') return all;
+      if (appState.speakCat === 'weak') {
+        const sub = all.filter(v => getVocabMeta(v.id).weight >= 5);
+        return sub.length > 0 ? sub : all;
+      }
+      const sub = all.filter(v => v.cat === appState.speakCat);
+      return sub.length > 0 ? sub : all;
+    }
+
+    function setSpeakCategory(cat) {
+      appState.speakCat = cat;
+      appState.speakIndex = 0;
+      renderSpeakItem();
+    }
+
     function renderSpeakItem() {
-      const item = vocabList[currentSpeakIndex];
-      document.getElementById('speak-kanji').innerText = item.kanji;
-      document.getElementById('speak-kana').innerText = item.kana;
-      document.getElementById('speak-romaji').innerText = item.romaji;
-      document.getElementById('speak-meaning').innerText = `"${item.meaning}"`;
+      const pool = getSpeakPool();
+      if (appState.speakIndex >= pool.length) appState.speakIndex = 0;
+      const item = pool[appState.speakIndex];
+
+      document.getElementById('speak-kanji').textContent = item.word;
+      document.getElementById('speak-kana').textContent = item.reading;
+      document.getElementById('speak-romaji').textContent = item.romaji;
+      document.getElementById('speak-meaning').textContent = `"${item.meaning}"`;
       document.getElementById('speech-result-box').classList.add('hidden');
     }
 
     function nextSpeakItem() {
-      currentSpeakIndex = (currentSpeakIndex + 1) % vocabList.length;
+      const pool = getSpeakPool();
+      appState.speakIndex = (appState.speakIndex + 1) % pool.length;
+      renderSpeakItem();
+    }
+
+    function randomSpeakItem() {
+      const pool = getSpeakPool();
+      appState.speakIndex = Math.floor(Math.random() * pool.length);
       renderSpeakItem();
     }
 
     function speakTargetSentence() {
-      speakJP(vocabList[currentSpeakIndex].kana);
+      const pool = getSpeakPool();
+      const item = pool[appState.speakIndex];
+      speakJP(item.reading);
     }
 
     function startSpeechRecognition() {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       if (!SpeechRecognition) {
-        alert("เบราว์เซอร์ของคุณไม่รองรับระบบตรวจจับเสียงพูด แนะนำให้ใช้ Chrome หรือ Safari เวอร์ชันล่าสุดครับ");
+        showToast('⚠️ เบราว์เซอร์นี้ไม่รองรับไมค์ แนะนำใช้ Google Chrome');
         return;
       }
 
@@ -750,21 +1565,23 @@
       const micStatus = document.getElementById('mic-status');
 
       recognition.onstart = () => {
-        micBtn.classList.add('recording-pulse', 'bg-red-600');
+        micBtn.classList.add('recording-pulse', 'bg-rose-600');
         micBtn.classList.remove('bg-indigo-600');
-        micStatus.innerText = "กำลังฟัง... พูดคำศัพท์ออกมาได้เลยครับ";
+        micStatus.textContent = 'กำลังฟัง... พูดคำศัพท์ออกมาได้เลยครับ';
       };
 
       recognition.onresult = (event) => {
         const transcripts = Array.from(event.results[0]).map(r => r.transcript.trim().replace(/[。、！？\s]/g, ''));
         const primaryHeard = transcripts[0];
-        const target = vocabList[currentSpeakIndex];
-        const cleanKanji = target.kanji.replace(/\s/g, '');
-        const cleanKana = target.kana.replace(/\s/g, '');
+        const pool = getSpeakPool();
+        const target = pool[appState.speakIndex];
+
+        const cleanWord = target.word.replace(/[\s/・]/g, '');
+        const cleanReading = target.reading.replace(/[\s/・]/g, '');
 
         const isMatch = transcripts.some(t =>
-          t.includes(cleanKanji) || t.includes(cleanKana) ||
-          cleanKanji.includes(t) || cleanKana.includes(t)
+          t.includes(cleanWord) || t.includes(cleanReading) ||
+          cleanWord.includes(t) || cleanReading.includes(t)
         );
 
         const resultBox = document.getElementById('speech-result-box');
@@ -772,296 +1589,747 @@
         const feedbackEl = document.getElementById('speech-feedback');
 
         resultBox.classList.remove('hidden');
-        heardEl.innerText = primaryHeard;
+        heardEl.textContent = primaryHeard;
 
         if (isMatch) {
-          feedbackEl.innerText = "🎉 ออกเสียงชัดเจนมาก! ตรงกับคำศัพท์เป๊ะเลย";
-          feedbackEl.className = "text-sm font-medium py-1.5 px-3 rounded-lg bg-emerald-500/20 text-emerald-300";
+          playSFX('correct');
+          feedbackEl.textContent = '🎉 ออกเสียงชัดเจนมาก! ตรงกับคำศัพท์เป๊ะเลย';
+          feedbackEl.className = 'text-xs sm:text-sm font-semibold py-2 px-3 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-500/30';
         } else {
-          feedbackEl.innerText = `💡 เกือบได้แล้ว! ลองออกเสียงว่า "${target.kana}" อีกครั้งนะ`;
-          feedbackEl.className = "text-sm font-medium py-1.5 px-3 rounded-lg bg-amber-500/20 text-amber-300";
+          playSFX('wrong');
+          feedbackEl.textContent = `💡 เกือบได้แล้ว! ลองออกเสียงว่า "${target.reading}" อีกครั้งนะ`;
+          feedbackEl.className = 'text-xs sm:text-sm font-medium py-2 px-3 rounded-xl bg-amber-500/20 text-amber-300 border border-amber-500/30';
         }
       };
 
       recognition.onerror = () => {
-        micStatus.innerText = "ไม่ได้ยินเสียงพูด ลองแตะไมค์แล้วพูดใหม่อีกครั้งครับ";
+        micStatus.textContent = 'ไม่ได้ยินเสียงพูด ลองแตะไมค์แล้วพูดใหม่อีกครั้งครับ';
       };
 
       recognition.onend = () => {
-        micBtn.classList.remove('recording-pulse', 'bg-red-600');
+        micBtn.classList.remove('recording-pulse', 'bg-rose-600');
         micBtn.classList.add('bg-indigo-600');
-        micStatus.innerText = "แตะที่ไมค์แล้วพูดออกเสียงภาษาญี่ปุ่น";
+        micStatus.textContent = 'แตะที่ไมค์แล้วพูดออกเสียงภาษาญี่ปุ่น';
       };
 
       recognition.start();
     }
 
-    // ==================== TAB 3: KANA & 100 KANJI CHART ====================
+    // =========================================================================
+    // 7. TAB 3: CHARTS (KATAKANA HEATMAP, HIRAGANA, KANJI N5) & N5 VAULT
+    // =========================================================================
     function switchCharSet(type) {
-      ['hiragana', 'katakana', 'kanji'].forEach(t => {
-        document.getElementById(`btn-${t}`).className = (t === type)
-          ? "py-2 text-xs font-medium rounded-lg bg-indigo-600 text-white"
-          : "py-2 text-xs font-medium rounded-lg text-slate-300";
+      appState.charSubTab = type;
+      ['katakana', 'hiragana', 'kanji', 'vault'].forEach(t => {
+        const btn = document.getElementById(`btn-${t}`);
+        const view = document.getElementById(`subview-${t}`);
+        btn.className = (t === type)
+          ? 'py-2 px-1 text-[11px] sm:text-xs font-semibold rounded-xl bg-indigo-600 text-white transition'
+          : 'py-2 px-1 text-[11px] sm:text-xs font-semibold rounded-xl text-slate-400 hover:text-white transition';
+        view.classList.toggle('hidden', t !== type);
       });
 
-      const searchWrap = document.getElementById('kanji-search-wrap');
-      searchWrap.classList.toggle('hidden', type !== 'kanji');
-
-      if (type === 'kanji') {
-        document.getElementById('kanji-search').value = '';
-        renderKanjiGrid(kanjiN5List);
-      } else {
-        const grid = document.getElementById('char-grid');
-        grid.innerHTML = '';
-        grid.className = "grid grid-cols-5 gap-2";
-        const list = type === 'hiragana' ? hiraganaList : katakanaList;
-        list.forEach(item => {
-          const cell = document.createElement('button');
-          if (!item.c) {
-            cell.className = "p-3 rounded-xl bg-slate-900/30";
-            cell.disabled = true;
-          } else {
-            cell.className = "bg-slate-800 hover:bg-indigo-600/30 border border-slate-700 rounded-xl p-2.5 flex flex-col items-center transition active:scale-95";
-            cell.onclick = () => speakJP(item.c);
-            cell.innerHTML = `
-              <span class="jp-font text-xl font-bold text-white">${item.c}</span>
-              <span class="text-[10px] text-slate-400 uppercase mt-0.5">${item.r}</span>
-            `;
-          }
-          grid.appendChild(cell);
-        });
+      if (type === 'katakana') {
+        renderKatakanaChart();
+        inspectKatakana(appState.inspectedKanaId, false);
+      } else if (type === 'hiragana') {
+        renderHiraganaChart();
+      } else if (type === 'kanji') {
+        renderKanjiGrid();
+      } else if (type === 'vault') {
+        renderVocabVault();
       }
     }
 
-    function renderKanjiGrid(list) {
-      const grid = document.getElementById('char-grid');
+    function renderKatakanaChart() {
+      const grid = document.getElementById('katakana-chart-grid');
       grid.innerHTML = '';
-      grid.className = "grid grid-cols-3 gap-2.5";
-      list.forEach((item, idx) => {
+
+      KATAKANA_GRID_SLOTS.forEach(id => {
+        if (!id) {
+          const empty = document.createElement('div');
+          empty.className = 'p-2 rounded-xl bg-slate-950/30 border border-slate-800/30';
+          grid.appendChild(empty);
+          return;
+        }
+        const k = KATAKANA_DATA.find(item => item.id === id);
+        const meta = getKanaMeta(id);
+        let style = 'bg-slate-800/90 border-slate-700 text-white';
+        if (meta.weight >= 8) {
+          style = 'bg-rose-600/30 border-rose-500 text-rose-100';
+        } else if (meta.weight >= 5) {
+          style = 'bg-amber-500/20 border-amber-500/70 text-amber-100';
+        } else if (meta.weight === 1) {
+          style = 'bg-emerald-500/20 border-emerald-500/60 text-emerald-200';
+        }
+
         const btn = document.createElement('button');
-        btn.className = "bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl p-3 flex flex-col items-center text-center transition active:scale-95 relative";
-        const firstReading = item.read.split('/')[0].trim();
-        btn.onclick = () => speakJP(firstReading);
+        btn.type = 'button';
+        btn.className = `p-2 rounded-xl border flex flex-col items-center justify-center transition active:scale-95 ${style}`;
         btn.innerHTML = `
-          <span class="absolute top-1.5 left-2 text-[9px] text-slate-500">#${idx + 1}</span>
-          <span class="jp-font text-2xl font-bold text-white mt-1">${item.c}</span>
-          <span class="jp-font text-[11px] text-indigo-300 mt-1 line-clamp-1">${item.read}</span>
-          <span class="text-[11px] text-emerald-400 mt-0.5 line-clamp-1">${item.r}</span>
+          <span class="jp-font text-lg sm:text-xl font-bold leading-none">${k.kana}</span>
+          <span class="text-[10px] opacity-80 uppercase mt-0.5">${k.romaji}</span>
+        `;
+        btn.onclick = () => inspectKatakana(id, true);
+        grid.appendChild(btn);
+      });
+    }
+
+    function inspectKatakana(id, shouldSpeak = true) {
+      const k = KATAKANA_DATA.find(item => item.id === id);
+      if (!k) return;
+      appState.inspectedKanaId = id;
+      const meta = getKanaMeta(id);
+
+      document.getElementById('insp-kana-char').textContent = k.kana;
+      document.getElementById('insp-kana-title').textContent = `${k.romaji} — ${k.thai} (แถว ${k.row})`;
+      document.getElementById('insp-kana-weight').textContent = `น้ำหนัก: ${meta.weight}`;
+      document.getElementById('insp-kana-mnemonic').textContent = k.mnemonic;
+
+      const twins = (k.lookalikes || [])
+        .map(lid => KATAKANA_DATA.find(x => x.id === lid))
+        .filter(Boolean)
+        .map(x => `${x.kana} (${x.romaji})`)
+        .join(', ');
+
+      document.getElementById('insp-kana-twin').textContent = twins
+        ? `👯 ระวังตัวหน้าคล้าย: ${twins}`
+        : '👯 ไม่มีคู่แฝดหน้าคล้ายพิเศษ';
+
+      if (shouldSpeak) speakJP(k.kana);
+    }
+
+    function speakInspectedKana() {
+      const k = KATAKANA_DATA.find(item => item.id === appState.inspectedKanaId);
+      if (k) speakJP(k.kana);
+    }
+
+    function boostInspectedKana() {
+      const k = KATAKANA_DATA.find(item => item.id === appState.inspectedKanaId);
+      if (!k) return;
+      const meta = getKanaMeta(k.id);
+      meta.weight = Math.min(MAX_WEIGHT, meta.weight + 4);
+      saveAppState();
+      playSFX('boost');
+      renderKatakanaChart();
+      inspectKatakana(k.id, false);
+      showToast(`📌 ย้ำตัว "${k.kana}" (+4) จะสุ่มในควิซบ่อยขึ้น!`);
+    }
+
+    function renderHiraganaChart() {
+      const grid = document.getElementById('hiragana-chart-grid');
+      grid.innerHTML = '';
+      HIRAGANA_DATA.forEach(item => {
+        const cell = document.createElement('button');
+        if (!item.c) {
+          cell.className = 'p-2.5 rounded-xl bg-slate-950/30';
+          cell.disabled = true;
+        } else {
+          cell.className = 'bg-slate-800 hover:bg-indigo-600/30 border border-slate-700 rounded-xl p-2 flex flex-col items-center transition active:scale-95';
+          cell.onclick = () => speakJP(item.c);
+          cell.innerHTML = `
+            <span class="jp-font text-lg sm:text-xl font-bold text-white">${item.c}</span>
+            <span class="text-[10px] text-slate-400 uppercase mt-0.5">${item.r}</span>
+          `;
+        }
+        grid.appendChild(cell);
+      });
+    }
+
+    function renderKanjiGrid() {
+      const grid = document.getElementById('kanji-chart-grid');
+      const query = (document.getElementById('kanji-search-input').value || '').trim().toLowerCase();
+      grid.innerHTML = '';
+
+      const filtered = KANJI_N5_DATA.filter(item => {
+        if (!query) return true;
+        return `${item.c} ${item.read} ${item.meaning} ${item.tip}`.toLowerCase().includes(query);
+      });
+
+      filtered.forEach(item => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'bg-slate-800/90 hover:bg-slate-800 border border-slate-700 hover:border-indigo-500/50 rounded-2xl p-3 flex flex-col items-center text-center transition active:scale-95 space-y-1';
+        btn.onclick = () => {
+          speakJP(item.c);
+          showToast(`💡 ${item.c} (${item.meaning}): ${item.tip}`);
+        };
+        btn.innerHTML = `
+          <span class="jp-font text-3xl font-black text-white">${item.c}</span>
+          <span class="jp-font text-[11px] font-semibold text-indigo-300">${item.read}</span>
+          <span class="text-xs font-bold text-emerald-400">${item.meaning}</span>
+          <span class="text-[10px] text-slate-400 line-clamp-2 leading-snug">${item.tip}</span>
         `;
         grid.appendChild(btn);
       });
     }
 
-    function filterKanjiGrid() {
-      const q = document.getElementById('kanji-search').value.trim().toLowerCase();
-      if (!q) {
-        renderKanjiGrid(kanjiN5List);
+    function renderVocabVault() {
+      const container = document.getElementById('vault-list-container');
+      const statsLine = document.getElementById('vault-stats-line');
+      const query = (document.getElementById('vault-search-input').value || '').trim().toLowerCase();
+      const catFilter = document.getElementById('vault-cat-filter').value;
+      const statusFilter = document.getElementById('vault-status-filter').value;
+
+      const all = getAllVocab();
+      const filtered = all.filter(item => {
+        const meta = getVocabMeta(item.id);
+        if (catFilter !== 'all' && item.cat !== catFilter) return false;
+        if (statusFilter === 'weak' && meta.weight < 5) return false;
+        if (statusFilter === 'mastered' && !meta.mastered) return false;
+        if (statusFilter === 'learning' && meta.mastered) return false;
+
+        if (query) {
+          const hay = `${item.word} ${item.reading} ${item.romaji} ${item.meaning}`.toLowerCase();
+          if (!hay.includes(query)) return false;
+        }
+        return true;
+      });
+
+      statsLine.textContent = `พบ ${filtered.length} คำ (จากทั้งหมด ${all.length} คำ)`;
+      container.innerHTML = '';
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<div class="text-center py-8 text-xs text-slate-500">ไม่พบคำศัพท์ที่ตรงกับการค้นหา</div>`;
         return;
       }
-      const filtered = kanjiN5List.filter(k =>
-        k.c.includes(q) || k.read.toLowerCase().includes(q) || k.r.toLowerCase().includes(q)
-      );
-      renderKanjiGrid(filtered);
+
+      filtered.forEach(item => {
+        const meta = getVocabMeta(item.id);
+        let weightColor = 'bg-slate-800 text-slate-300 border-slate-700';
+        if (meta.weight >= 8) weightColor = 'bg-rose-500/20 text-rose-300 border-rose-500/40';
+        else if (meta.weight >= 5) weightColor = 'bg-amber-500/20 text-amber-300 border-amber-500/40';
+        else if (meta.weight === 1) weightColor = 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40';
+
+        const row = document.createElement('div');
+        row.className = 'p-3 rounded-2xl bg-slate-950/90 border border-slate-800 flex items-center justify-between gap-2';
+        row.innerHTML = `
+          <div class="flex items-center gap-2.5 min-w-0">
+            <button type="button" class="v-speak w-9 h-9 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 flex items-center justify-center shrink-0">
+              🔊
+            </button>
+            <div class="min-w-0">
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <span class="jp-font text-base font-bold text-white">${item.word}</span>
+                ${item.word !== item.reading ? `<span class="jp-font text-[11px] text-indigo-300">(${item.reading})</span>` : ''}
+              </div>
+              <div class="text-xs text-slate-300 truncate">${item.meaning}</div>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-1.5 shrink-0">
+            <span class="px-2 py-1 rounded-lg border text-[10px] font-semibold ${weightColor}">
+              w:${meta.weight}
+            </span>
+            <button type="button" class="v-boost px-2 py-1 rounded-lg bg-amber-500/15 text-amber-300 border border-amber-500/30 text-[11px] font-bold">
+              +4
+            </button>
+            <button type="button" class="v-master px-2 py-1 rounded-lg border text-[11px] font-bold ${meta.mastered ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40' : 'bg-slate-800 text-slate-400 border-slate-700'}">
+              ${meta.mastered ? '✅' : '⬜'}
+            </button>
+          </div>
+        `;
+
+        row.querySelector('.v-speak').onclick = () => speakJP(item.reading);
+        row.querySelector('.v-boost').onclick = () => {
+          meta.weight = Math.min(MAX_WEIGHT, meta.weight + 4);
+          meta.mastered = false;
+          saveAppState();
+          playSFX('boost');
+          renderVocabVault();
+          showToast(`📌 ย้ำคำว่า "${item.word}" (+4)`);
+        };
+        row.querySelector('.v-master').onclick = () => {
+          meta.mastered = !meta.mastered;
+          if (meta.mastered) meta.weight = Math.max(MIN_WEIGHT, meta.weight - 2);
+          saveAppState();
+          renderVocabVault();
+        };
+
+        container.appendChild(row);
+      });
     }
 
-    // ==================== TAB 4: 4-MODE QUIZ LOGIC ====================
+    // =========================================================================
+    // 8. TAB 4: SNIPER QUIZ ENGINE (WEIGHTED SRS & LOOKALIKE TRAPS)
+    // =========================================================================
     function setQuizMode(mode) {
-      currentQuizMode = mode;
-      ['hiragana', 'katakana', 'kanji', 'sentence'].forEach(m => {
-        document.getElementById(`qmode-${m}`).className = (m === mode)
-          ? "py-2 px-1 text-[11px] font-medium rounded-lg bg-indigo-600 text-white"
-          : "py-2 px-1 text-[11px] font-medium rounded-lg text-slate-300";
+      appState.quizMode = mode;
+      document.querySelectorAll('.qmode-pill').forEach(btn => {
+        const active = btn.dataset.qmode === mode;
+        btn.className = active
+          ? 'qmode-pill py-2 px-2.5 rounded-xl text-xs font-semibold bg-indigo-600 text-white shadow-md shadow-indigo-600/20 text-left flex items-center gap-1.5 transition'
+          : 'qmode-pill py-2 px-2.5 rounded-xl text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 text-left flex items-center gap-1.5 transition';
       });
 
-      const modeNames = {
-        hiragana: "โหมด 1: ทายตัวอักษร Hiragana",
-        katakana: "โหมด 2: ทายตัวอักษร Katakana",
-        kanji: "โหมด 3: ทายคันจิ N5 (100 ตัว)",
-        sentence: "โหมด 4: ผสมคำเรียงประโยค"
-      };
-      document.getElementById('quiz-mode-label').innerText = modeNames[mode];
+      const isVocab = mode === 'vocab_n5';
+      document.getElementById('quiz-kana-subcontrols').classList.toggle('hidden', isVocab);
+      document.getElementById('quiz-vocab-subcontrols').classList.toggle('hidden', !isVocab);
 
-      const mcBox = document.getElementById('quiz-mc-container');
-      const sentBox = document.getElementById('quiz-sentence-container');
+      nextQuizQuestion();
+    }
 
-      if (mode === 'sentence') {
-        mcBox.classList.add('hidden');
-        sentBox.classList.remove('hidden');
+    function setQuizKanaInputMode(inputMode) {
+      appState.quizKanaInput = inputMode;
+      document.getElementById('q-input-choice').className = inputMode === 'choice'
+        ? 'px-3 py-1 rounded-lg text-xs font-medium bg-slate-800 text-white transition'
+        : 'px-3 py-1 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition';
+      document.getElementById('q-input-type').className = inputMode === 'type'
+        ? 'px-3 py-1 rounded-lg text-xs font-medium bg-slate-800 text-white transition'
+        : 'px-3 py-1 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition';
+      renderQuizQuestion();
+    }
+
+    function toggleQuizFurigana() {
+      appState.quizShowFurigana = !appState.quizShowFurigana;
+      const btn = document.getElementById('quiz-furi-btn');
+      if (appState.quizShowFurigana) {
+        btn.textContent = 'Furigana: เปิด';
+        btn.className = 'px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 whitespace-nowrap';
       } else {
-        mcBox.classList.remove('hidden');
-        sentBox.classList.add('hidden');
+        btn.textContent = 'Furigana: ปิด';
+        btn.className = 'px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700 whitespace-nowrap';
       }
-
-      generateQuiz();
+      renderQuizQuestion();
     }
 
-    function generateQuiz() {
-      document.getElementById('quiz-feedback').innerText = '';
+    function getQuizPool() {
+      if (appState.quizMode === 'tn') {
+        return KATAKANA_DATA.filter(k => k.isLower);
+      }
+      if (appState.quizMode === 'lookalike') {
+        return KATAKANA_DATA.filter(k => LOOKALIKE_IDS.includes(k.id));
+      }
+      if (appState.quizMode === 'kana_all') {
+        return KATAKANA_DATA;
+      }
+      // vocab_n5
+      const all = getAllVocab();
+      const cat = document.getElementById('quiz-vocab-cat').value;
+      if (cat === 'weak') {
+        const sub = all.filter(v => getVocabMeta(v.id).weight >= 5);
+        return sub.length > 0 ? sub : all;
+      }
+      if (cat !== 'all') {
+        const sub = all.filter(v => v.cat === cat);
+        return sub.length > 0 ? sub : all;
+      }
+      return all;
+    }
 
-      if (currentQuizMode === 'hiragana') {
-        const pool = hiraganaList.filter(k => k.c !== "");
-        const target = pool[Math.floor(Math.random() * pool.length)];
-        document.getElementById('quiz-type-badge').innerText = "ทายเสียงอ่าน Hiragana";
-        document.getElementById('quiz-question').innerText = target.c;
-        document.getElementById('quiz-subhint').innerText = "";
-        currentQuizAnswer = target.r;
-        currentQuizAudioText = target.c;
+    function nextQuizQuestion() {
+      const pool = getQuizPool();
+      const candidates = pool.length > 1 ? pool.filter(x => x.id !== appState.quizLastId) : pool;
+      const isVocab = appState.quizMode === 'vocab_n5';
 
-        const wrong = pool.filter(k => k.r !== target.r).sort(() => 0.5 - Math.random()).slice(0, 3).map(k => k.r);
-        renderQuizOptions([...wrong, target.r].sort(() => 0.5 - Math.random()));
+      let totalWeight = 0;
+      const weighted = candidates.map(item => {
+        const w = isVocab ? getVocabMeta(item.id).weight : getKanaMeta(item.id).weight;
+        const ew = Math.pow(w, 1.35);
+        totalWeight += ew;
+        return { item, ew };
+      });
 
-      } else if (currentQuizMode === 'katakana') {
-        const pool = katakanaList.filter(k => k.c !== "");
-        const target = pool[Math.floor(Math.random() * pool.length)];
-        document.getElementById('quiz-type-badge').innerText = "ทายเสียงอ่าน Katakana";
-        document.getElementById('quiz-question').innerText = target.c;
-        document.getElementById('quiz-subhint').innerText = "";
-        currentQuizAnswer = target.r;
-        currentQuizAudioText = target.c;
+      let r = Math.random() * totalWeight;
+      let picked = candidates[candidates.length - 1];
+      for (const entry of weighted) {
+        r -= entry.ew;
+        if (r <= 0) {
+          picked = entry.item;
+          break;
+        }
+      }
 
-        const wrong = pool.filter(k => k.r !== target.r).sort(() => 0.5 - Math.random()).slice(0, 3).map(k => k.r);
-        renderQuizOptions([...wrong, target.r].sort(() => 0.5 - Math.random()));
+      appState.quizTarget = picked;
+      appState.quizLastId = picked.id;
+      appState.quizAnswered = false;
+      appState.quizHintVisible = false;
 
-      } else if (currentQuizMode === 'kanji') {
-        const target = kanjiN5List[Math.floor(Math.random() * kanjiN5List.length)];
-        document.getElementById('quiz-type-badge').innerText = "ทายความหมายและเสียงอ่าน Kanji N5";
-        document.getElementById('quiz-question').innerText = target.c;
-        document.getElementById('quiz-subhint').innerText = `เสียงอ่าน: ${target.read}`;
-        currentQuizAnswer = target.r;
-        currentQuizAudioText = target.read.split('/')[0].trim();
+      renderQuizQuestion();
+    }
 
-        const wrong = kanjiN5List.filter(k => k.c !== target.c).sort(() => 0.5 - Math.random()).slice(0, 3).map(k => k.r);
-        renderQuizOptions([...wrong, target.r].sort(() => 0.5 - Math.random()));
+    function renderQuizQuestion() {
+      const target = appState.quizTarget;
+      const isVocab = appState.quizMode === 'vocab_n5';
+      const meta = isVocab ? getVocabMeta(target.id) : getKanaMeta(target.id);
 
-      } else if (currentQuizMode === 'sentence') {
-        currentSentenceObj = sentenceQuizList[Math.floor(Math.random() * sentenceQuizList.length)];
-        document.getElementById('sent-meaning').innerText = `"${currentSentenceObj.meaning}"`;
-        document.getElementById('sent-romaji').innerText = `คำอ่าน: ${currentSentenceObj.romaji}`;
-        resetSentenceBuilder();
+      document.getElementById('quiz-badge-left').textContent = isVocab
+        ? (VOCAB_CATEGORIES[target.cat] || 'คำศัพท์ N5')
+        : `แถว ${target.row}`;
+      document.getElementById('quiz-weight-pill').textContent = `น้ำหนัก: ${meta.weight}/20`;
+      document.getElementById('quiz-streak-pill').textContent = `🔥 ${appState.quizStreak}`;
+
+      const furiEl = document.getElementById('quiz-furi-display');
+      const mainEl = document.getElementById('quiz-question-main');
+      mainEl.classList.remove('animate-pop');
+      void mainEl.offsetWidth;
+      mainEl.classList.add('animate-pop');
+
+      if (isVocab) {
+        mainEl.textContent = target.word;
+        mainEl.className = 'jp-font text-4xl sm:text-5xl font-black text-white py-1 group-hover:scale-105 transition-transform';
+        if (appState.quizShowFurigana || appState.quizAnswered) {
+          furiEl.textContent = target.word === target.reading ? '' : target.reading;
+        } else {
+          furiEl.textContent = '';
+        }
+      } else {
+        furiEl.textContent = '';
+        mainEl.textContent = target.kana;
+        mainEl.className = 'jp-font text-6xl font-black text-white py-1 group-hover:scale-105 transition-transform';
+      }
+
+      const feedbackEl = document.getElementById('quiz-feedback-line');
+      feedbackEl.className = 'min-h-[1.75rem] text-xs sm:text-sm font-medium text-slate-300 flex items-center justify-center';
+      feedbackEl.textContent = isVocab
+        ? 'เลือกความหมายที่ถูกต้อง'
+        : (appState.quizKanaInput === 'choice' ? 'เลือกเสียงอ่านที่ถูกต้อง' : 'พิมพ์เสียงอ่าน Romaji แล้วกดตรวจ');
+
+      const mnemonicBox = document.getElementById('quiz-mnemonic-box');
+      if (appState.quizHintVisible) {
+        document.getElementById('quiz-mnemonic-text').textContent = isVocab ? target.tip : target.mnemonic;
+        mnemonicBox.classList.remove('hidden');
+      } else {
+        mnemonicBox.classList.add('hidden');
+      }
+
+      document.getElementById('quiz-next-btn').classList.add('hidden');
+
+      const choicesGrid = document.getElementById('quiz-choices-grid');
+      const typeForm = document.getElementById('quiz-type-form');
+
+      if (!isVocab && appState.quizKanaInput === 'type') {
+        choicesGrid.classList.add('hidden');
+        typeForm.classList.remove('hidden');
+        const input = document.getElementById('quiz-romaji-input');
+        input.value = '';
+        input.disabled = false;
+        setTimeout(() => input.focus(), 50);
+      } else {
+        choicesGrid.classList.remove('hidden');
+        typeForm.classList.add('hidden');
+        renderQuizChoices(target, isVocab);
       }
     }
 
-    function renderQuizOptions(options) {
-      const container = document.getElementById('quiz-options');
-      container.innerHTML = '';
-      options.forEach(opt => {
+    function renderQuizChoices(target, isVocab) {
+      const grid = document.getElementById('quiz-choices-grid');
+      grid.innerHTML = '';
+      const chosen = [target];
+      const used = new Set([target.id]);
+
+      if (!isVocab) {
+        // Prioritize visual lookalike traps!
+        const twins = [...(target.lookalikes || [])].sort(() => Math.random() - 0.5);
+        for (const lid of twins) {
+          if (chosen.length >= 4) break;
+          const found = KATAKANA_DATA.find(k => k.id === lid);
+          if (found && !used.has(found.id)) {
+            chosen.push(found);
+            used.add(found.id);
+          }
+        }
+        const pool = [...getQuizPool(), ...KATAKANA_DATA].sort(() => Math.random() - 0.5);
+        for (const item of pool) {
+          if (chosen.length >= 4) break;
+          if (!used.has(item.id)) {
+            chosen.push(item);
+            used.add(item.id);
+          }
+        }
+      } else {
+        const all = getAllVocab();
+        const sameCat = all.filter(v => v.cat === target.cat && v.id !== target.id).sort(() => Math.random() - 0.5);
+        for (const item of sameCat) {
+          if (chosen.length >= 4) break;
+          if (!used.has(item.id)) {
+            chosen.push(item);
+            used.add(item.id);
+          }
+        }
+        const rest = [...all].sort(() => Math.random() - 0.5);
+        for (const item of rest) {
+          if (chosen.length >= 4) break;
+          if (!used.has(item.id)) {
+            chosen.push(item);
+            used.add(item.id);
+          }
+        }
+      }
+
+      chosen.sort(() => Math.random() - 0.5).forEach(opt => {
         const btn = document.createElement('button');
-        btn.className = "w-full py-3.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-sm font-medium text-white transition";
-        btn.innerText = opt;
-        btn.onclick = () => checkQuizAnswer(opt, btn);
-        container.appendChild(btn);
+        btn.type = 'button';
+        btn.dataset.optId = opt.id;
+        btn.className = 'q-opt-btn p-3 rounded-2xl bg-slate-800/95 hover:bg-slate-700 border-2 border-slate-700 hover:border-indigo-500/70 text-center transition active:scale-95 flex flex-col items-center justify-center';
+        if (isVocab) {
+          btn.innerHTML = `<span class="text-xs sm:text-sm font-semibold text-white leading-snug">${opt.meaning}</span>`;
+        } else {
+          btn.innerHTML = `
+            <span class="text-base sm:text-lg font-bold text-white">${opt.romaji}</span>
+            <span class="text-[11px] text-slate-400">${opt.thai}</span>
+          `;
+        }
+        btn.onclick = () => evaluateQuizChoice(opt.id);
+        grid.appendChild(btn);
       });
     }
 
-    function checkQuizAnswer(selected, btnEl) {
-      const feedback = document.getElementById('quiz-feedback');
-      if (selected === currentQuizAnswer) {
-        quizScore += 10;
-        document.getElementById('quiz-score').innerText = `คะแนน: ${quizScore}`;
-        btnEl.className = "w-full py-3.5 px-3 rounded-xl bg-emerald-600 border border-emerald-400 text-sm font-medium text-white";
-        feedback.innerText = "✅ ถูกต้อง! (+10 คะแนน)";
-        feedback.className = "text-center text-sm font-medium min-h-[28px] text-emerald-400";
-        speakJP(currentQuizAudioText);
-        setTimeout(generateQuiz, 900);
-      } else {
-        btnEl.className = "w-full py-3.5 px-3 rounded-xl bg-rose-600/80 border border-rose-400 text-sm font-medium text-white";
-        feedback.innerText = "❌ ยังไม่ถูก ลองเลือกใหม่นะครับ!";
-        feedback.className = "text-center text-sm font-medium min-h-[28px] text-rose-400";
-      }
-    }
+    function evaluateQuizChoice(selectedId) {
+      if (appState.quizAnswered) return;
+      const isCorrect = selectedId === appState.quizTarget.id;
 
-    function speakQuizQuestion() {
-      speakJP(currentQuizAudioText);
-    }
-
-    // ==================== MODE 4: SENTENCE BUILDER FUNCTIONS ====================
-    function resetSentenceBuilder() {
-      selectedSentenceWords = [];
-      availableSentencePool = currentSentenceObj.words.map((w, idx) => ({ id: idx, text: w }))
-        .sort(() => 0.5 - Math.random());
-      document.getElementById('quiz-feedback').innerText = '';
-      renderSentenceUI();
-    }
-
-    function renderSentenceUI() {
-      const answerBox = document.getElementById('sent-answer-box');
-      const poolBox = document.getElementById('sent-word-pool');
-
-      answerBox.innerHTML = '';
-      if (selectedSentenceWords.length === 0) {
-        answerBox.innerHTML = '<span class="text-xs text-slate-500">แตะคำด้านล่างเพื่อเรียงเป็นประโยค...</span>';
-      } else {
-        selectedSentenceWords.forEach((item, idx) => {
-          const chip = document.createElement('button');
-          chip.className = "jp-font px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-rose-600 text-white text-base font-bold shadow transition";
-          chip.innerText = item.text;
-          chip.onclick = () => removeWordFromSentence(idx);
-          answerBox.appendChild(chip);
-        });
-      }
-
-      poolBox.innerHTML = '';
-      availableSentencePool.forEach((item, idx) => {
-        const chip = document.createElement('button');
-        chip.className = "jp-font px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white text-base font-medium transition active:scale-95";
-        chip.innerText = item.text;
-        chip.onclick = () => selectWordForSentence(idx);
-        poolBox.appendChild(chip);
+      document.querySelectorAll('.q-opt-btn').forEach(btn => {
+        const id = btn.dataset.optId;
+        btn.disabled = true;
+        if (id === appState.quizTarget.id) {
+          btn.className = 'q-opt-btn p-3 rounded-2xl bg-emerald-600/25 border-2 border-emerald-500 text-center flex flex-col items-center justify-center';
+        } else if (id === selectedId) {
+          btn.className = 'q-opt-btn p-3 rounded-2xl bg-rose-600/25 border-2 border-rose-500 text-center flex flex-col items-center justify-center';
+        } else {
+          btn.className = 'q-opt-btn p-3 rounded-2xl bg-slate-900/60 border-2 border-slate-800 opacity-40 text-center flex flex-col items-center justify-center';
+        }
       });
+
+      finalizeQuizAnswer(isCorrect);
     }
 
-    function selectWordForSentence(poolIndex) {
-      const picked = availableSentencePool.splice(poolIndex, 1)[0];
-      selectedSentenceWords.push(picked);
-      speakJP(picked.text);
-      renderSentenceUI();
+    function submitQuizTyping(e) {
+      e.preventDefault();
+      if (appState.quizAnswered) {
+        nextQuizQuestion();
+        return;
+      }
+      const input = document.getElementById('quiz-romaji-input');
+      const val = input.value.trim().toLowerCase();
+      if (!val) return;
+      input.disabled = true;
+      const isCorrect = appState.quizTarget.accept.includes(val);
+      finalizeQuizAnswer(isCorrect);
     }
 
-    function removeWordFromSentence(ansIndex) {
-      const removed = selectedSentenceWords.splice(ansIndex, 1)[0];
-      availableSentencePool.push(removed);
-      renderSentenceUI();
-    }
+    function finalizeQuizAnswer(isCorrect) {
+      appState.quizAnswered = true;
+      const target = appState.quizTarget;
+      const isVocab = appState.quizMode === 'vocab_n5';
+      const meta = isVocab ? getVocabMeta(target.id) : getKanaMeta(target.id);
+      const feedbackEl = document.getElementById('quiz-feedback-line');
+      const arena = document.getElementById('quiz-arena');
 
-    function checkSentenceAnswer() {
-      const feedback = document.getElementById('quiz-feedback');
-      const userString = selectedSentenceWords.map(w => w.text).join('');
-      const targetString = currentSentenceObj.words.join('');
-
-      if (userString === targetString) {
-        quizScore += 20;
-        document.getElementById('quiz-score').innerText = `คะแนน: ${quizScore}`;
-        feedback.innerText = "🎉 เรียงประโยคถูกต้องสมบูรณ์! (+20 คะแนน)";
-        feedback.className = "text-center text-sm font-medium min-h-[28px] text-emerald-400";
-        speakJP(currentSentenceObj.kana);
-        setTimeout(generateQuiz, 1500);
+      if (isVocab) {
+        document.getElementById('quiz-furi-display').textContent = target.word === target.reading ? '' : target.reading;
+        speakJP(target.reading);
       } else {
-        feedback.innerText = `❌ เรียงยังไม่ตรง ลองสลับตำแหน่งคำดูอีกครั้งครับ`;
-        feedback.className = "text-center text-sm font-medium min-h-[28px] text-rose-400";
+        speakJP(target.kana);
+      }
+
+      if (isCorrect) {
+        meta.weight = Math.max(MIN_WEIGHT, meta.weight - 1);
+        appState.quizStreak += 1;
+        playSFX('correct');
+
+        feedbackEl.className = 'min-h-[1.75rem] text-xs sm:text-sm font-bold text-emerald-400 flex items-center justify-center';
+        feedbackEl.textContent = isVocab
+          ? `✓ ถูกต้อง! ${target.word} = ${target.meaning}`
+          : `✓ ถูกต้อง! ${target.kana} อ่านว่า ${target.thai}`;
+
+        document.getElementById('quiz-weight-pill').textContent = `น้ำหนัก: ${meta.weight}/20`;
+        document.getElementById('quiz-streak-pill').textContent = `🔥 ${appState.quizStreak}`;
+        saveAppState();
+
+        setTimeout(() => {
+          if (appState.quizAnswered && appState.quizTarget.id === target.id) {
+            nextQuizQuestion();
+          }
+        }, 850);
+      } else {
+        meta.weight = Math.min(MAX_WEIGHT, meta.weight + 5);
+        meta.mistakes = (meta.mistakes || 0) + 1;
+        if (isVocab) meta.mastered = false;
+        appState.quizStreak = 0;
+        playSFX('wrong');
+
+        arena.classList.remove('animate-shake');
+        void arena.offsetWidth;
+        arena.classList.add('animate-shake');
+
+        feedbackEl.className = 'min-h-[1.75rem] text-xs sm:text-sm font-bold text-rose-400 flex items-center justify-center';
+        feedbackEl.textContent = isVocab
+          ? `✗ ผิด! เฉลย: ${target.reading} = ${target.meaning}`
+          : `✗ ผิด! ตัว ${target.kana} อ่านว่า ${target.thai}`;
+
+        // Immediately reveal Thai visual mnemonic hint box!
+        appState.quizHintVisible = true;
+        document.getElementById('quiz-mnemonic-text').textContent = isVocab ? target.tip : target.mnemonic;
+        document.getElementById('quiz-mnemonic-box').classList.remove('hidden');
+
+        document.getElementById('quiz-weight-pill').textContent = `น้ำหนัก: ${meta.weight}/20`;
+        document.getElementById('quiz-streak-pill').textContent = `🔥 0`;
+        document.getElementById('quiz-next-btn').classList.remove('hidden');
+        saveAppState();
       }
     }
 
-    function speakCurrentSentence() {
-      if (currentSentenceObj) speakJP(currentSentenceObj.kana);
+    function toggleQuizHint() {
+      if (!appState.quizTarget) return;
+      appState.quizHintVisible = !appState.quizHintVisible;
+      const isVocab = appState.quizMode === 'vocab_n5';
+      const box = document.getElementById('quiz-mnemonic-box');
+      if (appState.quizHintVisible) {
+        document.getElementById('quiz-mnemonic-text').textContent = isVocab ? appState.quizTarget.tip : appState.quizTarget.mnemonic;
+        box.classList.remove('hidden');
+      } else {
+        box.classList.add('hidden');
+      }
     }
 
-    // ==================== NAVIGATION ====================
+    function boostCurrentQuizTarget() {
+      if (!appState.quizTarget) return;
+      const isVocab = appState.quizMode === 'vocab_n5';
+      const meta = isVocab ? getVocabMeta(appState.quizTarget.id) : getKanaMeta(appState.quizTarget.id);
+      meta.weight = Math.min(MAX_WEIGHT, meta.weight + 4);
+      if (isVocab) meta.mastered = false;
+      saveAppState();
+      playSFX('boost');
+      document.getElementById('quiz-weight-pill').textContent = `น้ำหนัก: ${meta.weight}/20`;
+      const label = isVocab ? appState.quizTarget.word : appState.quizTarget.kana;
+      showToast(`⚠️ ย้ำ "${label}" (+4) ระบบจะดึงกลับมาถามซ้ำบ่อยขึ้น!`);
+    }
+
+    function speakQuizTarget() {
+      if (!appState.quizTarget) return;
+      const isVocab = appState.quizMode === 'vocab_n5';
+      speakJP(isVocab ? appState.quizTarget.reading : appState.quizTarget.kana);
+    }
+
+    // =========================================================================
+    // 9. BACKUP & GITHUB SYNC MODAL (EXPORT / IMPORT JSON)
+    // =========================================================================
+    let resetConfirmPending = false;
+    let resetConfirmTimer = null;
+
+    function toggleBackupModal(show) {
+      const modal = document.getElementById('backup-modal');
+      if (show) {
+        const payload = {
+          app: 'NihongoPocketSniper',
+          version: 2,
+          exportedAt: new Date().toISOString(),
+          customVocab: appState.customVocab,
+          vocabMeta: appState.vocabMeta,
+          katakanaMeta: appState.katakanaMeta
+        };
+        document.getElementById('backup-json-box').value = JSON.stringify(payload);
+        modal.classList.remove('hidden');
+      } else {
+        modal.classList.add('hidden');
+      }
+    }
+
+    function exportBackupJSON() {
+      const text = document.getElementById('backup-json-box').value;
+      const blob = new Blob([text], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `nihongo-pocket-sniper-${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('⬇️ ดาวน์โหลดไฟล์ JSON เรียบร้อย');
+    }
+
+    function copyBackupJSON() {
+      const box = document.getElementById('backup-json-box');
+      box.select();
+      document.execCommand('copy');
+      showToast('📋 คัดลอกโค้ดสำรองลงคลิปบอร์ดแล้ว');
+    }
+
+    function importBackupJSON(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const data = JSON.parse(e.target.result);
+          if (Array.isArray(data.customVocab)) appState.customVocab = data.customVocab;
+          if (data.vocabMeta) appState.vocabMeta = { ...appState.vocabMeta, ...data.vocabMeta };
+          if (data.katakanaMeta) appState.katakanaMeta = { ...appState.katakanaMeta, ...data.katakanaMeta };
+          saveAppState();
+          renderFlashcard();
+          if (appState.activeTab === 'chars') switchCharSet(appState.charSubTab);
+          if (appState.activeTab === 'quiz') nextQuizQuestion();
+          toggleBackupModal(false);
+          showToast('✅ กู้คืนข้อมูลจากไฟล์ JSON สำเร็จ!');
+        } catch (err) {
+          showToast('❌ ไฟล์ JSON ไม่ถูกต้อง');
+        }
+      };
+      reader.readAsText(file);
+      event.target.value = '';
+    }
+
+    function handleResetProgress() {
+      const btn = document.getElementById('reset-trigger-btn');
+      if (!resetConfirmPending) {
+        resetConfirmPending = true;
+        btn.textContent = '⚠️ แตะอีกครั้งเพื่อยืนยันรีเซ็ตทั้งหมด';
+        clearTimeout(resetConfirmTimer);
+        resetConfirmTimer = setTimeout(() => {
+          resetConfirmPending = false;
+          btn.textContent = '🗑️ รีเซ็ตสถิติความจำทั้งหมด';
+        }, 3500);
+        return;
+      }
+
+      resetConfirmPending = false;
+      btn.textContent = '🗑️ รีเซ็ตสถิติความจำทั้งหมด';
+      appState.vocabMeta = {};
+      appState.katakanaMeta = {};
+      KATAKANA_DATA.forEach(k => getKanaMeta(k.id));
+      getAllVocab().forEach(v => getVocabMeta(v.id));
+      saveAppState();
+      renderFlashcard();
+      if (appState.activeTab === 'chars') switchCharSet(appState.charSubTab);
+      if (appState.activeTab === 'quiz') nextQuizQuestion();
+      toggleBackupModal(false);
+      showToast('รีเซ็ตสถิติความจำทั้งหมดเรียบร้อยแล้ว');
+    }
+
+    // =========================================================================
+    // 10. BOTTOM TAB NAVIGATION & INIT
+    // =========================================================================
     function switchTab(tabName) {
+      appState.activeTab = tabName;
       ['flashcard', 'speak', 'chars', 'quiz'].forEach(t => {
         document.getElementById(`tab-${t}`).classList.toggle('hidden', t !== tabName);
         document.getElementById(`nav-${t}`).className = (t === tabName)
-          ? "flex flex-col items-center py-1 text-indigo-400"
-          : "flex flex-col items-center py-1 text-slate-400";
+          ? 'flex flex-col items-center py-1 text-indigo-400 transition'
+          : 'flex flex-col items-center py-1 text-slate-400 hover:text-slate-200 transition';
       });
 
+      if (tabName === 'flashcard') renderFlashcard();
       if (tabName === 'speak') renderSpeakItem();
-      if (tabName === 'chars') switchCharSet('hiragana');
-      if (tabName === 'quiz') setQuizMode(currentQuizMode);
+      if (tabName === 'chars') switchCharSet(appState.charSubTab);
+      if (tabName === 'quiz') {
+        if (!appState.quizTarget) nextQuizQuestion();
+        else renderQuizQuestion();
+      }
     }
 
-    // Initialize App
-    updateMasteredBadge();
-    renderCard();
+    // Boot Application
+    window.addEventListener('DOMContentLoaded', () => {
+      loadAppState();
+
+      document.getElementById('open-backup-btn').addEventListener('click', () => toggleBackupModal(true));
+
+      document.querySelectorAll('.qmode-pill').forEach(btn => {
+        btn.addEventListener('click', () => setQuizMode(btn.dataset.qmode));
+      });
+
+      renderFlashcard();
+      nextQuizQuestion();
+    });
   </script>
 </body>
 </html>
