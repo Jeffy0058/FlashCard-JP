@@ -124,17 +124,17 @@
         <!-- Filter Pills + Add Custom Card Button -->
         <div class="flex flex-wrap justify-between items-center gap-2">
           <div class="flex gap-1.5">
-            <button onclick="setCardFilter('all')" id="filter-all" class="text-xs px-3 py-1.5 rounded-xl bg-indigo-600 text-white font-medium transition">
+            <button type="button" onclick="setCardFilter('all')" id="filter-all" class="text-xs px-3 py-1.5 rounded-xl bg-indigo-600 text-white font-medium transition">
               ทั้งหมด
             </button>
-            <button onclick="setCardFilter('learning')" id="filter-learning" class="text-xs px-3 py-1.5 rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 font-medium transition">
+            <button type="button" onclick="setCardFilter('learning')" id="filter-learning" class="text-xs px-3 py-1.5 rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 font-medium transition">
               กำลังท่อง
             </button>
-            <button onclick="setCardFilter('weak')" id="filter-weak" class="text-xs px-3 py-1.5 rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 font-medium transition">
+            <button type="button" onclick="setCardFilter('weak')" id="filter-weak" class="text-xs px-3 py-1.5 rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700 font-medium transition">
               🔥 จุดอ่อน/ย้ำบ่อย
             </button>
           </div>
-          <button onclick="toggleAddModal(true)" class="text-xs bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-xl font-semibold flex items-center gap-1 shadow-md shadow-emerald-600/20 transition active:scale-95">
+          <button type="button" onclick="toggleAddModal(true)" class="text-xs bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-xl font-semibold flex items-center gap-1 shadow-md shadow-emerald-600/20 transition active:scale-95">
             <span>+ เพิ่มคำศัพท์</span>
           </button>
         </div>
@@ -165,7 +165,7 @@
         </div>
 
         <!-- 3D Flip Card -->
-        <div class="perspective w-full h-76 sm:h-80 cursor-pointer" style="height: 19rem;" onclick="flipCard()">
+        <div class="perspective w-full cursor-pointer" style="height: 19rem;" onclick="flipCard()">
           <div id="flashcard-inner" class="flip-card-inner relative w-full h-full">
 
             <!-- Front -->
@@ -174,11 +174,10 @@
                 <span class="bg-slate-700/80 text-slate-200 px-2.5 py-1 rounded-lg truncate max-w-[140px]" id="card-category">JLPT N5</span>
 
                 <div class="flex items-center gap-1.5">
-                  <!-- Furigana Toggle Button on Card Front -->
-                  <button id="fc-furigana-btn" onclick="event.stopPropagation(); toggleCardFurigana()" class="px-2.5 py-1.5 bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 border border-emerald-500/30 rounded-full text-[11px] font-medium transition" title="เปิด/ปิดตัวช่วยอ่าน">
+                  <button type="button" id="fc-furigana-btn" onclick="event.stopPropagation(); toggleCardFurigana()" class="px-2.5 py-1.5 bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 border border-emerald-500/30 rounded-full text-[11px] font-medium transition" title="เปิด/ปิดตัวช่วยอ่าน">
                     👁️ ซ่อนคำอ่าน
                   </button>
-                  <button onclick="event.stopPropagation(); speakCurrentCard()" class="px-3 py-1.5 bg-indigo-600/25 hover:bg-indigo-600/40 text-indigo-300 border border-indigo-500/30 rounded-full text-xs font-medium transition active:scale-95" title="ฟังเสียง">
+                  <button type="button" onclick="event.stopPropagation(); speakCurrentCard()" class="px-3 py-1.5 bg-indigo-600/25 hover:bg-indigo-600/40 text-indigo-300 border border-indigo-500/30 rounded-full text-xs font-medium transition active:scale-95" title="ฟังเสียง">
                     🔊 ฟังเสียง
                   </button>
                 </div>
@@ -196,7 +195,7 @@
             <div class="flip-card-back absolute inset-0 bg-gradient-to-br from-indigo-950 via-slate-900 to-slate-900 border border-indigo-500/40 rounded-3xl p-5 flex flex-col justify-between items-center shadow-xl">
               <div class="w-full flex justify-between items-center text-xs text-indigo-300">
                 <span id="card-romaji" class="font-medium">คำอ่าน: ทาเบรุ (taberu)</span>
-                <button onclick="event.stopPropagation(); speakCurrentCard()" class="px-3 py-1.5 bg-indigo-600/30 hover:bg-indigo-600/50 text-indigo-200 rounded-full text-xs transition">
+                <button type="button" onclick="event.stopPropagation(); speakCurrentCard()" class="px-3 py-1.5 bg-indigo-600/30 hover:bg-indigo-600/50 text-indigo-200 rounded-full text-xs transition">
                   🔊 ฟังเสียง
                 </button>
               </div>
@@ -220,25 +219,24 @@
 
         <!-- Card Mastery & Weak-Spot Controls -->
         <div class="grid grid-cols-2 gap-2.5 pt-1">
-          <button onclick="boostCurrentFlashcard()" class="py-3 px-2 rounded-2xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 text-amber-300 font-semibold text-xs sm:text-sm transition active:scale-95">
+          <button type="button" onclick="boostCurrentFlashcard()" class="py-3 px-2 rounded-2xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 text-amber-300 font-semibold text-xs sm:text-sm transition active:scale-95">
             ⚡ ไม่ชัวร์ (ย้ำอีก +4)
           </button>
-          <button onclick="markCard(true)" class="py-3 px-2 rounded-2xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/40 text-emerald-300 font-semibold text-xs sm:text-sm transition active:scale-95">
+          <button type="button" onclick="markCard(true)" class="py-3 px-2 rounded-2xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/40 text-emerald-300 font-semibold text-xs sm:text-sm transition active:scale-95">
             ✅ จำได้แล้ว
           </button>
         </div>
 
         <!-- Navigation Controls -->
         <div class="flex justify-between items-center pt-1">
-          <button onclick="prevCard()" class="text-xs sm:text-sm text-slate-300 hover:text-white px-4 py-2 bg-slate-800/80 hover:bg-slate-700 rounded-xl transition">← ก่อนหน้า</button>
-          <button onclick="randomWeightedCard()" class="text-xs text-indigo-300 hover:text-indigo-200 px-3 py-2 bg-indigo-500/10 border border-indigo-500/30 rounded-xl font-medium transition">🎯 สุ่มเน้นตัวอ่อน</button>
-          <button onclick="nextCard()" class="text-xs sm:text-sm text-slate-300 hover:text-white px-4 py-2 bg-slate-800/80 hover:bg-slate-700 rounded-xl transition">ถัดไป →</button>
+          <button type="button" onclick="prevCard()" class="text-xs sm:text-sm text-slate-300 hover:text-white px-4 py-2 bg-slate-800/80 hover:bg-slate-700 rounded-xl transition">← ก่อนหน้า</button>
+          <button type="button" onclick="randomWeightedCard()" class="text-xs text-indigo-300 hover:text-indigo-200 px-3 py-2 bg-indigo-500/10 border border-indigo-500/30 rounded-xl font-medium transition">🎯 สุ่มเน้นตัวอ่อน</button>
+          <button type="button" onclick="nextCard()" class="text-xs sm:text-sm text-slate-300 hover:text-white px-4 py-2 bg-slate-800/80 hover:bg-slate-700 rounded-xl transition">ถัดไป →</button>
         </div>
       </section>
 
       <!-- ==================== TAB 2: SPEAKING PRACTICE ==================== -->
       <section id="tab-speak" class="hidden space-y-4">
-        <!-- Category Filter for Speaking -->
         <div class="flex items-center justify-between gap-2">
           <select id="speak-cat-select" onchange="setSpeakCategory(this.value)" class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-200 outline-none">
             <option value="all">ฝึกพูด: รวมคำศัพท์ N5 ทั้งหมด + คำที่เพิ่มเอง</option>
@@ -268,13 +266,13 @@
           </div>
 
           <div class="flex flex-wrap justify-center gap-2">
-            <button onclick="speakTargetSentence()" class="px-3.5 py-2 rounded-xl bg-slate-700 hover:bg-slate-600 text-xs font-medium flex items-center gap-1.5 transition active:scale-95">
+            <button type="button" onclick="speakTargetSentence()" class="px-3.5 py-2 rounded-xl bg-slate-700 hover:bg-slate-600 text-xs font-medium flex items-center gap-1.5 transition active:scale-95">
               🔊 ฟังสำเนียงต้นฉบับ
             </button>
-            <button onclick="randomSpeakItem()" class="px-3.5 py-2 rounded-xl bg-indigo-600/25 hover:bg-indigo-600/40 text-indigo-200 border border-indigo-500/30 text-xs font-medium transition active:scale-95">
+            <button type="button" onclick="randomSpeakItem()" class="px-3.5 py-2 rounded-xl bg-indigo-600/25 hover:bg-indigo-600/40 text-indigo-200 border border-indigo-500/30 text-xs font-medium transition active:scale-95">
               🎲 สุ่มคำใหม่
             </button>
-            <button onclick="nextSpeakItem()" class="px-3.5 py-2 rounded-xl bg-slate-700 hover:bg-slate-600 text-xs font-medium transition active:scale-95">
+            <button type="button" onclick="nextSpeakItem()" class="px-3.5 py-2 rounded-xl bg-slate-700 hover:bg-slate-600 text-xs font-medium transition active:scale-95">
               ⏭️ ถัดไป
             </button>
           </div>
@@ -282,7 +280,7 @@
 
         <!-- Microphone Section -->
         <div class="bg-slate-800/40 border border-slate-800 rounded-3xl p-6 flex flex-col items-center text-center space-y-4">
-          <button id="mic-btn" onclick="startSpeechRecognition()" class="w-20 h-20 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white flex items-center justify-center text-3xl shadow-xl shadow-indigo-600/30 transition active:scale-95">
+          <button type="button" id="mic-btn" onclick="startSpeechRecognition()" class="w-20 h-20 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white flex items-center justify-center text-3xl shadow-xl shadow-indigo-600/30 transition active:scale-95">
             🎙️
           </button>
           <p id="mic-status" class="text-xs sm:text-sm text-slate-300 font-medium">แตะที่ไมค์แล้วพูดออกเสียงภาษาญี่ปุ่น</p>
@@ -298,18 +296,17 @@
 
       <!-- ==================== TAB 3: CHARTS & SEARCHABLE N5 VAULT ==================== -->
       <section id="tab-chars" class="hidden space-y-4">
-        <!-- 4 Sub-tabs -->
         <div class="grid grid-cols-4 gap-1 bg-slate-950 p-1 rounded-2xl border border-slate-800">
-          <button onclick="switchCharSet('katakana')" id="btn-katakana" class="py-2 px-1 text-[11px] sm:text-xs font-semibold rounded-xl bg-indigo-600 text-white transition">
+          <button type="button" onclick="switchCharSet('katakana')" id="btn-katakana" class="py-2 px-1 text-[11px] sm:text-xs font-semibold rounded-xl bg-indigo-600 text-white transition">
             Katakana
           </button>
-          <button onclick="switchCharSet('hiragana')" id="btn-hiragana" class="py-2 px-1 text-[11px] sm:text-xs font-semibold rounded-xl text-slate-400 hover:text-white transition">
+          <button type="button" onclick="switchCharSet('hiragana')" id="btn-hiragana" class="py-2 px-1 text-[11px] sm:text-xs font-semibold rounded-xl text-slate-400 hover:text-white transition">
             Hiragana
           </button>
-          <button onclick="switchCharSet('kanji')" id="btn-kanji" class="py-2 px-1 text-[11px] sm:text-xs font-semibold rounded-xl text-slate-400 hover:text-white transition">
+          <button type="button" onclick="switchCharSet('kanji')" id="btn-kanji" class="py-2 px-1 text-[11px] sm:text-xs font-semibold rounded-xl text-slate-400 hover:text-white transition">
             Kanji N5
           </button>
-          <button onclick="switchCharSet('vault')" id="btn-vault" class="py-2 px-1 text-[11px] sm:text-xs font-semibold rounded-xl text-slate-400 hover:text-white transition">
+          <button type="button" onclick="switchCharSet('vault')" id="btn-vault" class="py-2 px-1 text-[11px] sm:text-xs font-semibold rounded-xl text-slate-400 hover:text-white transition">
             คลังศัพท์ N5
           </button>
         </div>
@@ -325,7 +322,6 @@
             </div>
           </div>
 
-          <!-- Selected Katakana Inspector Card -->
           <div id="kana-inspector" class="bg-slate-950 border border-indigo-500/30 rounded-2xl p-3.5 space-y-2 shadow-lg">
             <div class="flex items-center justify-between gap-3">
               <div class="flex items-center gap-3">
@@ -349,17 +345,16 @@
                 👯 ระวังตัวหน้าคล้าย: シ (shi), ソ (so), ン (n)
               </span>
               <div class="flex items-center gap-1.5 shrink-0">
-                <button onclick="speakInspectedKana()" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-[11px] text-slate-200 border border-slate-700">
+                <button type="button" onclick="speakInspectedKana()" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-[11px] text-slate-200 border border-slate-700">
                   🔊 ฟังเสียง
                 </button>
-                <button onclick="boostInspectedKana()" class="px-2.5 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-[11px] font-semibold text-amber-300 border border-amber-500/40">
+                <button type="button" onclick="boostInspectedKana()" class="px-2.5 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-[11px] font-semibold text-amber-300 border border-amber-500/40">
                   +4 ย้ำ
                 </button>
               </div>
             </div>
           </div>
 
-          <!-- Katakana 5-Col Grid -->
           <div id="katakana-chart-grid" class="grid grid-cols-5 gap-1.5"></div>
         </div>
 
@@ -414,42 +409,38 @@
 
       <!-- ==================== TAB 4: SNIPER QUIZ ==================== -->
       <section id="tab-quiz" class="hidden space-y-4">
-        <!-- Mode Selector Pills -->
         <div class="grid grid-cols-2 gap-1.5">
-          <button data-qmode="tn" class="qmode-pill py-2 px-2.5 rounded-xl text-xs font-semibold bg-indigo-600 text-white shadow-md shadow-indigo-600/20 text-left flex items-center gap-1.5 transition">
+          <button type="button" data-qmode="tn" class="qmode-pill py-2 px-2.5 rounded-xl text-xs font-semibold bg-indigo-600 text-white shadow-md shadow-indigo-600/20 text-left flex items-center gap-1.5 transition">
             <span>🎯</span>
             <span>Katakana แถว T–N</span>
           </button>
-          <button data-qmode="lookalike" class="qmode-pill py-2 px-2.5 rounded-xl text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 text-left flex items-center gap-1.5 transition">
+          <button type="button" data-qmode="lookalike" class="qmode-pill py-2 px-2.5 rounded-xl text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 text-left flex items-center gap-1.5 transition">
             <span>👯</span>
             <span>คู่แฝดหน้าคล้าย</span>
           </button>
-          <button data-qmode="kana_all" class="qmode-pill py-2 px-2.5 rounded-xl text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 text-left flex items-center gap-1.5 transition">
+          <button type="button" data-qmode="kana_all" class="qmode-pill py-2 px-2.5 rounded-xl text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 text-left flex items-center gap-1.5 transition">
             <span>🎌</span>
             <span>Katakana ทั้งหมด</span>
           </button>
-          <button data-qmode="vocab_n5" class="qmode-pill py-2 px-2.5 rounded-xl text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 text-left flex items-center gap-1.5 transition">
+          <button type="button" data-qmode="vocab_n5" class="qmode-pill py-2 px-2.5 rounded-xl text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 text-left flex items-center gap-1.5 transition">
             <span>📚</span>
             <span>คำศัพท์ N5 (265+)</span>
           </button>
         </div>
 
-        <!-- Sub-controls Bar (Dynamic based on Katakana vs Vocab mode) -->
         <div class="bg-slate-950/90 border border-slate-800 rounded-2xl p-2.5 flex flex-wrap items-center justify-between gap-2">
-          <!-- Katakana Sub-controls -->
           <div id="quiz-kana-subcontrols" class="flex items-center justify-between w-full gap-2">
             <span class="text-[11px] text-slate-400">รูปแบบตอบ:</span>
             <div class="inline-flex bg-slate-900 p-0.5 rounded-xl border border-slate-800">
-              <button id="q-input-choice" onclick="setQuizKanaInputMode('choice')" class="px-3 py-1 rounded-lg text-xs font-medium bg-slate-800 text-white transition">
+              <button type="button" id="q-input-choice" onclick="setQuizKanaInputMode('choice')" class="px-3 py-1 rounded-lg text-xs font-medium bg-slate-800 text-white transition">
                 ตัวเลือกดักทาง
               </button>
-              <button id="q-input-type" onclick="setQuizKanaInputMode('type')" class="px-3 py-1 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition">
+              <button type="button" id="q-input-type" onclick="setQuizKanaInputMode('type')" class="px-3 py-1 rounded-lg text-xs font-medium text-slate-400 hover:text-white transition">
                 พิมพ์โรมันจิ
               </button>
             </div>
           </div>
 
-          <!-- Vocab N5 Sub-controls -->
           <div id="quiz-vocab-subcontrols" class="hidden flex items-center justify-between w-full gap-2">
             <select id="quiz-vocab-cat" onchange="nextQuizQuestion()" class="flex-1 bg-slate-900 border border-slate-800 rounded-xl px-2.5 py-1.5 text-xs text-slate-200 outline-none">
               <option value="all">ทุกหมวด N5 (สุ่มเน้นตัวอ่อน)</option>
@@ -463,17 +454,15 @@
               <option value="katakana_n5">คำทับศัพท์คาตาคานะ N5</option>
               <option value="greetings">คำทักทายและคำถาม</option>
             </select>
-            <button id="quiz-furi-btn" onclick="toggleQuizFurigana()" class="px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 whitespace-nowrap">
+            <button type="button" id="quiz-furi-btn" onclick="toggleQuizFurigana()" class="px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 whitespace-nowrap">
               Furigana: เปิด
             </button>
           </div>
         </div>
 
-        <!-- Quiz Arena Card -->
         <div id="quiz-arena" class="bg-gradient-to-b from-slate-800/90 to-slate-900 border border-slate-700/80 rounded-3xl p-5 text-center space-y-3 shadow-xl relative overflow-hidden">
           <div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-rose-500"></div>
 
-          <!-- Top Metadata -->
           <div class="flex justify-between items-center text-xs">
             <span id="quiz-badge-left" class="bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-2.5 py-1 rounded-lg font-medium">
               แถว T
@@ -488,7 +477,6 @@
             </div>
           </div>
 
-          <!-- Target Display -->
           <div onclick="speakQuizTarget()" class="py-4 px-3 rounded-2xl bg-slate-950/90 border border-slate-800 cursor-pointer group">
             <div id="quiz-furi-display" class="jp-font text-sm text-indigo-300 min-h-[1.25rem] mb-1"></div>
             <div id="quiz-question-main" class="jp-font text-5xl sm:text-6xl font-black text-white py-1 group-hover:scale-105 transition-transform">
@@ -497,12 +485,10 @@
             <div class="text-[11px] text-slate-500 mt-1">🔊 แตะเพื่อฟังเสียง</div>
           </div>
 
-          <!-- Feedback Line -->
           <div id="quiz-feedback-line" class="min-h-[1.75rem] text-xs sm:text-sm font-medium text-slate-300 flex items-center justify-center">
             เลือกเสียงอ่านที่ถูกต้อง
           </div>
 
-          <!-- Thai Visual Mnemonic Hint Box (Shown on Wrong Answer or Manual Hint) -->
           <div id="quiz-mnemonic-box" class="hidden p-3 rounded-2xl bg-indigo-950/70 border border-indigo-500/40 text-left text-xs text-indigo-100 space-y-1 animate-pop">
             <div class="font-bold text-indigo-300 flex items-center gap-1">
               <span>💡 ทริคจำภาพ / จุดสังเกต:</span>
@@ -510,10 +496,8 @@
             <p id="quiz-mnemonic-text" class="text-slate-200 leading-relaxed"></p>
           </div>
 
-          <!-- 4-Choice Options -->
           <div id="quiz-choices-grid" class="grid grid-cols-2 gap-2.5 pt-1"></div>
 
-          <!-- Romaji Typing Input Form -->
           <form id="quiz-type-form" onsubmit="submitQuizTyping(event)" class="hidden pt-1">
             <div class="flex gap-2">
               <input id="quiz-romaji-input" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="พิมพ์เสียงอ่าน เช่น tsu, shi, n..." class="flex-1 bg-slate-950 border-2 border-slate-700 focus:border-indigo-500 rounded-2xl px-3 py-2.5 text-center text-base font-bold text-white placeholder-slate-500 outline-none" />
@@ -523,76 +507,74 @@
             </div>
           </form>
 
-          <!-- Bottom Quiz Action Buttons -->
           <div class="pt-3 border-t border-slate-800/80 flex items-center justify-between gap-2">
-            <button onclick="toggleQuizHint()" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium border border-slate-700 transition">
+            <button type="button" onclick="toggleQuizHint()" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium border border-slate-700 transition">
               💡 ดูทริคจำ
             </button>
 
-            <button onclick="boostCurrentQuizTarget()" class="px-3 py-2 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/40 text-xs font-semibold transition active:scale-95">
+            <button type="button" onclick="boostCurrentQuizTarget()" class="px-3 py-2 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/40 text-xs font-semibold transition active:scale-95">
               ⚠️ ไม่ชัวร์ / ขอย้ำตัวนี้อีก (+4)
             </button>
 
-            <button id="quiz-next-btn" onclick="nextQuizQuestion()" class="hidden px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-md transition">
+            <button type="button" id="quiz-next-btn" onclick="nextQuizQuestion()" class="hidden px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-md transition">
               ถัดไป →
             </button>
           </div>
         </div>
       </section>
 
-      <!-- ==================== TAB 5: EXAM MODE (3 SUBJECTS × CHOICE / TYPING) ==================== -->
+      <!-- ==================== TAB 5: EXAM MODE (ทำข้อสอบ 3 วิชา × Choice / เขียนตอบ) ==================== -->
       <section id="tab-exam" class="hidden space-y-4">
-
-        <!-- 1. Exam Setup Screen -->
+        <!-- 5A: Exam Setup Screen -->
         <div id="exam-setup-view" class="space-y-4 animate-pop">
-          <div class="bg-gradient-to-br from-indigo-950/80 via-slate-900 to-slate-900 border border-indigo-500/30 rounded-3xl p-5 space-y-4 shadow-xl">
+          <div class="bg-gradient-to-br from-indigo-950/75 via-slate-900 to-slate-900 border border-indigo-500/30 rounded-3xl p-4 sm:p-5 space-y-4 shadow-xl">
             <div class="flex items-center gap-2.5">
               <span class="text-2xl">📝</span>
               <div>
                 <h2 class="text-base font-bold text-white">โหมดทำข้อสอบจำลอง (Exam Mode)</h2>
-                <p class="text-[11px] text-slate-400">วัดระดับความแม่นยำจริง พร้อมสรุปเกรดและดึงข้อที่ผิดไปย้ำต่อ</p>
+                <p class="text-[11px] text-slate-400">เลือกได้ครบ 3 วิชา ทั้งแบบตัวเลือก (Choice) และเขียนตอบ</p>
               </div>
             </div>
 
-            <!-- Subject Selection (3 Subjects) -->
+            <!-- 1. Subject Selector (3 Subjects) -->
             <div class="space-y-2">
               <label class="text-xs font-semibold text-slate-300 block">1. เลือกวิชาที่ต้องการสอบ:</label>
               <div class="grid grid-cols-1 gap-2">
                 <button type="button" data-esub="hiragana" class="exam-sub-btn p-3 rounded-2xl bg-indigo-600 text-white border border-indigo-400 text-left flex items-center justify-between transition">
                   <div class="flex items-center gap-2.5">
-                    <span class="jp-font text-xl font-black w-8 h-8 rounded-xl bg-white/15 flex items-center justify-center">あ</span>
+                    <span class="jp-font text-xl font-black w-9 h-9 rounded-xl bg-white/15 flex items-center justify-center">あ</span>
                     <div>
-                      <div class="text-xs sm:text-sm font-bold">ข้อสอบ Hiragana (ฮิรางานะ)</div>
-                      <div class="text-[11px] opacity-85">ทดสอบตัวอักษรพื้นฐานครบทั้ง 46 ตัว</div>
+                      <div class="text-xs sm:text-sm font-bold">1) ข้อสอบ Hiragana (ครบ 46 ตัวอักษร)</div>
+                      <div class="text-[11px] opacity-85">ทดสอบตัวอักษรฮิรางานะพื้นฐานทั้งหมด</div>
                     </div>
                   </div>
-                  <span class="text-xs font-bold">เลือกอยู่</span>
+                  <span class="text-xs font-bold exam-active-tag">เลือกอยู่</span>
                 </button>
 
                 <button type="button" data-esub="katakana" class="exam-sub-btn p-3 rounded-2xl bg-slate-800/90 hover:bg-slate-800 text-slate-200 border border-slate-700 text-left flex items-center justify-between transition">
                   <div class="flex items-center gap-2.5">
-                    <span class="jp-font text-xl font-black w-8 h-8 rounded-xl bg-slate-900 flex items-center justify-center">ア</span>
+                    <span class="jp-font text-xl font-black w-9 h-9 rounded-xl bg-slate-900 flex items-center justify-center">ア</span>
                     <div>
-                      <div class="text-xs sm:text-sm font-bold">ข้อสอบ Katakana (คาตาคานะ)</div>
-                      <div class="text-[11px] text-slate-400">เลือกสอบทั้งหมด หรือเจาะเฉพาะแถว T–N ได้</div>
+                      <div class="text-xs sm:text-sm font-bold">2) ข้อสอบ Katakana (ทั้งหมด / T–N / คู่แฝด)</div>
+                      <div class="text-[11px] text-slate-400">เลือกเจาะเฉพาะแถวล่างหรือคู่แฝดหน้าคล้ายได้</div>
                     </div>
                   </div>
                 </button>
 
                 <button type="button" data-esub="vocab_sentence" class="exam-sub-btn p-3 rounded-2xl bg-slate-800/90 hover:bg-slate-800 text-slate-200 border border-slate-700 text-left flex items-center justify-between transition">
                   <div class="flex items-center gap-2.5">
-                    <span class="jp-font text-lg font-black w-8 h-8 rounded-xl bg-slate-900 flex items-center justify-center">文</span>
+                    <span class="jp-font text-lg font-black w-9 h-9 rounded-xl bg-slate-900 flex items-center justify-center">文</span>
                     <div>
-                      <div class="text-xs sm:text-sm font-bold">ข้อสอบ คำศัพท์ &amp; ประโยค N5</div>
-                      <div class="text-[11px] text-slate-400">รวมคำศัพท์ N5 และประโยคสนทนาพื้นฐาน</div>
+                      <div class="text-xs sm:text-sm font-bold">3) ข้อสอบคำศัพท์และประโยค N5 (300+ รายการ)</div>
+                      <div class="text-[11px] text-slate-400">รวมคำศัพท์ 265+ คำ + ประโยค N5 35 ประโยค</div>
                     </div>
                   </div>
                 </button>
               </div>
             </div>
 
-            <!-- Extra Option for Katakana / Vocab -->
-            <div id="exam-sub-options" class="hidden bg-slate-950/80 border border-slate-800 rounded-2xl p-3 space-y-2">
+            <!-- Dynamic Sub-options for Katakana / Vocab+Sentence -->
+            <div id="exam-sub-options" class="hidden bg-slate-950/90 border border-slate-800 rounded-2xl p-3">
               <div id="exam-kana-scope-wrap" class="hidden flex items-center justify-between gap-2">
                 <span class="text-xs text-slate-300">ขอบเขต Katakana:</span>
                 <select id="exam-kana-scope" class="bg-slate-900 border border-slate-700 rounded-xl px-2.5 py-1.5 text-xs text-white outline-none">
@@ -601,147 +583,225 @@
                   <option value="lookalike">เฉพาะคู่แฝดหน้าคล้าย (ツ/シ/ン/ソ)</option>
                 </select>
               </div>
-
               <div id="exam-vocab-scope-wrap" class="hidden flex items-center justify-between gap-2">
-                <span class="text-xs text-slate-300">เนื้อหาข้อสอบ N5:</span>
+                <span class="text-xs text-slate-300">ขอบเขต N5:</span>
                 <select id="exam-vocab-scope" class="bg-slate-900 border border-slate-700 rounded-xl px-2.5 py-1.5 text-xs text-white outline-none">
                   <option value="mixed">รวมคำศัพท์ + ประโยค N5</option>
-                  <option value="vocab_only">เฉพาะคำศัพท์ N5</option>
-                  <option value="sentence_only">เฉพาะประโยคสนทนา N5</option>
+                  <option value="vocab_only">เฉพาะคำศัพท์ N5 (265+ คำ)</option>
+                  <option value="sentence_only">เฉพาะประโยคสนทนา N5 (35 ประโยค)</option>
                 </select>
               </div>
             </div>
 
-            <!-- Format Selection (Choice vs Writing/Typing) -->
+            <!-- 2. Format Selector (Choice vs Written) -->
             <div class="space-y-2">
-              <label class="text-xs font-semibold text-slate-300 block">2. เลือกรูปแบบการตอบข้อสอบ:</label>
+              <label class="text-xs font-semibold text-slate-300 block">2. เลือกรูปแบบการทำข้อสอบ:</label>
               <div class="grid grid-cols-2 gap-2">
-                <button type="button" id="exam-fmt-choice" onclick="setExamFormat('choice')" class="p-3 rounded-2xl bg-emerald-600/20 border-2 border-emerald-500 text-emerald-200 text-left transition">
+                <button type="button" id="exam-fmt-choice" onclick="setExamFormat('choice')" class="p-3 rounded-2xl bg-indigo-600/20 border-2 border-indigo-500 text-indigo-200 text-left transition">
                   <div class="text-xs sm:text-sm font-bold">🔘 แบบตัวเลือก (Choice)</div>
-                  <div class="text-[10px] text-emerald-300/80 mt-0.5">เลือกคำตอบที่ถูกจาก 4 ตัวเลือก</div>
+                  <div class="text-[10px] text-slate-300 mt-0.5">เลือกตอบ 4 ตัวเลือก (มีตัวลวงดักทาง)</div>
                 </button>
-                <button type="button" id="exam-fmt-write" onclick="setExamFormat('write')" class="p-3 rounded-2xl bg-slate-800/90 border-2 border-slate-700 text-slate-300 text-left transition">
-                  <div class="text-xs sm:text-sm font-bold">✍️ แบบเขียน (พิมพ์ตอบ)</div>
-                  <div class="text-[10px] text-slate-400 mt-0.5">พิมพ์คำอ่านหรือคำแปลด้วยตัวเอง</div>
+                <button type="button" id="exam-fmt-written" onclick="setExamFormat('written')" class="p-3 rounded-2xl bg-slate-800 border-2 border-slate-700 text-slate-300 text-left transition">
+                  <div class="text-xs sm:text-sm font-bold">✍️ แบบเขียนตอบ</div>
+                  <div class="text-[10px] text-slate-400 mt-0.5">พิมพ์ Romaji / Kana / คำแปลไทย</div>
                 </button>
               </div>
             </div>
 
-            <!-- Question Count Selection -->
+            <!-- 3. Question Count Selector -->
             <div class="space-y-2">
               <label class="text-xs font-semibold text-slate-300 block">3. จำนวนข้อสอบ:</label>
               <div class="grid grid-cols-3 gap-2">
-                <button type="button" data-ecount="10" onclick="setExamCount(10)" class="exam-cnt-btn py-2 rounded-xl bg-indigo-600 text-white text-xs font-bold border border-indigo-400 transition">
-                  10 ข้อ
-                </button>
-                <button type="button" data-ecount="20" onclick="setExamCount(20)" class="exam-cnt-btn py-2 rounded-xl bg-slate-800 text-slate-300 text-xs font-bold border border-slate-700 transition">
-                  20 ข้อ
-                </button>
-                <button type="button" data-ecount="30" onclick="setExamCount(30)" class="exam-cnt-btn py-2 rounded-xl bg-slate-800 text-slate-300 text-xs font-bold border border-slate-700 transition">
-                  30 ข้อ
-                </button>
+                <button type="button" data-ecount="10" onclick="setExamCount(10)" class="exam-cnt-btn py-2 rounded-xl bg-indigo-600 text-white text-xs font-bold border border-indigo-400">10 ข้อ</button>
+                <button type="button" data-ecount="20" onclick="setExamCount(20)" class="exam-cnt-btn py-2 rounded-xl bg-slate-800 text-slate-300 text-xs font-bold border border-slate-700">20 ข้อ</button>
+                <button type="button" data-ecount="30" onclick="setExamCount(30)" class="exam-cnt-btn py-2 rounded-xl bg-slate-800 text-slate-300 text-xs font-bold border border-slate-700">30 ข้อ</button>
               </div>
             </div>
 
-            <!-- Start Exam CTA -->
-            <button type="button" onclick="startExam()" class="w-full py-3.5 rounded-2xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-sm shadow-lg shadow-indigo-600/30 transition active:scale-95">
+            <button type="button" onclick="startExam()" class="w-full py-3.5 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm shadow-lg shadow-indigo-600/30 transition active:scale-95">
               🚀 เริ่มทำข้อสอบทันที
             </button>
           </div>
         </div>
 
-        <!-- 2. Active Exam Runner View -->
+        <!-- 5B: Active Exam Runner -->
         <div id="exam-active-view" class="hidden space-y-4">
-          <!-- Exam Progress & Timer Header -->
-          <div class="bg-slate-950 border border-slate-800 rounded-2xl p-3 space-y-2">
+          <div class="bg-slate-950/90 border border-slate-800 rounded-2xl p-3 space-y-2">
             <div class="flex justify-between items-center text-xs">
               <span id="exam-progress-text" class="font-bold text-indigo-300">ข้อที่ 1 / 10</span>
               <div class="flex items-center gap-2">
                 <span id="exam-live-score" class="text-emerald-400 font-semibold">ถูก: 0</span>
                 <span id="exam-timer-text" class="bg-slate-900 px-2.5 py-0.5 rounded-lg border border-slate-700 text-slate-300 font-mono">00:00</span>
-                <button type="button" onclick="abortExam()" class="text-slate-400 hover:text-rose-400 px-1.5 py-0.5 text-xs" title="ออกจากการสอบ">✕</button>
+                <button type="button" onclick="resetExamToSetup()" title="ออกจากข้อสอบ" class="text-slate-400 hover:text-rose-400 px-1.5 text-xs">✕</button>
               </div>
             </div>
             <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
-              <div id="exam-progress-bar" class="h-full bg-gradient-to-r from-indigo-500 to-emerald-400 transition-all duration-300" style="width: 10%"></div>
+              <div id="exam-progress-bar" class="h-full bg-indigo-500 transition-all duration-300" style="width: 10%"></div>
             </div>
           </div>
 
-          <!-- Question Card -->
-          <div id="exam-card" class="bg-slate-800/90 border border-slate-700 rounded-3xl p-5 text-center space-y-4 shadow-xl">
+          <div class="bg-slate-800/90 border border-slate-700 rounded-3xl p-5 text-center space-y-4 shadow-xl">
             <div class="flex justify-between items-center text-xs">
-              <span id="exam-q-badge" class="bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-2.5 py-1 rounded-lg font-medium">
-                Hiragana
-              </span>
-              <button type="button" id="exam-furi-toggle" onclick="toggleExamFurigana()" class="hidden px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-700 text-[11px] text-slate-300">
-                👁️ ซ่อนคำอ่าน
-              </button>
-            </div>
-
-            <div onclick="speakExamCurrent()" class="py-5 px-3 rounded-2xl bg-slate-950/90 border border-slate-800 cursor-pointer group">
-              <div id="exam-q-sub" class="jp-font text-xs sm:text-sm text-indigo-300 min-h-[1.25rem] mb-1"></div>
-              <div id="exam-q-main" class="jp-font text-4xl sm:text-5xl font-black text-white leading-snug group-hover:scale-105 transition-transform">
-                あ
+              <span id="exam-q-badge" class="bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-2.5 py-1 rounded-lg font-medium">Hiragana</span>
+              <div class="flex items-center gap-1.5">
+                <button type="button" id="exam-furi-toggle" onclick="toggleExamFurigana()" class="hidden px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-700 text-[11px] text-emerald-300">
+                  👁️ ซ่อนคำอ่าน
+                </button>
+                <button type="button" onclick="speakExamCurrent()" class="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-700 border border-slate-700 text-[11px] text-slate-300">
+                  🔊 ฟังเสียง
+                </button>
               </div>
-              <div class="text-[11px] text-slate-500 mt-2">🔊 แตะเพื่อฟังเสียงโจทย์</div>
             </div>
 
-            <p id="exam-q-instruction" class="text-xs text-slate-300 font-medium">
-              เลือกเสียงอ่านที่ถูกต้อง
-            </p>
+            <div class="py-4 px-3 rounded-2xl bg-slate-950/90 border border-slate-800">
+              <div id="exam-q-sub" class="jp-font text-sm text-indigo-300 min-h-[1.25rem] mb-1"></div>
+              <div id="exam-q-main" class="jp-font text-5xl font-black text-white">あ</div>
+            </div>
 
-            <!-- Choice Mode Container -->
-            <div id="exam-choices-box" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5"></div>
+            <p id="exam-q-instruction" class="text-xs text-slate-300 font-medium">เลือกเสียงอ่านที่ถูกต้อง</p>
 
-            <!-- Writing / Typing Mode Container -->
-            <form id="exam-write-form" onsubmit="submitExamWriting(event)" class="hidden space-y-2.5">
-              <input id="exam-write-input" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="พิมพ์คำตอบที่นี่..." class="w-full bg-slate-950 border-2 border-slate-700 focus:border-indigo-500 rounded-2xl px-4 py-3 text-center text-base font-bold text-white placeholder-slate-500 outline-none" />
-              <button id="exam-write-submit-btn" type="submit" class="w-full py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-bold transition">
-                ส่งคำตอบ
-              </button>
+            <!-- Choice Mode Grid -->
+            <div id="exam-choices-box" class="grid grid-cols-2 gap-2.5"></div>
+
+            <!-- Written Mode Form -->
+            <form id="exam-write-form" onsubmit="submitExamWriting(event)" class="hidden space-y-2">
+              <div class="flex gap-2">
+                <input id="exam-write-input" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="พิมพ์คำตอบที่นี่..." class="flex-1 bg-slate-950 border-2 border-slate-700 focus:border-indigo-500 rounded-2xl px-3 py-2.5 text-center text-sm sm:text-base font-bold text-white outline-none" />
+                <button type="submit" id="exam-write-submit-btn" class="px-4 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-bold">ตรวจคำตอบ</button>
+              </div>
             </form>
 
-            <!-- Instant Question Feedback Banner -->
-            <div id="exam-q-feedback" class="hidden p-3 rounded-2xl text-xs sm:text-sm font-semibold text-left space-y-1 animate-pop"></div>
+            <div id="exam-q-feedback" class="hidden p-3 rounded-2xl text-xs sm:text-sm font-semibold text-left"></div>
 
-            <button id="exam-next-btn" type="button" onclick="nextExamQuestion()" class="hidden w-full py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold shadow-lg transition">
+            <button type="button" id="exam-next-btn" onclick="nextExamQuestion()" class="hidden w-full py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs sm:text-sm font-bold shadow-md">
               ข้อถัดไป →
             </button>
           </div>
         </div>
 
-        <!-- 3. Exam Result Summary View -->
+        <!-- 5C: Exam Result Summary -->
         <div id="exam-result-view" class="hidden space-y-4 animate-pop">
-          <div class="bg-gradient-to-b from-slate-800 to-slate-900 border border-slate-700 rounded-3xl p-6 text-center space-y-3 shadow-xl">
-            <div class="text-xs font-semibold text-indigo-300 uppercase tracking-wider">ผลการทำข้อสอบ</div>
-            <div id="exam-grade-badge" class="w-20 h-20 mx-auto rounded-3xl bg-emerald-500/20 border-2 border-emerald-400 flex items-center justify-center text-4xl font-black text-emerald-300 shadow-lg">
-              A
-            </div>
-            <div id="exam-score-big" class="text-2xl font-black text-white">8 / 10 คะแนน (80%)</div>
-            <p id="exam-result-summary" class="text-xs text-slate-400">ใช้เวลาทั้งหมด 00:45 • ยอดเยี่ยมมาก!</p>
+          <div class="bg-gradient-to-b from-slate-800 to-slate-950 border border-slate-700 rounded-3xl p-5 text-center space-y-3 shadow-xl">
+            <div class="text-xs text-slate-400 font-medium">สรุปผลการทำข้อสอบ</div>
+            <div id="exam-grade-badge" class="w-20 h-20 mx-auto rounded-3xl border-2 flex items-center justify-center text-4xl font-black">A</div>
+            <div id="exam-score-big" class="text-xl font-black text-white">8 / 10 คะแนน (80%)</div>
+            <p id="exam-result-summary" class="text-xs text-slate-300">ใช้เวลา 00:45 • ได้รับ +40 XP</p>
 
             <div class="grid grid-cols-2 gap-2 pt-2">
-              <button type="button" onclick="startExam()" class="py-2.5 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition">
-                🔄 สอบชุดใหม่อีกครั้ง
-              </button>
-              <button type="button" onclick="resetExamToSetup()" class="py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold transition">
-                ⚙️ เปลี่ยนวิชา / รูปแบบ
-              </button>
+              <button type="button" onclick="startExam()" class="py-2.5 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold">🔄 สอบชุดนี้อีกครั้ง</button>
+              <button type="button" onclick="resetExamToSetup()" class="py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-bold">⚙️ เปลี่ยนวิชาสอบ</button>
             </div>
           </div>
 
-          <!-- Wrong Answers Review & Weak-Spot Push -->
-          <div id="exam-mistakes-section" class="space-y-2.5">
-            <div class="flex items-center justify-between gap-2 px-1">
-              <h3 class="text-xs font-bold text-rose-300">❌ รายการข้อที่ตอบผิด (ทบทวนเฉลย)</h3>
-              <button type="button" id="push-mistakes-btn" onclick="pushExamMistakesToWeakness()" class="px-2.5 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-[11px] font-semibold text-amber-300 transition">
+          <!-- Wrong Answers Breakdown & One-Tap Boost to Sniper Quiz -->
+          <div id="exam-mistakes-section" class="bg-slate-950 border border-rose-500/30 rounded-3xl p-4 space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <h3 class="text-xs sm:text-sm font-bold text-rose-300">❌ รายการข้อที่ตอบผิดพร้อมเฉลย</h3>
+              <button type="button" id="push-mistakes-btn" onclick="pushExamMistakesToWeakness()" class="px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 text-xs font-bold">
                 🔥 ส่งข้อที่ผิดไปย้ำในควิซ (+5)
               </button>
             </div>
             <div id="exam-mistakes-list" class="space-y-2 max-h-64 overflow-y-auto pr-1"></div>
           </div>
         </div>
+      </section>
 
+      <!-- ==================== TAB 6: LEARNING ANALYTICS DASHBOARD (สถิติ) ==================== -->
+      <section id="tab-dashboard" class="hidden space-y-4 animate-pop">
+        <!-- Level & XP Banner -->
+        <div class="bg-gradient-to-r from-indigo-950 via-slate-800 to-slate-900 border border-indigo-500/40 rounded-3xl p-4 space-y-2.5 shadow-lg">
+          <div class="flex justify-between items-center">
+            <div class="flex items-center gap-2">
+              <span id="dash-level-badge" class="px-2.5 py-1 rounded-xl bg-indigo-600 text-white text-xs font-black">LV. 1</span>
+              <span id="dash-rank-title" class="font-bold text-white text-sm">ผู้เริ่มต้นภาษาญี่ปุ่น</span>
+            </div>
+            <span id="dash-xp-text" class="text-xs font-semibold text-indigo-300">0 / 100 XP</span>
+          </div>
+          <div class="w-full h-2.5 bg-slate-950 rounded-full overflow-hidden border border-slate-800">
+            <div id="dash-xp-bar" class="h-full bg-gradient-to-r from-indigo-500 to-emerald-400 transition-all duration-300" style="width: 0%"></div>
+          </div>
+          <p class="text-[11px] text-slate-400">สะสม XP จากการจำศัพท์ (+15), ควิซถูก (+10), ฝึกพูดผ่าน (+15) และทำข้อสอบ (+5/ข้อ)</p>
+        </div>
+
+        <!-- 4 Overview Metric Cards -->
+        <div class="grid grid-cols-2 gap-2.5">
+          <div class="bg-slate-950/90 border border-slate-800 rounded-2xl p-3.5">
+            <div class="text-[11px] text-slate-400">คำศัพท์ N5 ที่จำได้</div>
+            <div id="dash-stat-vocab" class="text-lg font-black text-emerald-400 mt-0.5">0 / 265</div>
+            <div id="dash-stat-vocab-pct" class="text-[10px] text-slate-500 mt-0.5">0% ของคลังศัพท์</div>
+          </div>
+          <div class="bg-slate-950/90 border border-slate-800 rounded-2xl p-3.5">
+            <div class="text-[11px] text-slate-400">ตอบคำถามทั้งหมด &amp; แม่นยำ</div>
+            <div id="dash-stat-total-q" class="text-lg font-black text-indigo-400 mt-0.5">0 ข้อ</div>
+            <div id="dash-stat-overall-acc" class="text-[10px] text-slate-500 mt-0.5">ความแม่นยำรวม 0%</div>
+          </div>
+          <div class="bg-slate-950/90 border border-slate-800 rounded-2xl p-3.5">
+            <div class="text-[11px] text-slate-400">ทำข้อสอบจำลอง (Exam)</div>
+            <div id="dash-stat-exam-count" class="text-lg font-black text-amber-400 mt-0.5">0 ครั้ง</div>
+            <div id="dash-stat-exam-avg" class="text-[10px] text-slate-500 mt-0.5">คะแนนเฉลี่ย -</div>
+          </div>
+          <div class="bg-slate-950/90 border border-slate-800 rounded-2xl p-3.5">
+            <div class="text-[11px] text-slate-400">ฝึกพูดออกเสียง (Mic)</div>
+            <div id="dash-stat-speak-pass" class="text-lg font-black text-sky-400 mt-0.5">0 ครั้ง</div>
+            <div id="dash-stat-speak-sub" class="text-[10px] text-slate-500 mt-0.5">พูดชัดตรงสำเนียง ja-JP</div>
+          </div>
+        </div>
+
+        <!-- Strength Analysis: เก่งตรงไหน (จุดแข็งรายหมวด) -->
+        <div class="bg-slate-950/90 border border-slate-800 rounded-3xl p-4 space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <h3 class="text-xs sm:text-sm font-bold text-emerald-300">💪 เก่งตรงไหน (จุดแข็งรายหมวด)</h3>
+            <span id="dash-best-badge" class="text-[10px] px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 font-semibold">
+              รอเก็บสถิติ
+            </span>
+          </div>
+          <div id="dash-strength-bars" class="space-y-2.5"></div>
+        </div>
+
+        <!-- Weakness Radar: ควรเพิ่มอะไร (เรดาร์จุดอ่อน & คำแนะนำ) -->
+        <div class="bg-slate-950/90 border border-rose-500/30 rounded-3xl p-4 space-y-3">
+          <h3 class="text-xs sm:text-sm font-bold text-rose-300">🎯 ควรเพิ่มอะไร (เรดาร์จุดอ่อน &amp; คำแนะนำ)</h3>
+          <div id="dash-advice-text" class="text-xs text-slate-200 bg-slate-900 border border-slate-800 rounded-2xl p-3 leading-relaxed">
+            เริ่มทำควิซหรือทำข้อสอบสัก 1 ชุด ระบบจะวิเคราะห์ตัวอักษรและคำศัพท์ที่ควรเน้นให้ทันทีครับ!
+          </div>
+
+          <div class="space-y-1.5">
+            <div class="text-[11px] text-slate-400 font-medium">รายการที่ตอบผิดบ่อย / น้ำหนักจุดอ่อนสูงสุด:</div>
+            <div id="dash-weak-chips" class="flex flex-wrap gap-1.5"></div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 pt-1">
+            <button type="button" onclick="jumpToWeakSniperQuiz()" class="py-2.5 px-3 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-200 text-xs font-bold transition active:scale-95">
+              🎯 ไปซ้อมในควิซจุดอ่อนทันที
+            </button>
+            <button type="button" onclick="jumpToWeaknessExam()" class="py-2.5 px-3 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/30 border border-indigo-500/40 text-indigo-200 text-xs font-bold transition active:scale-95">
+              📝 ทำข้อสอบแก้จุดอ่อน
+            </button>
+          </div>
+        </div>
+
+        <!-- Exam History Table -->
+        <div class="bg-slate-950/90 border border-slate-800 rounded-3xl p-4 space-y-3">
+          <h3 class="text-xs sm:text-sm font-bold text-white">📜 ประวัติการทำข้อสอบ (Exam History)</h3>
+          <div class="overflow-x-auto max-h-60 overflow-y-auto">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr class="border-b border-slate-800 text-[11px] text-slate-400">
+                  <th class="py-2 pr-2">วันที่</th>
+                  <th class="py-2 px-2">วิชาสอบ</th>
+                  <th class="py-2 px-2">รูปแบบ</th>
+                  <th class="py-2 px-2 text-right">คะแนน</th>
+                  <th class="py-2 pl-2 text-center">เกรด</th>
+                </tr>
+              </thead>
+              <tbody id="dash-exam-table-body" class="divide-y divide-slate-800/70">
+                <tr>
+                  <td colspan="5" class="py-4 text-center text-slate-500">ยังไม่มีประวัติการทำข้อสอบ</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </section>
 
     </main>
@@ -753,7 +813,7 @@
           <h3 class="text-base font-bold text-white flex items-center gap-1.5">
             <span>➕</span> เพิ่มคำศัพท์ใหม่
           </h3>
-          <button onclick="toggleAddModal(false)" class="text-slate-400 hover:text-white p-1">✕</button>
+          <button type="button" onclick="toggleAddModal(false)" class="text-slate-400 hover:text-white p-1">✕</button>
         </div>
 
         <div class="space-y-3 text-xs sm:text-sm">
@@ -780,8 +840,8 @@
         </div>
 
         <div class="flex gap-2 pt-2">
-          <button onclick="toggleAddModal(false)" class="flex-1 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs sm:text-sm font-medium">ยกเลิก</button>
-          <button onclick="saveCustomCard()" class="flex-1 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs sm:text-sm font-semibold shadow-lg shadow-indigo-600/25">บันทึกคำศัพท์</button>
+          <button type="button" onclick="toggleAddModal(false)" class="flex-1 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs sm:text-sm font-medium">ยกเลิก</button>
+          <button type="button" onclick="saveCustomCard()" class="flex-1 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs sm:text-sm font-semibold shadow-lg shadow-indigo-600/25">บันทึกคำศัพท์</button>
         </div>
       </div>
     </div>
@@ -794,14 +854,14 @@
             <span class="text-xl">💾</span>
             <div>
               <h3 class="text-base font-bold text-white">สำรอง &amp; ย้ายข้อมูล (JSON)</h3>
-              <p class="text-[11px] text-slate-400">ซิงก์คำศัพท์ที่เพิ่มเอง สถานะจำได้ และค่าน้ำหนักจุดอ่อน</p>
+              <p class="text-[11px] text-slate-400">ซิงก์คำศัพท์ที่เพิ่มเอง สถานะจำได้ สถิติ และค่าน้ำหนักจุดอ่อน</p>
             </div>
           </div>
-          <button onclick="toggleBackupModal(false)" class="text-slate-400 hover:text-white p-1">✕</button>
+          <button type="button" onclick="toggleBackupModal(false)" class="text-slate-400 hover:text-white p-1">✕</button>
         </div>
 
         <div class="grid grid-cols-2 gap-2">
-          <button onclick="exportBackupJSON()" class="py-2.5 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold transition">
+          <button type="button" onclick="exportBackupJSON()" class="py-2.5 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold transition">
             ⬇️ ดาวน์โหลด JSON
           </button>
           <label class="py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold text-center cursor-pointer transition">
@@ -813,16 +873,16 @@
         <div class="space-y-1.5">
           <label class="text-[11px] text-slate-400 block">โค้ดสำรองข้อมูล (คัดลอกไปวางเครื่องอื่นได้):</label>
           <textarea id="backup-json-box" rows="4" readonly class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-[10px] font-mono text-slate-300 outline-none"></textarea>
-          <button onclick="copyBackupJSON()" class="w-full py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium border border-slate-700 transition">
+          <button type="button" onclick="copyBackupJSON()" class="w-full py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium border border-slate-700 transition">
             📋 คัดลอกโค้ดสำรองลงคลิปบอร์ด
           </button>
         </div>
 
         <div class="pt-2 border-t border-slate-800 flex justify-between items-center">
-          <button id="reset-trigger-btn" onclick="handleResetProgress()" class="text-[11px] text-rose-400 hover:text-rose-300 font-medium">
+          <button type="button" id="reset-trigger-btn" onclick="handleResetProgress()" class="text-[11px] text-rose-400 hover:text-rose-300 font-medium">
             🗑️ รีเซ็ตสถิติความจำทั้งหมด
           </button>
-          <button onclick="toggleBackupModal(false)" class="text-xs text-slate-400 hover:text-white">ปิดหน้าต่าง</button>
+          <button type="button" onclick="toggleBackupModal(false)" class="text-xs text-slate-400 hover:text-white">ปิดหน้าต่าง</button>
         </div>
       </div>
     </div>
@@ -830,27 +890,35 @@
     <!-- ==================== TOAST NOTIFICATION ==================== -->
     <div id="toast" class="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 pointer-events-none opacity-0 translate-y-2 transition-all duration-200 w-max max-w-[90vw]">
       <div class="bg-slate-800/95 backdrop-blur-md border border-slate-700 text-white px-4 py-2 rounded-2xl shadow-2xl text-xs font-medium text-center">
-    <!-- ==================== BOTTOM NAVIGATION BAR (5 TABS) ==================== -->
-    <nav class="fixed bottom-0 w-full max-w-lg bg-slate-900/95 backdrop-blur-md border-t border-slate-800 grid grid-cols-5 py-2 z-30">
-      <button onclick="switchTab('flashcard')" id="nav-flashcard" class="flex flex-col items-center py-1 text-indigo-400 transition">
-        <span class="text-lg sm:text-xl">🎴</span>
-        <span class="text-[10px] sm:text-[11px] mt-0.5 font-semibold">แฟลชการ์ด</span>
+        <span id="toast-msg">บันทึกเรียบร้อย</span>
+      </div>
+    </div>
+
+    <!-- ==================== BOTTOM NAVIGATION BAR (6 TABS) ==================== -->
+    <nav class="fixed bottom-0 w-full max-w-lg bg-slate-900/95 backdrop-blur-md border-t border-slate-800 grid grid-cols-6 py-2 z-30">
+      <button type="button" onclick="switchTab('flashcard')" id="nav-flashcard" class="flex flex-col items-center py-1 text-indigo-400 transition">
+        <span class="text-lg">🎴</span>
+        <span class="text-[10px] mt-0.5 font-semibold">แฟลชการ์ด</span>
       </button>
-      <button onclick="switchTab('speak')" id="nav-speak" class="flex flex-col items-center py-1 text-slate-400 hover:text-slate-200 transition">
-        <span class="text-lg sm:text-xl">🎙️</span>
-        <span class="text-[10px] sm:text-[11px] mt-0.5 font-medium">ฝึกพูด</span>
+      <button type="button" onclick="switchTab('speak')" id="nav-speak" class="flex flex-col items-center py-1 text-slate-400 hover:text-slate-200 transition">
+        <span class="text-lg">🎙️</span>
+        <span class="text-[10px] mt-0.5 font-medium">ฝึกพูด</span>
       </button>
-      <button onclick="switchTab('chars')" id="nav-chars" class="flex flex-col items-center py-1 text-slate-400 hover:text-slate-200 transition">
-        <span class="text-lg sm:text-xl jp-font font-bold">あ</span>
-        <span class="text-[10px] sm:text-[11px] mt-0.5 font-medium">คลัง &amp; ตาราง</span>
+      <button type="button" onclick="switchTab('chars')" id="nav-chars" class="flex flex-col items-center py-1 text-slate-400 hover:text-slate-200 transition">
+        <span class="text-lg jp-font font-bold">あ</span>
+        <span class="text-[10px] mt-0.5 font-medium">คลัง/ตาราง</span>
       </button>
-      <button onclick="switchTab('quiz')" id="nav-quiz" class="flex flex-col items-center py-1 text-slate-400 hover:text-slate-200 transition">
-        <span class="text-lg sm:text-xl">🎯</span>
-        <span class="text-[10px] sm:text-[11px] mt-0.5 font-medium">ควิซจุดอ่อน</span>
+      <button type="button" onclick="switchTab('quiz')" id="nav-quiz" class="flex flex-col items-center py-1 text-slate-400 hover:text-slate-200 transition">
+        <span class="text-lg">🎯</span>
+        <span class="text-[10px] mt-0.5 font-medium">ควิซจุดอ่อน</span>
       </button>
-      <button onclick="switchTab('exam')" id="nav-exam" class="flex flex-col items-center py-1 text-slate-400 hover:text-slate-200 transition">
-        <span class="text-lg sm:text-xl">📝</span>
-        <span class="text-[10px] sm:text-[11px] mt-0.5 font-medium">ทำข้อสอบ</span>
+      <button type="button" onclick="switchTab('exam')" id="nav-exam" class="flex flex-col items-center py-1 text-slate-400 hover:text-slate-200 transition">
+        <span class="text-lg">📝</span>
+        <span class="text-[10px] mt-0.5 font-medium">ทำข้อสอบ</span>
+      </button>
+      <button type="button" onclick="switchTab('dashboard')" id="nav-dashboard" class="flex flex-col items-center py-1 text-slate-400 hover:text-slate-200 transition">
+        <span class="text-lg">📊</span>
+        <span class="text-[10px] mt-0.5 font-medium">สถิติ</span>
       </button>
     </nav>
 
@@ -1005,7 +1073,7 @@
     ];
 
     // =========================================================================
-    // 2. DATA: JLPT N5 VOCABULARY (265+ WORDS ACROSS 8 CATEGORIES)
+    // 2. DATA: JLPT N5 VOCABULARY (265+ WORDS) & N5 SENTENCES (35 SENTENCES)
     // =========================================================================
     const VOCAB_CATEGORIES = {
       time: 'ตัวเลข วัน และเวลา',
@@ -1020,7 +1088,7 @@
     };
 
     const DEFAULT_N5_VOCAB = [
-      // --- 1. ตัวเลข วัน และเวลา (Numbers & Time) ---
+      // --- 1. ตัวเลข วัน และเวลา ---
       { id: 'v_t01', word: '一', reading: 'いち', romaji: 'ichi', meaning: 'หนึ่ง (1)', cat: 'time', tip: 'ขีดแนวนอน 1 ขีด = เลข 1' },
       { id: 'v_t02', word: '二', reading: 'に', romaji: 'ni', meaning: 'สอง (2)', cat: 'time', tip: 'ขีดแนวนอน 2 ขีด = เลข 2' },
       { id: 'v_t03', word: '三', reading: 'さん', romaji: 'san', meaning: 'สาม (3)', cat: 'time', tip: 'ขีดแนวนอน 3 ขีด = เลข 3' },
@@ -1064,7 +1132,7 @@
       { id: 'v_t41', word: '今年', reading: 'ことし', romaji: 'kotoshi', meaning: 'ปีนี้', cat: 'time', tip: 'อ่านพิเศษว่า โคะโทะชิ = ปีนี้' },
       { id: 'v_t42', word: '来年', reading: 'らいねん', romaji: 'rainen', meaning: 'ปีหน้า', cat: 'time', tip: '来 (ที่จะมา) + 年 (ปี) = ปีหน้า' },
 
-      // --- 2. คำกริยาพื้นฐาน N5 (Essential Verbs) ---
+      // --- 2. คำกริยาพื้นฐาน N5 ---
       { id: 'v_v01', word: '食べる', reading: 'たべる', romaji: 'taberu', meaning: 'กิน / รับประทาน', cat: 'verbs', tip: 'กริยากลุ่ม 2 (ทะเบะรุ)', exJp: '朝ご飯を食べます', exTh: 'อะสะโกะฮัง โอะ ทาเบมัส (กินข้าวเช้า)' },
       { id: 'v_v02', word: '飲む', reading: 'のむ', romaji: 'nomu', meaning: 'ดื่ม', cat: 'verbs', tip: 'คันจิ 食 + 欠 = ดื่ม (โนะมุ)', exJp: '水を飲みます', exTh: 'มิซึ โอะ โนะมิมัส (ดื่มน้ำ)' },
       { id: 'v_v03', word: '行く', reading: 'いく', romaji: 'iku', meaning: 'ไป', cat: 'verbs', tip: 'อิคุ = ไป (รูปสุภาพ: 行きます)', exJp: '学校へ行きます', exTh: 'กักโค เอะ อิคิมัส (ไปโรงเรียน)' },
@@ -1110,7 +1178,7 @@
       { id: 'v_v43', word: '住む', reading: 'すむ', romaji: 'sumu', meaning: 'อาศัยอยู่', cat: 'verbs', tip: 'คน (亻) + เจ้าของ (主) = อยู่อาศัย' },
       { id: 'v_v44', word: '死ぬ', reading: 'しぬ', romaji: 'shinu', meaning: 'ตาย / เสียชีวิต', cat: 'verbs', tip: 'กริยาตัวเดียวในภาษาญี่ปุ่นที่ลงท้าย ぬ' },
 
-      // --- 3. คำคุณศัพท์ い และ な (Adjectives) ---
+      // --- 3. คำคุณศัพท์ い และ な ---
       { id: 'v_a01', word: '大きい', reading: 'おおきい', romaji: 'ookii', meaning: 'ใหญ่ (い)', cat: 'adj', tip: 'คนกางแขนกางขา (大) = ใหญ่' },
       { id: 'v_a02', word: '小さい', reading: 'ちいさい', romaji: 'chiisai', meaning: 'เล็ก (い)', cat: 'adj', tip: 'คนหุบแขนแนบตัว (小) = เล็ก' },
       { id: 'v_a03', word: '新しい', reading: 'あたらしい', romaji: 'atarashii', meaning: 'ใหม่ (い)', cat: 'adj', tip: 'อะทะระชี่ = ใหม่' },
@@ -1154,7 +1222,7 @@
       { id: 'v_a41', word: '下手', reading: 'へた', romaji: 'heta', meaning: 'ไม่เก่ง / อ่อนหัด (な)', cat: 'adj', tip: 'มือ (手) อยู่ล่าง (下) = ไม่เก่ง' },
       { id: 'v_a42', word: '大丈夫', reading: 'だいじょうぶ', romaji: 'daijoubu', meaning: 'ไม่เป็นไร / โอเค (な)', cat: 'adj', tip: 'ไดโจบุ = ไม่เป็นไร' },
 
-      // --- 4. สถานที่และทิศทาง (Places & Directions) ---
+      // --- 4. สถานที่และทิศทาง ---
       { id: 'v_p01', word: '学校', reading: 'がっこう', romaji: 'gakkou', meaning: 'โรงเรียน', cat: 'places', tip: 'งักโค = โรงเรียน' },
       { id: 'v_p02', word: '大学', reading: 'だいがく', romaji: 'daigaku', meaning: 'มหาวิทยาลัย', cat: 'places', tip: '大 (ใหญ่) + 学 (เรียน) = มหาวิทยาลัย' },
       { id: 'v_p03', word: '駅', reading: 'えき', romaji: 'eki', meaning: 'สถานีรถไฟ', cat: 'places', tip: 'เอะคิ = สถานีรถไฟ' },
@@ -1186,7 +1254,7 @@
       { id: 'v_p29', word: '海', reading: 'うみ', romaji: 'umi', meaning: 'ทะเล', cat: 'places', tip: 'อุ มิ = ทะเล' },
       { id: 'v_p30', word: '道', reading: 'みち', romaji: 'michi', meaning: 'ถนน / ทาง', cat: 'places', tip: 'มิ จิ = ถนนหนทาง' },
 
-      // --- 5. ครอบครัว ผู้คน และร่างกาย (People & Body) ---
+      // --- 5. ครอบครัว ผู้คน และร่างกาย ---
       { id: 'v_m01', word: '私', reading: 'わたし', romaji: 'watashi', meaning: 'ฉัน / ผม', cat: 'people', tip: 'วะทะชิ = สรรพนามบุรุษที่ 1 มาตรฐาน' },
       { id: 'v_m02', word: 'あなた', reading: 'あなた', romaji: 'anata', meaning: 'คุณ', cat: 'people', tip: 'อะนะตะ = คุณ (ญี่ปุ่นนิยมเรียกชื่อแทน)' },
       { id: 'v_m03', word: '人', reading: 'ひと', romaji: 'hito', meaning: 'คน / มนุษย์', cat: 'people', tip: 'คนยืนก้าวขา = ฮิโทะ' },
@@ -1215,7 +1283,7 @@
       { id: 'v_m26', word: '犬', reading: 'いぬ', romaji: 'inu', meaning: 'สุนัข / หมา', cat: 'people', tip: 'ตัวใหญ่ (大) มีจุดหูตั้ง 1 จุด = อินุ (สุนัข)' },
       { id: 'v_m27', word: '猫', reading: 'ねこ', romaji: 'neko', meaning: 'แมว', cat: 'people', tip: 'เนะโคะ = แมว' },
 
-      // --- 6. อาหารและของใช้ชีวิตประจำวัน (Food & Daily Life) ---
+      // --- 6. อาหารและของใช้ชีวิตประจำวัน ---
       { id: 'v_d01', word: '水', reading: 'みず', romaji: 'mizu', meaning: 'น้ำเปล่า / น้ำเย็น', cat: 'daily', tip: 'มิซึ = น้ำเย็น (ถ้าเป็นน้ำร้อนใช้ お湯 โอะยุ)' },
       { id: 'v_d02', word: 'お茶', reading: 'おちゃ', romaji: 'ocha', meaning: 'ชาเขียว / น้ำชา', cat: 'daily', tip: 'โอะฉะ = ชาญี่ปุ่น' },
       { id: 'v_d03', word: '牛乳', reading: 'ぎゅうにゅう', romaji: 'gyuunyuu', meaning: 'นมวัว', cat: 'daily', tip: '牛 (วัว) + 乳 (นม) = นมวัว' },
@@ -1245,7 +1313,7 @@
       { id: 'v_d27', word: '雪', reading: 'ゆき', romaji: 'yuki', meaning: 'หิมะ', cat: 'daily', tip: 'ยุ คิ = หิมะ' },
       { id: 'v_d28', word: '花', reading: 'はな', romaji: 'hana', meaning: 'ดอกไม้', cat: 'daily', tip: 'ฮะนะ = ดอกไม้ (เสียงเดียวกับ จมูก 鼻)' },
 
-      // --- 7. คำทับศัพท์คาตาคานะ N5 (Katakana Vocabulary) ---
+      // --- 7. คำทับศัพท์คาตาคานะ N5 ---
       { id: 'v_k01', word: 'テレビ', reading: 'テレビ', romaji: 'terebi', meaning: 'โทรทัศน์ (TV)', cat: 'katakana_n5', tip: 'テ (te) + レ (re) + ビ (bi) = Television' },
       { id: 'v_k02', word: 'カメラ', reading: 'カメラ', romaji: 'kamera', meaning: 'กล้องถ่ายรูป (Camera)', cat: 'katakana_n5', tip: 'カ (ka) + メ (me) + ラ (ra) = Camera' },
       { id: 'v_k03', word: 'パソコン', reading: 'パソコン', romaji: 'pasokon', meaning: 'คอมพิวเตอร์ (PC)', cat: 'katakana_n5', tip: 'ย่อมาจาก Personal Computer (พะโซะคง)' },
@@ -1275,7 +1343,7 @@
       { id: 'v_k27', word: 'アルバイト', reading: 'アルバイト', romaji: 'arubaito', meaning: 'งานพาร์ทไทม์ (งานพิเศษ)', cat: 'katakana_n5', tip: 'มาจากภาษาเยอรมัน Arbeit (อะรุไบโตะ)' },
       { id: 'v_k28', word: 'プレゼント', reading: 'プレゼント', romaji: 'purezento', meaning: 'ของขวัญ (Present)', cat: 'katakana_n5', tip: 'プ (pu) レ (re) ゼ (ze) ン (n) ト (to) = Present' },
 
-      // --- 8. คำทักทาย คำถาม และคำเชื่อม (Greetings, Question Words & Basics) ---
+      // --- 8. คำทักทาย คำถาม และคำเชื่อม ---
       { id: 'v_g01', word: 'おはようございます', reading: 'おはようございます', romaji: 'ohayou gozaimasu', meaning: 'สวัสดีตอนเช้า', cat: 'greetings', tip: 'ใช้ทักทายช่วงเช้า (กับเพื่อนสนิทใช้แค่ おはよう)' },
       { id: 'v_g02', word: 'こんにちは', reading: 'こんにちは', romaji: 'konnichiwa', meaning: 'สวัสดีตอนกลางวัน', cat: 'greetings', tip: 'ตัว は ตัวท้ายออกเสียงว่า "วะ" (wa)' },
       { id: 'v_g03', word: 'こんばんは', reading: 'こんばんは', romaji: 'konbanwa', meaning: 'สวัสดีตอนค่ำ', cat: 'greetings', tip: 'ตัว は ตัวท้ายออกเสียงว่า "วะ" (wa)' },
@@ -1306,73 +1374,95 @@
       { id: 'v_g28', word: 'それから', reading: 'それから', romaji: 'sorekara', meaning: 'หลังจากนั้น / แล้วก็', cat: 'greetings', tip: 'โซะเระคะระ = หลังจากนั้น' }
     ];
 
-    // Core N5 Sentences for Exam Mode (Word/Sentence Subject)
-    const EXAM_N5_SENTENCES = [
-      { id: 's_01', jp: '毎日日本語を勉強します。', reading: 'まいにちにほんごをべんきょうします', romaji: 'mainichi nihongo o benkyou shimasu', meaning: 'เรียนภาษาญี่ปุ่นทุกวัน' },
-      { id: 's_02', jp: '朝ご飯を食べます。', reading: 'あさごはんをたべます', romaji: 'asagohan o tabemasu', meaning: 'กินข้าวเช้า' },
-      { id: 's_03', jp: '水を飲みます。', reading: 'みずをのみます', romaji: 'mizu o nomimasu', meaning: 'ดื่มน้ำ' },
-      { id: 's_04', jp: '学校へ行きます。', reading: 'がっこうへいきます', romaji: 'gakkou e ikimasu', meaning: 'ไปโรงเรียน' },
-      { id: 's_05', jp: 'うちへ帰ります。', reading: 'うちへかえります', romaji: 'uchi e kaerimasu', meaning: 'กลับบ้าน' },
-      { id: 's_06', jp: 'トイレはどこですか。', reading: 'といれはどこですか', romaji: 'toire wa doko desu ka', meaning: 'ห้องน้ำอยู่ที่ไหนครับ/คะ' },
-      { id: 's_07', jp: 'これはいくらですか。', reading: 'これはいくらですか', romaji: 'kore wa ikura desu ka', meaning: 'อันนี้ราคาเท่าไหร่ครับ/คะ' },
-      { id: 's_08', jp: '今何時ですか。', reading: 'いまなんじですか', romaji: 'ima nanji desu ka', meaning: 'ตอนนี้กี่โมงแล้วครับ/คะ' },
-      { id: 's_09', jp: 'テレビを見ます。', reading: 'てれびをみます', romaji: 'terebi o mimasu', meaning: 'ดูโทรทัศน์' },
-      { id: 's_10', jp: '音楽を聞きます。', reading: 'おんがくをききます', romaji: 'ongaku o kikimasu', meaning: 'ฟังเพลง' },
-      { id: 's_11', jp: '本を読みます。', reading: 'ほんをよみます', romaji: 'hon o yomimasu', meaning: 'อ่านหนังสือ' },
-      { id: 's_12', jp: '手紙を書きます。', reading: 'てがみをかきます', romaji: 'tegami o kakimasu', meaning: 'เขียนจดหมาย' },
-      { id: 's_13', jp: '友達に会います。', reading: 'ともだちにあいます', romaji: 'tomodachi ni aimasu', meaning: 'พบกับเพื่อน' },
-      { id: 's_14', jp: '駅は病院の隣です。', reading: 'えきはびょういんのとなりです', romaji: 'eki wa byouin no tonari desu', meaning: 'สถานีรถไฟอยู่ข้างๆ โรงพยาบาล' },
-      { id: 's_15', jp: '今日はとても暑いです。', reading: 'きょうはとてもあついです', romaji: 'kyou wa totemo atsui desu', meaning: 'วันนี้อากาศร้อนมากๆ' },
-      { id: 's_16', jp: 'このラーメンは美味しいです。', reading: 'このらーめんはおいしいです', romaji: 'kono raamen wa oishii desu', meaning: 'ราเม็งชามนี้อร่อย' },
-      { id: 's_17', jp: '私は学生です。', reading: 'わたしはがくせいです', romaji: 'watashi wa gakusei desu', meaning: 'ฉันเป็นนักเรียน' },
-      { id: 's_18', jp: 'お名前は何ですか。', reading: 'おなまえはなんですか', romaji: 'onamae wa nan desu ka', meaning: 'คุณชื่ออะไรครับ/คะ' },
-      { id: 's_19', jp: '電車で会社へ行きます。', reading: 'でんしゃでかいしゃへいきます', romaji: 'densha de kaisha e ikimasu', meaning: 'ไปบริษัทโดยรถไฟ' },
-      { id: 's_20', jp: '昨日映画を見ました。', reading: 'きのうえいがをみました', romaji: 'kinou eiga o mimashita', meaning: 'เมื่อวานดูภาพยนตร์' }
+    // Built-in 35 Essential N5 Sentences Bank for Exam Mode
+    const N5_SENTENCES_DATA = [
+      { id: 's_01', word: '毎日日本語を勉強します。', reading: 'まいにちにほんごをべんきょうします', romaji: 'mainichi nihongo o benkyou shimasu', meaning: 'เรียนภาษาญี่ปุ่นทุกวัน', cat: 'sentences' },
+      { id: 's_02', word: '朝ご飯を食べます。', reading: 'あさごはんをたべます', romaji: 'asagohan o tabemasu', meaning: 'กินข้าวเช้า', cat: 'sentences' },
+      { id: 's_03', word: '水を飲みます。', reading: 'みずをのみます', romaji: 'mizu o nomimasu', meaning: 'ดื่มน้ำ', cat: 'sentences' },
+      { id: 's_04', word: '学校へ行きます。', reading: 'がっこうへいきます', romaji: 'gakkou e ikimasu', meaning: 'ไปโรงเรียน', cat: 'sentences' },
+      { id: 's_05', word: 'うちへ帰ります。', reading: 'うちへかえります', romaji: 'uchi e kaerimasu', meaning: 'กลับบ้าน', cat: 'sentences' },
+      { id: 's_06', word: 'トイレはどこですか。', reading: 'といれはどこですか', romaji: 'toire wa doko desu ka', meaning: 'ห้องน้ำอยู่ที่ไหนครับ/คะ', cat: 'sentences' },
+      { id: 's_07', word: 'これはいくらですか。', reading: 'これはいくらですか', romaji: 'kore wa ikura desu ka', meaning: 'อันนี้ราคาเท่าไหร่ครับ/คะ', cat: 'sentences' },
+      { id: 's_08', word: '今何時ですか。', reading: 'いまなんじですか', romaji: 'ima nanji desu ka', meaning: 'ตอนนี้กี่โมงแล้วครับ/คะ', cat: 'sentences' },
+      { id: 's_09', word: 'テレビを見ます。', reading: 'てれびをみます', romaji: 'terebi o mimasu', meaning: 'ดูโทรทัศน์', cat: 'sentences' },
+      { id: 's_10', word: '本を読みます。', reading: 'ほんをよみます', romaji: 'hon o yomimasu', meaning: 'อ่านหนังสือ', cat: 'sentences' },
+      { id: 's_11', word: '友達に会います。', reading: 'ともだちにあいます', romaji: 'tomodachi ni aimasu', meaning: 'พบกับเพื่อน', cat: 'sentences' },
+      { id: 's_12', word: '今日はとても暑いです。', reading: 'きょうはとてもあついです', romaji: 'kyou wa totemo atsui desu', meaning: 'วันนี้อากาศร้อนมากๆ', cat: 'sentences' },
+      { id: 's_13', word: 'このラーメンは美味しいです。', reading: 'このらーめんはおいしいです', romaji: 'kono raamen wa oishii desu', meaning: 'ราเม็งชามนี้อร่อย', cat: 'sentences' },
+      { id: 's_14', word: '私は学生です。', reading: 'わたしはがくせいです', romaji: 'watashi wa gakusei desu', meaning: 'ฉันเป็นนักเรียน', cat: 'sentences' },
+      { id: 's_15', word: 'お名前は何ですか。', reading: 'おなまえはなんですか', romaji: 'onamae wa nan desu ka', meaning: 'คุณชื่ออะไรครับ/คะ', cat: 'sentences' },
+      { id: 's_16', word: '駅まで歩きます。', reading: 'えきまであるきます', romaji: 'eki made arukimasu', meaning: 'เดินไปจนถึงสถานีรถไฟ', cat: 'sentences' },
+      { id: 's_17', word: '電車に乗ります。', reading: 'でんしゃにのります', romaji: 'densha ni norimasu', meaning: 'ขึ้นรถไฟ', cat: 'sentences' },
+      { id: 's_18', word: '昨日映画を見ました。', reading: 'きのうえいがをみました', romaji: 'kinou eiga o mimashita', meaning: 'เมื่อวานดูภาพยนตร์', cat: 'sentences' },
+      { id: 's_19', word: '明日東京へ行きます。', reading: 'あしたとうきょうへいきます', romaji: 'ashita toukyou e ikimasu', meaning: 'พรุ่งนี้จะไปโตเกียว', cat: 'sentences' },
+      { id: 's_20', word: 'コーヒーを飲みませんか。', reading: 'こーひーをのみませんか', romaji: 'koohii o nomimasen ka', meaning: 'ไปดื่มกาแฟด้วยกันไหมครับ/คะ', cat: 'sentences' },
+      { id: 's_21', word: 'ちょっと待ってください。', reading: 'ちょっとまってください', romaji: 'chotto matte kudasai', meaning: 'กรุณารอสักครู่ครับ/คะ', cat: 'sentences' },
+      { id: 's_22', word: 'ここに名前を書いてください。', reading: 'ここになまえをかいてください', romaji: 'koko ni namae o kaite kudasai', meaning: 'กรุณาเขียนชื่อตรงนี้ครับ/คะ', cat: 'sentences' },
+      { id: 's_23', word: '日本語が分かります。', reading: 'にほんごがわかります', romaji: 'nihongo ga wakarimasu', meaning: 'เข้าใจภาษาญี่ปุ่น', cat: 'sentences' },
+      { id: 's_24', word: '私は猫が好きです。', reading: 'わたしはねこがすきです', romaji: 'watashi wa neko ga suki desu', meaning: 'ฉันชอบแมว', cat: 'sentences' },
+      { id: 's_25', word: '田中さんは料理が上手です。', reading: 'たなかさんはりょうりがじょうずです', romaji: 'tanaka san wa ryouri ga jouzu desu', meaning: 'คุณทานากะทำอาหารเก่ง', cat: 'sentences' },
+      { id: 's_26', word: '部屋に机があります。', reading: 'へやにつくえがあります', romaji: 'heya ni tsukue ga arimasu', meaning: 'ในห้องมีโต๊ะอยู่', cat: 'sentences' },
+      { id: 's_27', word: '公園に子供がいます。', reading: 'こうえんにこどもがいます', romaji: 'kouen ni kodomo ga imasu', meaning: 'ในสวนสาธารณะมีเด็กอยู่', cat: 'sentences' },
+      { id: 's_28', word: '毎朝6時に起きます。', reading: 'まいあさろくじにおきます', romaji: 'maiasa rokuji ni okimasu', meaning: 'ตื่นนอนตอน 6 โมงทุกเช้า', cat: 'sentences' },
+      { id: 's_29', word: '夜11時に寝ます。', reading: 'よるじゅういちじにねます', romaji: 'yoru juuichiji ni nemasu', meaning: 'เข้านอนตอน 5 ทุ่ม', cat: 'sentences' },
+      { id: 's_30', word: 'スーパーで野菜を買います。', reading: 'すーぱーでやさいをかいます', romaji: 'suupaa de yasai o kaimasu', meaning: 'ซื้อผักที่ซูเปอร์มาร์เก็ต', cat: 'sentences' },
+      { id: 's_31', word: '音楽を聞きながら勉強します。', reading: 'おんがくをききながらべんきょうします', romaji: 'ongaku o kikinagara benkyou shimasu', meaning: 'อ่านหนังสือเรียนไปพลางฟังเพลงไปพลาง', cat: 'sentences' },
+      { id: 's_32', word: 'この鞄は高くないです。', reading: 'このかばんはたかくないです', romaji: 'kono kaban wa takakunai desu', meaning: 'กระเป๋าใบนี้ไม่แพง', cat: 'sentences' },
+      { id: 's_33', word: '日曜日は暇です。', reading: 'にちようびはひまです', romaji: 'nichiyoubi wa hima desu', meaning: 'วันอาทิตย์ว่าง', cat: 'sentences' },
+      { id: 's_34', word: 'コンビニでお弁当を買いました。', reading: 'こんびにでおべんとうをかいました', romaji: 'konbini de obentou o kaimashita', meaning: 'ซื้อข้าวกล่องที่ร้านสะดวกซื้อแล้ว', cat: 'sentences' },
+      { id: 's_35', word: '傘を持って行きましょう。', reading: 'かさをもっていきましょう', romaji: 'kasa o motte ikimashou', meaning: 'พกร่มติดตัวไปด้วยกันเถอะ', cat: 'sentences' }
     ];
 
     // =========================================================================
     // 3. UNIFIED STATE MANAGEMENT & LOCALSTORAGE SYNC
     // =========================================================================
-    const STORAGE_KEY = 'nihongo_pocket_sniper_v2';
+    const STORAGE_KEY = 'nihongo_pocket_sniper_v3';
     const DEFAULT_WEIGHT = 4;
     const MIN_WEIGHT = 1;
     const MAX_WEIGHT = 20;
 
     let appState = {
       activeTab: 'flashcard',
-      // Data collections
       customVocab: [],
-      vocabMeta: {},      // { [id]: { mastered: bool, weight: number, mistakes: number } }
-      katakanaMeta: {},   // { [id]: { weight: number, mistakes: number } }
+      vocabMeta: {},
+      katakanaMeta: {},
+      stats: {
+        xp: 0,
+        totalAnswered: 0,
+        totalCorrect: 0,
+        speakPass: 0,
+        catStats: {},
+        examHistory: []
+      },
 
-      // Tab 1: Flashcards state
-      fcFilter: 'all',    // 'all' | 'learning' | 'weak'
+      // Tab 1: Flashcards
+      fcFilter: 'all',
       fcCatFilter: 'all',
       fcIndex: 0,
       fcFlipped: false,
       fcShowFurigana: true,
 
-      // Tab 2: Speaking state
+      // Tab 2: Speaking
       speakCat: 'all',
       speakIndex: 0,
 
-      // Tab 3: Charts & Vault state
+      // Tab 3: Charts & Vault
       charSubTab: 'katakana',
       inspectedKanaId: 'tsu',
 
-      // Tab 4: Sniper Quiz state
-      quizMode: 'tn',             // 'tn' | 'lookalike' | 'kana_all' | 'vocab_n5'
-      quizKanaInput: 'choice',    // 'choice' | 'type'
+      // Tab 4: Sniper Quiz
+      quizMode: 'tn',
+      quizKanaInput: 'choice',
       quizShowFurigana: true,
-      quizTarget: null,           // either Katakana obj or Vocab obj
+      quizTarget: null,
       quizLastId: null,
       quizAnswered: false,
       quizHintVisible: false,
       quizStreak: 0,
 
-      // Tab 5: Exam Mode state
-      examSubject: 'hiragana',    // 'hiragana' | 'katakana' | 'vocab_sentence'
-      examFormat: 'choice',       // 'choice' | 'write'
+      // Tab 5: Exam Mode
+      examSubject: 'hiragana',
+      examFormat: 'choice',
       examCount: 10,
       examQuestions: [],
       examIndex: 0,
@@ -1404,20 +1494,29 @@
 
     function loadAppState() {
       try {
-        const raw = localStorage.getItem(STORAGE_KEY);
+        const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('nihongo_pocket_sniper_v2');
         if (raw) {
           const parsed = JSON.parse(raw);
           if (parsed && typeof parsed === 'object') {
             if (Array.isArray(parsed.customVocab)) appState.customVocab = parsed.customVocab;
             if (parsed.vocabMeta) appState.vocabMeta = parsed.vocabMeta;
             if (parsed.katakanaMeta) appState.katakanaMeta = parsed.katakanaMeta;
+            if (parsed.stats) {
+              appState.stats = {
+                xp: parsed.stats.xp || 0,
+                totalAnswered: parsed.stats.totalAnswered || 0,
+                totalCorrect: parsed.stats.totalCorrect || 0,
+                speakPass: parsed.stats.speakPass || 0,
+                catStats: parsed.stats.catStats || {},
+                examHistory: Array.isArray(parsed.stats.examHistory) ? parsed.stats.examHistory : []
+              };
+            }
           }
         }
       } catch (e) {
         console.warn('LocalStorage read error:', e);
       }
 
-      // Initialize missing entries
       KATAKANA_DATA.forEach(k => getKanaMeta(k.id));
       getAllVocab().forEach(v => getVocabMeta(v.id));
       saveAppState();
@@ -1428,7 +1527,8 @@
         const payload = {
           customVocab: appState.customVocab,
           vocabMeta: appState.vocabMeta,
-          katakanaMeta: appState.katakanaMeta
+          katakanaMeta: appState.katakanaMeta,
+          stats: appState.stats
         };
         localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
       } catch (e) {
@@ -1441,6 +1541,23 @@
       const all = getAllVocab();
       const masteredCount = all.filter(v => getVocabMeta(v.id).mastered).length;
       document.getElementById('mastered-badge').textContent = `จำได้แล้ว ${masteredCount}/${all.length} คำ`;
+    }
+
+    function recordAnalytics(catKey, isCorrect, xpGain) {
+      appState.stats.totalAnswered = (appState.stats.totalAnswered || 0) + 1;
+      if (isCorrect) {
+        appState.stats.totalCorrect = (appState.stats.totalCorrect || 0) + 1;
+      }
+      if (!appState.stats.catStats[catKey]) {
+        appState.stats.catStats[catKey] = { correct: 0, total: 0 };
+      }
+      appState.stats.catStats[catKey].total += 1;
+      if (isCorrect) {
+        appState.stats.catStats[catKey].correct += 1;
+      }
+      if (xpGain > 0) {
+        appState.stats.xp = (appState.stats.xp || 0) + xpGain;
+      }
     }
 
     // =========================================================================
@@ -1471,12 +1588,9 @@
           utter.rate = 0.9;
           utter.volume = 1.0;
           window.speechSynthesis.speak(utter);
-        } catch (e) {
-          // Fail silently if speech blocked
-        }
+        } catch (e) {}
       };
 
-      // เรียก cancel เฉพาะตอนที่ยังมีเสียงค้างอยู่ เพื่อป้องกันบั๊กเสียงเงียบบน iOS
       if (window.speechSynthesis.speaking || window.speechSynthesis.pending) {
         window.speechSynthesis.cancel();
         setTimeout(playAudio, 60);
@@ -1508,7 +1622,6 @@
       } catch (e) {}
     }
 
-    // Toast Helper (Replaces alert/confirm cleanly)
     let toastTimer = null;
     function showToast(msg) {
       const el = document.getElementById('toast');
@@ -1523,7 +1636,7 @@
     }
 
     // =========================================================================
-    // 5. TAB 1: FLASHCARDS LOGIC (3D FLIP, FURIGANA TOGGLE, WEAK-SPOT BOOST)
+    // 5. TAB 1: FLASHCARDS LOGIC
     // =========================================================================
     function getFilteredFlashcards() {
       let list = getAllVocab();
@@ -1653,11 +1766,14 @@
       const cards = getFilteredFlashcards();
       const card = cards[appState.fcIndex];
       const meta = getVocabMeta(card.id);
+      if (mastered && !meta.mastered) {
+        appState.stats.xp = (appState.stats.xp || 0) + 15;
+      }
       meta.mastered = mastered;
       if (mastered) {
         meta.weight = Math.max(MIN_WEIGHT, meta.weight - 2);
         playSFX('correct');
-        showToast(`✅ จำคำว่า "${card.word}" ได้แล้ว!`);
+        showToast(`✅ จำคำว่า "${card.word}" ได้แล้ว! (+15 XP)`);
       }
       saveAppState();
       nextCard();
@@ -1741,7 +1857,7 @@
     }
 
     // =========================================================================
-    // 6. TAB 2: SPEAKING PRACTICE (WEB SPEECH API ja-JP)
+    // 6. TAB 2: SPEAKING PRACTICE
     // =========================================================================
     function getSpeakPool() {
       const all = getAllVocab();
@@ -1833,8 +1949,11 @@
         heardEl.textContent = primaryHeard;
 
         if (isMatch) {
+          appState.stats.speakPass = (appState.stats.speakPass || 0) + 1;
+          appState.stats.xp = (appState.stats.xp || 0) + 15;
+          saveAppState();
           playSFX('correct');
-          feedbackEl.textContent = '🎉 ออกเสียงชัดเจนมาก! ตรงกับคำศัพท์เป๊ะเลย';
+          feedbackEl.textContent = '🎉 ออกเสียงชัดเจนมาก! ตรงกับคำศัพท์เป๊ะเลย (+15 XP)';
           feedbackEl.className = 'text-xs sm:text-sm font-semibold py-2 px-3 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-500/30';
         } else {
           playSFX('wrong');
@@ -1857,7 +1976,7 @@
     }
 
     // =========================================================================
-    // 7. TAB 3: CHARTS (KATAKANA HEATMAP, HIRAGANA, KANJI N5) & N5 VAULT
+    // 7. TAB 3: CHARTS & SEARCHABLE N5 VAULT
     // =========================================================================
     function switchCharSet(type) {
       appState.charSubTab = type;
@@ -1916,7 +2035,7 @@
       });
     }
 
-    function inspectKatakana(id, shouldSpeak = true) {
+    function inspectKatakana(id, shouldSpeak) {
       const k = KATAKANA_DATA.find(item => item.id === id);
       if (!k) return;
       appState.inspectedKanaId = id;
@@ -1962,6 +2081,7 @@
       grid.innerHTML = '';
       HIRAGANA_DATA.forEach(item => {
         const cell = document.createElement('button');
+        cell.type = 'button';
         if (!item.c) {
           cell.className = 'p-2.5 rounded-xl bg-slate-950/30';
           cell.disabled = true;
@@ -2092,7 +2212,7 @@
     }
 
     // =========================================================================
-    // 8. TAB 4: SNIPER QUIZ ENGINE (WEIGHTED SRS & LOOKALIKE TRAPS)
+    // 8A. TAB 4: SNIPER QUIZ ENGINE
     // =========================================================================
     function setQuizMode(mode) {
       appState.quizMode = mode;
@@ -2144,7 +2264,6 @@
       if (appState.quizMode === 'kana_all') {
         return KATAKANA_DATA;
       }
-      // vocab_n5
       const all = getAllVocab();
       const cat = document.getElementById('quiz-vocab-cat').value;
       if (cat === 'weak') {
@@ -2260,7 +2379,6 @@
       const used = new Set([target.id]);
 
       if (!isVocab) {
-        // Prioritize visual lookalike traps!
         const twins = [...(target.lookalikes || [])].sort(() => Math.random() - 0.5);
         for (const lid of twins) {
           if (chosen.length >= 4) break;
@@ -2357,6 +2475,11 @@
       const feedbackEl = document.getElementById('quiz-feedback-line');
       const arena = document.getElementById('quiz-arena');
 
+      const statCat = isVocab
+        ? (target.cat === 'custom' ? 'greetings' : target.cat)
+        : (target.isLower ? 'katakana_tn' : 'katakana_top');
+      recordAnalytics(statCat, isCorrect, isCorrect ? 10 : 0);
+
       if (isVocab) {
         document.getElementById('quiz-furi-display').textContent = target.word === target.reading ? '' : target.reading;
         speakJP(target.reading);
@@ -2399,7 +2522,6 @@
           ? `✗ ผิด! เฉลย: ${target.reading} = ${target.meaning}`
           : `✗ ผิด! ตัว ${target.kana} อ่านว่า ${target.thai}`;
 
-        // Immediately reveal Thai visual mnemonic hint box!
         appState.quizHintVisible = true;
         document.getElementById('quiz-mnemonic-text').textContent = isVocab ? target.tip : target.mnemonic;
         document.getElementById('quiz-mnemonic-box').classList.remove('hidden');
@@ -2444,6 +2566,662 @@
     }
 
     // =========================================================================
+    // 8B. TAB 5: EXAM MODE ENGINE (3 SUBJECTS × CHOICE / WRITTEN)
+    // =========================================================================
+    function setExamSubject(sub) {
+      appState.examSubject = sub;
+      document.querySelectorAll('.exam-sub-btn').forEach(btn => {
+        const active = btn.dataset.esub === sub;
+        btn.className = active
+          ? 'exam-sub-btn p-3 rounded-2xl bg-indigo-600 text-white border border-indigo-400 text-left flex items-center justify-between transition'
+          : 'exam-sub-btn p-3 rounded-2xl bg-slate-800/90 hover:bg-slate-800 text-slate-200 border border-slate-700 text-left flex items-center justify-between transition';
+        const oldTag = btn.querySelector('.exam-active-tag');
+        if (oldTag) oldTag.remove();
+        if (active) {
+          const span = document.createElement('span');
+          span.className = 'text-xs font-bold exam-active-tag';
+          span.textContent = 'เลือกอยู่';
+          btn.appendChild(span);
+        }
+      });
+
+      const subOpts = document.getElementById('exam-sub-options');
+      const kanaWrap = document.getElementById('exam-kana-scope-wrap');
+      const vocabWrap = document.getElementById('exam-vocab-scope-wrap');
+
+      if (sub === 'hiragana') {
+        subOpts.classList.add('hidden');
+      } else if (sub === 'katakana') {
+        subOpts.classList.remove('hidden');
+        kanaWrap.classList.remove('hidden');
+        vocabWrap.classList.add('hidden');
+      } else {
+        subOpts.classList.remove('hidden');
+        kanaWrap.classList.add('hidden');
+        vocabWrap.classList.remove('hidden');
+      }
+    }
+
+    function setExamFormat(fmt) {
+      appState.examFormat = fmt;
+      const cBtn = document.getElementById('exam-fmt-choice');
+      const wBtn = document.getElementById('exam-fmt-written');
+      if (fmt === 'choice') {
+        cBtn.className = 'p-3 rounded-2xl bg-indigo-600/20 border-2 border-indigo-500 text-indigo-200 text-left transition';
+        wBtn.className = 'p-3 rounded-2xl bg-slate-800 border-2 border-slate-700 text-slate-300 text-left transition';
+      } else {
+        wBtn.className = 'p-3 rounded-2xl bg-indigo-600/20 border-2 border-indigo-500 text-indigo-200 text-left transition';
+        cBtn.className = 'p-3 rounded-2xl bg-slate-800 border-2 border-slate-700 text-slate-300 text-left transition';
+      }
+    }
+
+    function setExamCount(cnt) {
+      appState.examCount = cnt;
+      document.querySelectorAll('.exam-cnt-btn').forEach(btn => {
+        const active = Number(btn.dataset.ecount) === cnt;
+        btn.className = active
+          ? 'exam-cnt-btn py-2 rounded-xl bg-indigo-600 text-white text-xs font-bold border border-indigo-400'
+          : 'exam-cnt-btn py-2 rounded-xl bg-slate-800 text-slate-300 text-xs font-bold border border-slate-700';
+      });
+    }
+
+    function buildExamQuestions() {
+      const sub = appState.examSubject;
+      let rawItems = [];
+
+      if (sub === 'hiragana') {
+        rawItems = HIRAGANA_DATA.filter(h => h.c !== '').map(h => {
+          const accept = [h.r];
+          if (h.r === 'shi') accept.push('si');
+          if (h.r === 'chi') accept.push('ti');
+          if (h.r === 'tsu') accept.push('tu');
+          if (h.r === 'fu') accept.push('hu');
+          if (h.r === 'n') accept.push('nn');
+          return {
+            sourceType: 'hiragana',
+            statCat: 'hiragana',
+            sourceId: h.c,
+            badge: 'Hiragana',
+            prompt: h.c,
+            subPrompt: '',
+            speakText: h.c,
+            correctShort: h.r,
+            correctDisplay: h.r,
+            acceptAnswers: accept,
+            lookalikes: []
+          };
+        });
+      } else if (sub === 'katakana') {
+        const scope = document.getElementById('exam-kana-scope').value;
+        let pool = KATAKANA_DATA;
+        if (scope === 'tn') pool = KATAKANA_DATA.filter(k => k.isLower);
+        else if (scope === 'lookalike') pool = KATAKANA_DATA.filter(k => LOOKALIKE_IDS.includes(k.id));
+
+        rawItems = pool.map(k => ({
+          sourceType: 'katakana',
+          statCat: k.isLower ? 'katakana_tn' : 'katakana_top',
+          sourceId: k.id,
+          badge: `Katakana (แถว ${k.row})`,
+          prompt: k.kana,
+          subPrompt: '',
+          speakText: k.kana,
+          correctShort: k.romaji,
+          correctDisplay: `${k.romaji} (${k.thai})`,
+          acceptAnswers: k.accept,
+          lookalikes: k.lookalikes || []
+        }));
+      } else {
+        const scope = document.getElementById('exam-vocab-scope').value;
+        const vocabPool = getAllVocab();
+        let pool = [];
+        if (scope === 'vocab_only') {
+          pool = vocabPool;
+        } else if (scope === 'sentence_only') {
+          pool = N5_SENTENCES_DATA;
+        } else {
+          pool = [...vocabPool, ...N5_SENTENCES_DATA];
+        }
+
+        rawItems = pool.map(v => {
+          const isSentence = v.cat === 'sentences';
+          const cleanMeanings = v.meaning
+            .split('/')
+            .map(s => s.replace(/\(.*?\)/g, '').trim().toLowerCase())
+            .filter(Boolean);
+          const cleanReadings = v.reading
+            .split('/')
+            .map(s => s.trim().toLowerCase())
+            .filter(Boolean);
+          const cleanRomajis = v.romaji
+            .split('/')
+            .map(s => s.trim().toLowerCase())
+            .filter(Boolean);
+
+          return {
+            sourceType: isSentence ? 'sentence' : 'vocab',
+            statCat: isSentence ? 'greetings' : (v.cat === 'custom' ? 'greetings' : v.cat),
+            sourceId: v.id,
+            badge: isSentence ? 'ประโยค N5' : (VOCAB_CATEGORIES[v.cat] || 'คำศัพท์ N5'),
+            prompt: v.word,
+            subPrompt: v.word !== v.reading ? v.reading : '',
+            speakText: v.reading,
+            correctShort: v.meaning,
+            correctDisplay: `${v.meaning} (${v.reading})`,
+            acceptAnswers: [...new Set([
+              v.reading.toLowerCase(),
+              v.romaji.toLowerCase(),
+              ...cleanReadings,
+              ...cleanRomajis,
+              ...cleanMeanings
+            ])],
+            catGroup: v.cat
+          };
+        });
+      }
+
+      const shuffled = [...rawItems].sort(() => Math.random() - 0.5);
+      const selected = shuffled.slice(0, Math.min(appState.examCount, shuffled.length));
+
+      return selected.map(q => {
+        const chosenOptions = [q.correctShort];
+        const used = new Set([q.correctShort]);
+
+        if (q.sourceType === 'katakana' && q.lookalikes.length > 0) {
+          for (const lid of [...q.lookalikes].sort(() => Math.random() - 0.5)) {
+            if (chosenOptions.length >= 4) break;
+            const twin = rawItems.find(x => x.sourceId === lid) || KATAKANA_DATA.find(x => x.id === lid);
+            const label = twin ? twin.romaji : null;
+            if (label && !used.has(label)) {
+              chosenOptions.push(label);
+              used.add(label);
+            }
+          }
+        } else if (q.catGroup) {
+          for (const same of rawItems.filter(x => x.catGroup === q.catGroup && x.sourceId !== q.sourceId).sort(() => Math.random() - 0.5)) {
+            if (chosenOptions.length >= 4) break;
+            if (!used.has(same.correctShort)) {
+              chosenOptions.push(same.correctShort);
+              used.add(same.correctShort);
+            }
+          }
+        }
+
+        for (const item of [...rawItems].sort(() => Math.random() - 0.5)) {
+          if (chosenOptions.length >= 4) break;
+          if (!used.has(item.correctShort)) {
+            chosenOptions.push(item.correctShort);
+            used.add(item.correctShort);
+          }
+        }
+
+        return {
+          ...q,
+          options: chosenOptions.sort(() => Math.random() - 0.5)
+        };
+      });
+    }
+
+    function startExam() {
+      appState.examQuestions = buildExamQuestions();
+      appState.examIndex = 0;
+      appState.examScore = 0;
+      appState.examAnswered = false;
+      appState.examMistakes = [];
+      appState.examSeconds = 0;
+
+      clearInterval(appState.examTimerId);
+      appState.examTimerId = setInterval(() => {
+        appState.examSeconds += 1;
+        document.getElementById('exam-timer-text').textContent = formatExamTime(appState.examSeconds);
+      }, 1000);
+
+      document.getElementById('exam-timer-text').textContent = '00:00';
+      document.getElementById('exam-setup-view').classList.add('hidden');
+      document.getElementById('exam-result-view').classList.add('hidden');
+      document.getElementById('exam-active-view').classList.remove('hidden');
+      renderExamQuestion();
+    }
+
+    function formatExamTime(sec) {
+      return `${String(Math.floor(sec / 60)).padStart(2, '0')}:${String(sec % 60).padStart(2, '0')}`;
+    }
+
+    function resetExamToSetup() {
+      clearInterval(appState.examTimerId);
+      document.getElementById('exam-active-view').classList.add('hidden');
+      document.getElementById('exam-result-view').classList.add('hidden');
+      document.getElementById('exam-setup-view').classList.remove('hidden');
+    }
+
+    function toggleExamFurigana() {
+      appState.examShowFuri = !appState.examShowFuri;
+      document.getElementById('exam-furi-toggle').textContent = appState.examShowFuri ? '👁️ ซ่อนคำอ่าน' : '🙈 แสดงคำอ่าน';
+      renderExamQuestion();
+    }
+
+    function renderExamQuestion() {
+      const q = appState.examQuestions[appState.examIndex];
+      const total = appState.examQuestions.length;
+      appState.examAnswered = false;
+
+      document.getElementById('exam-progress-text').textContent = `ข้อที่ ${appState.examIndex + 1} / ${total}`;
+      document.getElementById('exam-live-score').textContent = `ถูก: ${appState.examScore}`;
+      document.getElementById('exam-progress-bar').style.width = `${((appState.examIndex + 1) / total) * 100}%`;
+      document.getElementById('exam-q-badge').textContent = q.badge;
+
+      const furiBtn = document.getElementById('exam-furi-toggle');
+      const subEl = document.getElementById('exam-q-sub');
+      const mainEl = document.getElementById('exam-q-main');
+
+      if (appState.examSubject === 'vocab_sentence') {
+        furiBtn.classList.remove('hidden');
+        furiBtn.textContent = appState.examShowFuri ? '👁️ ซ่อนคำอ่าน' : '🙈 แสดงคำอ่าน';
+        subEl.textContent = appState.examShowFuri ? q.subPrompt : '';
+        mainEl.textContent = q.prompt;
+        mainEl.className = q.prompt.length > 8
+          ? 'jp-font text-2xl sm:text-3xl font-black text-white'
+          : 'jp-font text-4xl sm:text-5xl font-black text-white';
+      } else {
+        furiBtn.classList.add('hidden');
+        subEl.textContent = '';
+        mainEl.textContent = q.prompt;
+        mainEl.className = 'jp-font text-5xl sm:text-6xl font-black text-white';
+      }
+
+      const instEl = document.getElementById('exam-q-instruction');
+      const choicesBox = document.getElementById('exam-choices-box');
+      const writeForm = document.getElementById('exam-write-form');
+      document.getElementById('exam-q-feedback').classList.add('hidden');
+      document.getElementById('exam-next-btn').classList.add('hidden');
+
+      if (appState.examFormat === 'choice') {
+        choicesBox.classList.remove('hidden');
+        writeForm.classList.add('hidden');
+        instEl.textContent = appState.examSubject === 'vocab_sentence' ? 'เลือกความหมายที่ถูกต้อง' : 'เลือกเสียงอ่านที่ถูกต้อง';
+        choicesBox.innerHTML = '';
+        q.options.forEach(opt => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.dataset.opt = opt;
+          btn.className = 'exam-opt-btn p-3.5 rounded-2xl bg-slate-900 hover:bg-slate-700 border-2 border-slate-700 text-xs sm:text-sm font-semibold text-white transition active:scale-95';
+          btn.textContent = opt;
+          btn.onclick = () => handleExamChoice(opt);
+          choicesBox.appendChild(btn);
+        });
+      } else {
+        choicesBox.classList.add('hidden');
+        writeForm.classList.remove('hidden');
+        const inp = document.getElementById('exam-write-input');
+        const subBtn = document.getElementById('exam-write-submit-btn');
+        inp.value = '';
+        inp.disabled = false;
+        subBtn.classList.remove('hidden');
+        if (appState.examSubject === 'vocab_sentence') {
+          instEl.textContent = 'พิมพ์คำอ่าน (Kana / Romaji) หรือความหมายภาษาไทย';
+          inp.placeholder = 'เช่น たべる / taberu / กิน';
+        } else {
+          instEl.textContent = 'พิมพ์เสียงอ่าน Romaji ของตัวอักษรนี้';
+          inp.placeholder = 'เช่น ka, shi, tsu, n...';
+        }
+        setTimeout(() => inp.focus(), 50);
+      }
+    }
+
+    function handleExamChoice(selectedOpt) {
+      if (appState.examAnswered) return;
+      const q = appState.examQuestions[appState.examIndex];
+      const isCorrect = selectedOpt === q.correctShort;
+
+      document.querySelectorAll('.exam-opt-btn').forEach(btn => {
+        btn.disabled = true;
+        const val = btn.dataset.opt;
+        if (val === q.correctShort) {
+          btn.className = 'exam-opt-btn p-3.5 rounded-2xl bg-emerald-600/25 border-2 border-emerald-500 text-xs sm:text-sm font-bold text-emerald-200';
+        } else if (val === selectedOpt) {
+          btn.className = 'exam-opt-btn p-3.5 rounded-2xl bg-rose-600/25 border-2 border-rose-500 text-xs sm:text-sm font-bold text-rose-200';
+        } else {
+          btn.className = 'exam-opt-btn p-3.5 rounded-2xl bg-slate-950/60 border-2 border-slate-800 text-xs text-slate-500 opacity-50';
+        }
+      });
+
+      finalizeExamStep(isCorrect, selectedOpt);
+    }
+
+    function submitExamWriting(e) {
+      e.preventDefault();
+      if (appState.examAnswered) {
+        nextExamQuestion();
+        return;
+      }
+      const inp = document.getElementById('exam-write-input');
+      const userAns = inp.value.trim();
+      if (!userAns) return;
+
+      inp.disabled = true;
+      document.getElementById('exam-write-submit-btn').classList.add('hidden');
+      const q = appState.examQuestions[appState.examIndex];
+      const norm = userAns.toLowerCase().replace(/[。、！？\s]+/g, '');
+      const isCorrect = q.acceptAnswers.some(acc => {
+        const cleanAcc = acc.replace(/[。、！？\s]+/g, '');
+        if (q.sourceType === 'hiragana' || q.sourceType === 'katakana') return cleanAcc === norm;
+        return cleanAcc === norm || (norm.length >= 2 && cleanAcc.includes(norm));
+      });
+
+      finalizeExamStep(isCorrect, userAns);
+    }
+
+    function finalizeExamStep(isCorrect, userAnswerText) {
+      appState.examAnswered = true;
+      const q = appState.examQuestions[appState.examIndex];
+      const fbBox = document.getElementById('exam-q-feedback');
+      const nextBtn = document.getElementById('exam-next-btn');
+
+      if (q.subPrompt) document.getElementById('exam-q-sub').textContent = q.subPrompt;
+      speakJP(q.speakText);
+      recordAnalytics(q.statCat, isCorrect, isCorrect ? 5 : 0);
+
+      fbBox.classList.remove('hidden');
+      if (isCorrect) {
+        appState.examScore += 1;
+        document.getElementById('exam-live-score').textContent = `ถูก: ${appState.examScore}`;
+        playSFX('correct');
+        fbBox.className = 'p-3 rounded-2xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 text-xs font-semibold text-left';
+        fbBox.innerHTML = `✅ ถูกต้อง! เฉลย: <span class="text-white">${q.correctDisplay}</span>`;
+      } else {
+        playSFX('wrong');
+        appState.examMistakes.push({ ...q, userAnswer: userAnswerText });
+        fbBox.className = 'p-3 rounded-2xl bg-rose-500/15 border border-rose-500/40 text-rose-300 text-xs font-semibold text-left';
+        fbBox.innerHTML = `❌ ผิด (คุณตอบ: ${userAnswerText})<br/><span class="text-white">เฉลยที่ถูก: ${q.correctDisplay}</span>`;
+      }
+      saveAppState();
+
+      nextBtn.textContent = (appState.examIndex + 1 >= appState.examQuestions.length) ? '📊 ดูสรุปผลคะแนนสอบ' : 'ข้อถัดไป →';
+      nextBtn.classList.remove('hidden');
+    }
+
+    function nextExamQuestion() {
+      if (appState.examIndex + 1 < appState.examQuestions.length) {
+        appState.examIndex += 1;
+        renderExamQuestion();
+      } else {
+        finishExam();
+      }
+    }
+
+    function finishExam() {
+      clearInterval(appState.examTimerId);
+      document.getElementById('exam-active-view').classList.add('hidden');
+      document.getElementById('exam-result-view').classList.remove('hidden');
+
+      const total = appState.examQuestions.length;
+      const pct = Math.round((appState.examScore / total) * 100);
+      let grade = 'F';
+      let gStyle = 'bg-rose-500/20 border-rose-400 text-rose-300';
+      if (pct >= 90) { grade = 'S'; gStyle = 'bg-amber-400/20 border-amber-300 text-amber-300'; }
+      else if (pct >= 80) { grade = 'A'; gStyle = 'bg-emerald-500/20 border-emerald-400 text-emerald-300'; }
+      else if (pct >= 70) { grade = 'B'; gStyle = 'bg-indigo-500/20 border-indigo-400 text-indigo-300'; }
+      else if (pct >= 50) { grade = 'C'; gStyle = 'bg-sky-500/20 border-sky-400 text-sky-300'; }
+
+      const gradeEl = document.getElementById('exam-grade-badge');
+      gradeEl.textContent = grade;
+      gradeEl.className = `w-20 h-20 mx-auto rounded-3xl border-2 flex items-center justify-center text-4xl font-black ${gStyle}`;
+
+      const earnedXp = appState.examScore * 5;
+      document.getElementById('exam-score-big').textContent = `${appState.examScore} / ${total} คะแนน (${pct}%)`;
+      document.getElementById('exam-result-summary').textContent = `ใช้เวลาสอบ ${formatExamTime(appState.examSeconds)} • ได้รับ +${earnedXp} XP`;
+
+      const subNames = { hiragana: 'Hiragana', katakana: 'Katakana', vocab_sentence: 'ศัพท์ & ประโยค N5' };
+      const fmtNames = { choice: 'Choice', written: 'เขียนตอบ' };
+      const nowStr = new Date().toLocaleDateString('th-TH', { day: 'numeric', month: 'short' });
+
+      appState.stats.examHistory.unshift({
+        date: nowStr,
+        subject: subNames[appState.examSubject] || appState.examSubject,
+        format: fmtNames[appState.examFormat] || appState.examFormat,
+        score: appState.examScore,
+        total,
+        pct,
+        grade
+      });
+      if (appState.stats.examHistory.length > 40) appState.stats.examHistory.pop();
+      saveAppState();
+
+      const mistakesSec = document.getElementById('exam-mistakes-section');
+      const mistakesList = document.getElementById('exam-mistakes-list');
+      const pushBtn = document.getElementById('push-mistakes-btn');
+
+      if (appState.examMistakes.length === 0) {
+        mistakesSec.classList.add('hidden');
+      } else {
+        mistakesSec.classList.remove('hidden');
+        pushBtn.disabled = false;
+        pushBtn.textContent = `🔥 ส่ง ${appState.examMistakes.length} ข้อที่ผิดไปย้ำในควิซ (+5)`;
+        mistakesList.innerHTML = '';
+
+        appState.examMistakes.forEach(m => {
+          const row = document.createElement('div');
+          row.className = 'p-3 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-between gap-2';
+          row.innerHTML = `
+            <div class="min-w-0">
+              <div class="jp-font text-base font-bold text-white">${m.prompt}</div>
+              <div class="text-[11px] text-rose-400">คุณตอบ: ${m.userAnswer}</div>
+              <div class="text-xs text-emerald-400 font-semibold">เฉลย: ${m.correctDisplay}</div>
+            </div>
+            <button type="button" class="p-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 text-xs shrink-0">🔊</button>
+          `;
+          row.querySelector('button').onclick = () => speakJP(m.speakText);
+          mistakesList.appendChild(row);
+        });
+      }
+    }
+
+    function pushExamMistakesToWeakness() {
+      let boostedCount = 0;
+      appState.examMistakes.forEach(m => {
+        if (m.sourceType === 'katakana') {
+          const meta = getKanaMeta(m.sourceId);
+          meta.weight = Math.min(MAX_WEIGHT, meta.weight + 5);
+          meta.mistakes = (meta.mistakes || 0) + 1;
+          boostedCount += 1;
+        } else if (m.sourceType === 'vocab') {
+          const meta = getVocabMeta(m.sourceId);
+          meta.weight = Math.min(MAX_WEIGHT, meta.weight + 5);
+          meta.mastered = false;
+          meta.mistakes = (meta.mistakes || 0) + 1;
+          boostedCount += 1;
+        }
+      });
+      saveAppState();
+      playSFX('boost');
+      const btn = document.getElementById('push-mistakes-btn');
+      btn.disabled = true;
+      btn.textContent = '✅ ส่งเข้าควิซจุดอ่อนเรียบร้อย!';
+      showToast(`🔥 เพิ่มน้ำหนักจุดอ่อนให้ ${boostedCount} รายการแล้ว!`);
+    }
+
+    function speakExamCurrent() {
+      const q = appState.examQuestions[appState.examIndex];
+      if (q) speakJP(q.speakText);
+    }
+
+    // =========================================================================
+    // 8C. TAB 6: LEARNING ANALYTICS DASHBOARD (เก่งตรงไหน / ควรเพิ่มอะไร)
+    // =========================================================================
+    const ANALYTICS_CAT_LABELS = {
+      hiragana: 'Hiragana (46 ตัว)',
+      katakana_top: 'Katakana แถวบน (A–S)',
+      katakana_tn: 'Katakana แถวล่าง (T–N)',
+      time: 'ตัวเลข วัน และเวลา',
+      verbs: 'คำกริยาพื้นฐาน N5',
+      adj: 'คำคุณศัพท์ い / な',
+      places: 'สถานที่และทิศทาง',
+      people: 'ครอบครัวและผู้คน',
+      daily: 'อาหารและของใช้',
+      katakana_n5: 'คำทับศัพท์คาตาคานะ',
+      greetings: 'คำทักทาย & ประโยค N5'
+    };
+
+    function renderDashboard() {
+      const stats = appState.stats;
+      const xp = stats.xp || 0;
+      const lv = Math.floor(xp / 100) + 1;
+      const xpInLv = xp % 100;
+      const ranks = ['ผู้เริ่มต้นภาษาญี่ปุ่น', 'นักล่าคาตาคานะ', 'ผู้พิชิตศัพท์ N5', 'จอมยุทธ์คันจิ N5', 'ปรมาจารย์ JLPT N5'];
+
+      document.getElementById('dash-level-badge').textContent = `LV. ${lv}`;
+      document.getElementById('dash-rank-title').textContent = ranks[Math.min(ranks.length - 1, Math.floor((lv - 1) / 2))];
+      document.getElementById('dash-xp-text').textContent = `${xpInLv} / 100 XP (รวม ${xp})`;
+      document.getElementById('dash-xp-bar').style.width = `${xpInLv}%`;
+
+      const allVocab = getAllVocab();
+      const mastered = allVocab.filter(v => getVocabMeta(v.id).mastered).length;
+      const vocabPct = allVocab.length > 0 ? Math.round((mastered / allVocab.length) * 100) : 0;
+      document.getElementById('dash-stat-vocab').textContent = `${mastered} / ${allVocab.length}`;
+      document.getElementById('dash-stat-vocab-pct').textContent = `${vocabPct}% ของคลังศัพท์`;
+
+      const totalQ = stats.totalAnswered || 0;
+      const overallAcc = totalQ > 0 ? Math.round(((stats.totalCorrect || 0) / totalQ) * 100) : 0;
+      document.getElementById('dash-stat-total-q').textContent = `${totalQ} ข้อ`;
+      document.getElementById('dash-stat-overall-acc').textContent = `ความแม่นยำรวม ${overallAcc}%`;
+
+      const exams = stats.examHistory || [];
+      document.getElementById('dash-stat-exam-count').textContent = `${exams.length} ครั้ง`;
+      if (exams.length > 0) {
+        const avg = Math.round(exams.reduce((s, e) => s + e.pct, 0) / exams.length);
+        document.getElementById('dash-stat-exam-avg').textContent = `คะแนนเฉลี่ย ${avg}%`;
+      } else {
+        document.getElementById('dash-stat-exam-avg').textContent = 'ยังไม่มีผลสอบ';
+      }
+
+      document.getElementById('dash-stat-speak-pass').textContent = `${stats.speakPass || 0} ครั้ง`;
+
+      const barsBox = document.getElementById('dash-strength-bars');
+      const bestBadge = document.getElementById('dash-best-badge');
+      barsBox.innerHTML = '';
+
+      const catList = Object.keys(ANALYTICS_CAT_LABELS).map(key => {
+        const rec = (stats.catStats && stats.catStats[key]) || { correct: 0, total: 0 };
+        const pct = rec.total > 0 ? Math.round((rec.correct / rec.total) * 100) : 0;
+        return { key, label: ANALYTICS_CAT_LABELS[key], correct: rec.correct, total: rec.total, pct };
+      });
+
+      const testedCats = catList.filter(c => c.total > 0).sort((a, b) => b.pct - a.pct || b.total - a.total);
+      if (testedCats.length > 0) {
+        bestBadge.textContent = `เก่งสุด: ${testedCats[0].label} (${testedCats[0].pct}%)`;
+      } else {
+        bestBadge.textContent = 'รอเก็บสถิติ';
+      }
+
+      catList.forEach(item => {
+        const barColor = item.total === 0 ? 'bg-slate-700' : (item.pct >= 75 ? 'bg-emerald-500' : (item.pct >= 50 ? 'bg-amber-400' : 'bg-rose-500'));
+        const row = document.createElement('div');
+        row.className = 'space-y-1';
+        row.innerHTML = `
+          <div class="flex justify-between text-[11px]">
+            <span class="text-slate-200 font-medium">${item.label}</span>
+            <span class="text-slate-400 font-semibold">${item.total > 0 ? `${item.pct}% (${item.correct}/${item.total})` : 'ยังไม่ทดสอบ'}</span>
+          </div>
+          <div class="w-full h-1.5 bg-slate-900 rounded-full overflow-hidden">
+            <div class="h-full ${barColor} rounded-full transition-all duration-300" style="width: ${item.pct}%"></div>
+          </div>
+        `;
+        barsBox.appendChild(row);
+      });
+
+      const weakKana = KATAKANA_DATA
+        .map(k => ({ ...k, weight: getKanaMeta(k.id).weight }))
+        .filter(k => k.weight >= 5)
+        .sort((a, b) => b.weight - a.weight)
+        .slice(0, 5);
+
+      const weakVocab = allVocab
+        .map(v => ({ ...v, weight: getVocabMeta(v.id).weight }))
+        .filter(v => v.weight >= 5)
+        .sort((a, b) => b.weight - a.weight)
+        .slice(0, 5);
+
+      const chipsBox = document.getElementById('dash-weak-chips');
+      chipsBox.innerHTML = '';
+
+      weakKana.forEach(k => {
+        const span = document.createElement('span');
+        span.className = 'px-2.5 py-1 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-200 text-xs font-bold jp-font';
+        span.textContent = `${k.kana} (${k.romaji}) • w:${k.weight}`;
+        chipsBox.appendChild(span);
+      });
+
+      weakVocab.forEach(v => {
+        const span = document.createElement('span');
+        span.className = 'px-2.5 py-1 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-200 text-xs font-semibold jp-font';
+        span.textContent = `${v.word} (${v.meaning}) • w:${v.weight}`;
+        chipsBox.appendChild(span);
+      });
+
+      if (weakKana.length === 0 && weakVocab.length === 0) {
+        chipsBox.innerHTML = `<span class="text-xs text-emerald-400">ยอดเยี่ยม! ตอนนี้ยังไม่มีตัวอักษรหรือคำศัพท์ที่เป็นจุดอ่อนหนัก</span>`;
+      }
+
+      const adviceEl = document.getElementById('dash-advice-text');
+      const lowestCat = [...testedCats].sort((a, b) => a.pct - b.pct)[0];
+      if (weakKana.length > 0 && weakKana[0].weight >= 6) {
+        const topK = weakKana.slice(0, 3).map(k => `${k.kana} (${k.romaji})`).join(', ');
+        adviceEl.innerHTML = `💡 <strong>ควรเน้นด่วน:</strong> ตัวอักษร Katakana <span class="text-amber-300 font-bold">${topK}</span> ยังตอบผิดหรือกดย้ำบ่อย กดปุ่มซ้อมในควิซจุดอ่อนด้านล่างเพื่อย้ำทันทีครับ`;
+      } else if (weakVocab.length > 0 && weakVocab[0].weight >= 6) {
+        const topV = weakVocab.slice(0, 3).map(v => `${v.word} (${v.meaning})`).join(', ');
+        adviceEl.innerHTML = `💡 <strong>ควรเพิ่มคำศัพท์:</strong> คำว่า <span class="text-indigo-300 font-bold">${topV}</span> ยังจำไม่แม่น แนะนำให้กดซ้อมในควิซจุดอ่อนหรือทำข้อสอบทบทวนครับ`;
+      } else if (lowestCat && lowestCat.pct < 70) {
+        adviceEl.innerHTML = `💡 <strong>หมวดที่ควรเสริม:</strong> หมวด <span class="text-amber-300 font-bold">${lowestCat.label}</span> ตอนนี้ได้ความแม่นยำ ${lowestCat.pct}% ลองทำข้อสอบเพิ่มความแม่นยำในหมวดนี้ครับ`;
+      } else {
+        adviceEl.innerHTML = `🌟 <strong>ภาพรวมยอดเยี่ยม!</strong> ลองเข้าแท็บ <strong>ทำข้อสอบ</strong> แล้วเลือก <strong>แบบเขียนตอบ</strong> เพื่อทดสอบความแม่นยำ 100% โดยไม่พึ่งตัวเลือกครับ`;
+      }
+
+      const tbody = document.getElementById('dash-exam-table-body');
+      tbody.innerHTML = '';
+      if (exams.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="py-4 text-center text-slate-500">ยังไม่มีประวัติการทำข้อสอบ</td></tr>`;
+      } else {
+        exams.forEach(ex => {
+          const gColor = ex.grade === 'S' ? 'text-amber-300' : (ex.grade === 'A' ? 'text-emerald-400' : (ex.grade === 'F' ? 'text-rose-400' : 'text-indigo-300'));
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td class="py-2 pr-2 text-slate-400 whitespace-nowrap">${ex.date}</td>
+            <td class="py-2 px-2 font-medium text-white">${ex.subject}</td>
+            <td class="py-2 px-2 text-slate-300">${ex.format}</td>
+            <td class="py-2 px-2 text-right font-semibold text-slate-200">${ex.score}/${ex.total} (${ex.pct}%)</td>
+            <td class="py-2 pl-2 text-center font-black ${gColor}">${ex.grade}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+    }
+
+    function jumpToWeakSniperQuiz() {
+      const weakKanaCount = KATAKANA_DATA.filter(k => getKanaMeta(k.id).weight >= 5).length;
+      switchTab('quiz');
+      if (weakKanaCount > 0) {
+        setQuizMode('tn');
+      } else {
+        setQuizMode('vocab_n5');
+        document.getElementById('quiz-vocab-cat').value = 'weak';
+        nextQuizQuestion();
+      }
+      showToast('🎯 เปิดควิซเจาะจุดอ่อนให้เรียบร้อย!');
+    }
+
+    function jumpToWeaknessExam() {
+      const weakKanaCount = KATAKANA_DATA.filter(k => getKanaMeta(k.id).weight >= 5).length;
+      switchTab('exam');
+      resetExamToSetup();
+      if (weakKanaCount > 0) {
+        setExamSubject('katakana');
+        document.getElementById('exam-kana-scope').value = 'tn';
+      } else {
+        setExamSubject('vocab_sentence');
+      }
+      showToast('📝 ตั้งค่าวิชาสอบแก้จุดอ่อนให้แล้ว กดเริ่มสอบได้เลย!');
+    }
+
+    // =========================================================================
     // 9. BACKUP & GITHUB SYNC MODAL (EXPORT / IMPORT JSON)
     // =========================================================================
     let resetConfirmPending = false;
@@ -2454,11 +3232,12 @@
       if (show) {
         const payload = {
           app: 'NihongoPocketSniper',
-          version: 2,
+          version: 3,
           exportedAt: new Date().toISOString(),
           customVocab: appState.customVocab,
           vocabMeta: appState.vocabMeta,
-          katakanaMeta: appState.katakanaMeta
+          katakanaMeta: appState.katakanaMeta,
+          stats: appState.stats
         };
         document.getElementById('backup-json-box').value = JSON.stringify(payload);
         modal.classList.remove('hidden');
@@ -2496,10 +3275,12 @@
           if (Array.isArray(data.customVocab)) appState.customVocab = data.customVocab;
           if (data.vocabMeta) appState.vocabMeta = { ...appState.vocabMeta, ...data.vocabMeta };
           if (data.katakanaMeta) appState.katakanaMeta = { ...appState.katakanaMeta, ...data.katakanaMeta };
+          if (data.stats) appState.stats = { ...appState.stats, ...data.stats };
           saveAppState();
           renderFlashcard();
           if (appState.activeTab === 'chars') switchCharSet(appState.charSubTab);
           if (appState.activeTab === 'quiz') nextQuizQuestion();
+          if (appState.activeTab === 'dashboard') renderDashboard();
           toggleBackupModal(false);
           showToast('✅ กู้คืนข้อมูลจากไฟล์ JSON สำเร็จ!');
         } catch (err) {
@@ -2527,12 +3308,14 @@
       btn.textContent = '🗑️ รีเซ็ตสถิติความจำทั้งหมด';
       appState.vocabMeta = {};
       appState.katakanaMeta = {};
+      appState.stats = { xp: 0, totalAnswered: 0, totalCorrect: 0, speakPass: 0, catStats: {}, examHistory: [] };
       KATAKANA_DATA.forEach(k => getKanaMeta(k.id));
       getAllVocab().forEach(v => getVocabMeta(v.id));
       saveAppState();
       renderFlashcard();
       if (appState.activeTab === 'chars') switchCharSet(appState.charSubTab);
       if (appState.activeTab === 'quiz') nextQuizQuestion();
+      if (appState.activeTab === 'dashboard') renderDashboard();
       toggleBackupModal(false);
       showToast('รีเซ็ตสถิติความจำทั้งหมดเรียบร้อยแล้ว');
     }
@@ -2540,476 +3323,9 @@
     // =========================================================================
     // 10. BOTTOM TAB NAVIGATION & INIT
     // =========================================================================
-    // 10. TAB 5: EXAM MODE (HIRAGANA, KATAKANA, VOCAB & SENTENCES × CHOICE/WRITE)
-    // =========================================================================
-    function setExamSubject(sub) {
-      appState.examSubject = sub;
-      document.querySelectorAll('.exam-sub-btn').forEach(btn => {
-        const active = btn.dataset.esub === sub;
-        btn.className = active
-          ? 'exam-sub-btn p-3 rounded-2xl bg-indigo-600 text-white border border-indigo-400 text-left flex items-center justify-between transition'
-          : 'exam-sub-btn p-3 rounded-2xl bg-slate-800/90 hover:bg-slate-800 text-slate-200 border border-slate-700 text-left flex items-center justify-between transition';
-        const tag = btn.querySelector('span:last-child');
-        if (tag && tag.textContent === 'เลือกอยู่') tag.remove();
-        if (active) {
-          const badge = document.createElement('span');
-          badge.className = 'text-xs font-bold';
-          badge.textContent = 'เลือกอยู่';
-          btn.appendChild(badge);
-        }
-      });
-
-      const subOpts = document.getElementById('exam-sub-options');
-      const kanaWrap = document.getElementById('exam-kana-scope-wrap');
-      const vocabWrap = document.getElementById('exam-vocab-scope-wrap');
-
-      if (sub === 'hiragana') {
-        subOpts.classList.add('hidden');
-      } else if (sub === 'katakana') {
-        subOpts.classList.remove('hidden');
-        kanaWrap.classList.remove('hidden');
-        vocabWrap.classList.add('hidden');
-      } else {
-        subOpts.classList.remove('hidden');
-        kanaWrap.classList.add('hidden');
-        vocabWrap.classList.remove('hidden');
-      }
-    }
-
-    function setExamFormat(fmt) {
-      appState.examFormat = fmt;
-      const btnChoice = document.getElementById('exam-fmt-choice');
-      const btnWrite = document.getElementById('exam-fmt-write');
-      if (fmt === 'choice') {
-        btnChoice.className = 'p-3 rounded-2xl bg-emerald-600/20 border-2 border-emerald-500 text-emerald-200 text-left transition';
-        btnWrite.className = 'p-3 rounded-2xl bg-slate-800/90 border-2 border-slate-700 text-slate-300 text-left transition';
-      } else {
-        btnWrite.className = 'p-3 rounded-2xl bg-emerald-600/20 border-2 border-emerald-500 text-emerald-200 text-left transition';
-        btnChoice.className = 'p-3 rounded-2xl bg-slate-800/90 border-2 border-slate-700 text-slate-300 text-left transition';
-      }
-    }
-
-    function setExamCount(cnt) {
-      appState.examCount = cnt;
-      document.querySelectorAll('.exam-cnt-btn').forEach(btn => {
-        const active = Number(btn.dataset.ecount) === cnt;
-        btn.className = active
-          ? 'exam-cnt-btn py-2 rounded-xl bg-indigo-600 text-white text-xs font-bold border border-indigo-400 transition'
-          : 'exam-cnt-btn py-2 rounded-xl bg-slate-800 text-slate-300 text-xs font-bold border border-slate-700 transition';
-      });
-    }
-
-    function buildExamQuestionPool() {
-      const sub = appState.examSubject;
-      let rawItems = [];
-
-      if (sub === 'hiragana') {
-        const valid = HIRAGANA_DATA.filter(h => h.c !== '');
-        rawItems = valid.map(h => {
-          const accept = [h.r];
-          if (h.r === 'shi') accept.push('si');
-          if (h.r === 'chi') accept.push('ti');
-          if (h.r === 'tsu') accept.push('tu');
-          if (h.r === 'fu') accept.push('hu');
-          if (h.r === 'n') accept.push('nn');
-          return {
-            sourceType: 'hiragana',
-            sourceId: h.c,
-            badge: 'Hiragana',
-            prompt: h.c,
-            subPrompt: '',
-            speakText: h.c,
-            correctDisplay: h.r,
-            acceptAnswers: accept
-          };
-        });
-      } else if (sub === 'katakana') {
-        const scope = document.getElementById('exam-kana-scope').value;
-        let pool = KATAKANA_DATA;
-        if (scope === 'tn') pool = KATAKANA_DATA.filter(k => k.isLower);
-        else if (scope === 'lookalike') pool = KATAKANA_DATA.filter(k => LOOKALIKE_IDS.includes(k.id));
-
-        rawItems = pool.map(k => ({
-          sourceType: 'katakana',
-          sourceId: k.id,
-          badge: `Katakana (แถว ${k.row})`,
-          prompt: k.kana,
-          subPrompt: '',
-          speakText: k.kana,
-          correctDisplay: `${k.romaji} (${k.thai})`,
-          correctShort: k.romaji,
-          acceptAnswers: k.accept
-        }));
-      } else {
-        const scope = document.getElementById('exam-vocab-scope').value;
-        const vocabItems = getAllVocab().map(v => ({
-          sourceType: 'vocab',
-          sourceId: v.id,
-          badge: VOCAB_CATEGORIES[v.cat] || 'คำศัพท์ N5',
-          prompt: v.word,
-          subPrompt: v.word !== v.reading ? v.reading : '',
-          speakText: v.reading,
-          correctDisplay: `${v.meaning} (${v.reading})`,
-          correctShort: v.meaning,
-          acceptAnswers: [
-            v.reading.toLowerCase(),
-            v.romaji.toLowerCase(),
-            ...v.reading.split('/').map(s => s.trim().toLowerCase()),
-            ...v.romaji.split('/').map(s => s.trim().toLowerCase()),
-            ...v.meaning.split('/').map(s => s.replace(/\(.*?\)/g, '').trim().toLowerCase())
-          ].filter(Boolean)
-        }));
-
-        const sentenceItems = EXAM_N5_SENTENCES.map(s => ({
-          sourceType: 'sentence',
-          sourceId: s.id,
-          badge: 'ประโยค N5',
-          prompt: s.jp,
-          subPrompt: s.reading,
-          speakText: s.reading,
-          correctDisplay: `${s.meaning} (${s.reading})`,
-          correctShort: s.meaning,
-          acceptAnswers: [
-            s.reading.toLowerCase(),
-            s.romaji.toLowerCase(),
-            s.meaning.toLowerCase()
-          ]
-        }));
-
-        if (scope === 'vocab_only') rawItems = vocabItems;
-        else if (scope === 'sentence_only') rawItems = sentenceItems;
-        else rawItems = [...vocabItems, ...sentenceItems];
-      }
-
-      // Shuffle and pick examCount items
-      const shuffled = [...rawItems].sort(() => Math.random() - 0.5);
-      const selected = shuffled.slice(0, Math.min(appState.examCount, shuffled.length));
-
-      // Attach 4 options for Choice mode
-      return selected.map(q => {
-        const distractors = rawItems
-          .filter(x => x.sourceId !== q.sourceId)
-          .sort(() => Math.random() - 0.5)
-          .slice(0, 3)
-          .map(d => d.correctShort || d.correctDisplay);
-        const correctOpt = q.correctShort || q.correctDisplay;
-        const options = [...new Set([...distractors, correctOpt])].slice(0, 4).sort(() => Math.random() - 0.5);
-        return { ...q, options, correctOpt };
-      });
-    }
-
-    function startExam() {
-      appState.examQuestions = buildExamQuestionPool();
-      appState.examIndex = 0;
-      appState.examScore = 0;
-      appState.examAnswered = false;
-      appState.examMistakes = [];
-      appState.examSeconds = 0;
-
-      clearInterval(appState.examTimerId);
-      appState.examTimerId = setInterval(() => {
-        appState.examSeconds += 1;
-        document.getElementById('exam-timer-text').textContent = formatExamTime(appState.examSeconds);
-      }, 1000);
-
-      document.getElementById('exam-timer-text').textContent = '00:00';
-      document.getElementById('exam-setup-view').classList.add('hidden');
-      document.getElementById('exam-result-view').classList.add('hidden');
-      document.getElementById('exam-active-view').classList.remove('hidden');
-
-      renderExamQuestion();
-    }
-
-    function formatExamTime(sec) {
-      const m = String(Math.floor(sec / 60)).padStart(2, '0');
-      const s = String(sec % 60).padStart(2, '0');
-      return `${m}:${s}`;
-    }
-
-    function abortExam() {
-      clearInterval(appState.examTimerId);
-      resetExamToSetup();
-    }
-
-    function resetExamToSetup() {
-      clearInterval(appState.examTimerId);
-      document.getElementById('exam-active-view').classList.add('hidden');
-      document.getElementById('exam-result-view').classList.add('hidden');
-      document.getElementById('exam-setup-view').classList.remove('hidden');
-    }
-
-    function toggleExamFurigana() {
-      appState.examShowFuri = !appState.examShowFuri;
-      const btn = document.getElementById('exam-furi-toggle');
-      btn.textContent = appState.examShowFuri ? '👁️ ซ่อนคำอ่าน' : '🙈 แสดงคำอ่าน';
-      renderExamQuestion();
-    }
-
-    function renderExamQuestion() {
-      const q = appState.examQuestions[appState.examIndex];
-      const total = appState.examQuestions.length;
-      appState.examAnswered = false;
-
-      document.getElementById('exam-progress-text').textContent = `ข้อที่ ${appState.examIndex + 1} / ${total}`;
-      document.getElementById('exam-live-score').textContent = `ถูก: ${appState.examScore}`;
-      document.getElementById('exam-progress-bar').style.width = `${((appState.examIndex + 1) / total) * 100}%`;
-      document.getElementById('exam-q-badge').textContent = q.badge;
-
-      const furiBtn = document.getElementById('exam-furi-toggle');
-      const subEl = document.getElementById('exam-q-sub');
-      const mainEl = document.getElementById('exam-q-main');
-
-      if (appState.examSubject === 'vocab_sentence') {
-        furiBtn.classList.remove('hidden');
-        furiBtn.textContent = appState.examShowFuri ? '👁️ ซ่อนคำอ่าน' : '🙈 แสดงคำอ่าน';
-        subEl.textContent = appState.examShowFuri ? q.subPrompt : '';
-        mainEl.textContent = q.prompt;
-        mainEl.className = q.prompt.length > 8
-          ? 'jp-font text-2xl sm:text-3xl font-black text-white leading-snug'
-          : 'jp-font text-4xl sm:text-5xl font-black text-white leading-snug';
-      } else {
-        furiBtn.classList.add('hidden');
-        subEl.textContent = '';
-        mainEl.textContent = q.prompt;
-        mainEl.className = 'jp-font text-6xl font-black text-white leading-snug';
-      }
-
-      const instEl = document.getElementById('exam-q-instruction');
-      const choicesBox = document.getElementById('exam-choices-box');
-      const writeForm = document.getElementById('exam-write-form');
-      const fbBox = document.getElementById('exam-q-feedback');
-      const nextBtn = document.getElementById('exam-next-btn');
-
-      fbBox.classList.add('hidden');
-      nextBtn.classList.add('hidden');
-
-      if (appState.examFormat === 'choice') {
-        choicesBox.classList.remove('hidden');
-        writeForm.classList.add('hidden');
-        instEl.textContent = appState.examSubject === 'vocab_sentence'
-          ? 'เลือกความหมายที่ถูกต้อง'
-          : 'เลือกเสียงอ่านที่ถูกต้อง';
-
-        choicesBox.innerHTML = '';
-        q.options.forEach(opt => {
-          const btn = document.createElement('button');
-          btn.type = 'button';
-          btn.dataset.opt = opt;
-          btn.className = 'exam-opt-btn p-3.5 rounded-2xl bg-slate-900 hover:bg-slate-700 border-2 border-slate-700 hover:border-indigo-500 text-xs sm:text-sm font-semibold text-white transition active:scale-95';
-          btn.textContent = opt;
-          btn.onclick = () => handleExamChoice(opt);
-          choicesBox.appendChild(btn);
-        });
-      } else {
-        choicesBox.classList.add('hidden');
-        writeForm.classList.remove('hidden');
-        const input = document.getElementById('exam-write-input');
-        const submitBtn = document.getElementById('exam-write-submit-btn');
-        input.value = '';
-        input.disabled = false;
-        submitBtn.disabled = false;
-        submitBtn.classList.remove('hidden');
-
-        if (appState.examSubject === 'vocab_sentence') {
-          instEl.textContent = 'พิมพ์คำอ่าน (ฮิรางานะ / โรมันจิ) หรือความหมายภาษาไทย';
-          input.placeholder = 'เช่น たべる / taberu / กิน';
-        } else {
-          instEl.textContent = 'พิมพ์เสียงอ่าน Romaji ของตัวอักษรนี้';
-          input.placeholder = 'เช่น ka, shi, tsu, n...';
-        }
-        setTimeout(() => input.focus(), 60);
-      }
-    }
-
-    function handleExamChoice(selectedOpt) {
-      if (appState.examAnswered) return;
-      const q = appState.examQuestions[appState.examIndex];
-      const isCorrect = selectedOpt === q.correctOpt;
-
-      document.querySelectorAll('.exam-opt-btn').forEach(btn => {
-        btn.disabled = true;
-        const val = btn.dataset.opt;
-        if (val === q.correctOpt) {
-          btn.className = 'exam-opt-btn p-3.5 rounded-2xl bg-emerald-600/25 border-2 border-emerald-500 text-xs sm:text-sm font-bold text-emerald-200';
-        } else if (val === selectedOpt) {
-          btn.className = 'exam-opt-btn p-3.5 rounded-2xl bg-rose-600/25 border-2 border-rose-500 text-xs sm:text-sm font-bold text-rose-200';
-        } else {
-          btn.className = 'exam-opt-btn p-3.5 rounded-2xl bg-slate-950/60 border-2 border-slate-800 text-xs sm:text-sm text-slate-500 opacity-50';
-        }
-      });
-
-      finalizeExamStep(isCorrect, selectedOpt);
-    }
-
-    function submitExamWriting(e) {
-      e.preventDefault();
-      if (appState.examAnswered) {
-        nextExamQuestion();
-        return;
-      }
-      const input = document.getElementById('exam-write-input');
-      const userAns = input.value.trim();
-      if (!userAns) return;
-
-      input.disabled = true;
-      document.getElementById('exam-write-submit-btn').classList.add('hidden');
-
-      const q = appState.examQuestions[appState.examIndex];
-      const norm = userAns.toLowerCase().replace(/\s+/g, ' ');
-      const isCorrect = q.acceptAnswers.some(acc => {
-        if (q.sourceType === 'hiragana' || q.sourceType === 'katakana') {
-          return acc === norm;
-        }
-        return acc === norm || (norm.length >= 2 && acc.includes(norm));
-      });
-
-      finalizeExamStep(isCorrect, userAns);
-    }
-
-    function finalizeExamStep(isCorrect, userAnswerText) {
-      appState.examAnswered = true;
-      const q = appState.examQuestions[appState.examIndex];
-      const fbBox = document.getElementById('exam-q-feedback');
-      const nextBtn = document.getElementById('exam-next-btn');
-
-      if (q.subPrompt) {
-        document.getElementById('exam-q-sub').textContent = q.subPrompt;
-      }
-      speakJP(q.speakText);
-
-      fbBox.classList.remove('hidden');
-      if (isCorrect) {
-        appState.examScore += 1;
-        document.getElementById('exam-live-score').textContent = `ถูก: ${appState.examScore}`;
-        playSFX('correct');
-        fbBox.className = 'p-3 rounded-2xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 text-xs sm:text-sm font-semibold text-left animate-pop';
-        fbBox.innerHTML = `✅ ถูกต้อง! เฉลย: <span class="text-white">${q.correctDisplay}</span>`;
-      } else {
-        playSFX('wrong');
-        appState.examMistakes.push({
-          ...q,
-          userAnswer: userAnswerText
-        });
-        fbBox.className = 'p-3 rounded-2xl bg-rose-500/15 border border-rose-500/40 text-rose-300 text-xs sm:text-sm font-semibold text-left animate-pop';
-        fbBox.innerHTML = `❌ ผิด (คุณตอบ: ${userAnswerText})<br/><span class="text-white">เฉลยที่ถูก: ${q.correctDisplay}</span>`;
-      }
-
-      nextBtn.textContent = (appState.examIndex + 1 >= appState.examQuestions.length)
-        ? '📊 ดูสรุปผลคะแนนสอบ'
-        : 'ข้อถัดไป →';
-      nextBtn.classList.remove('hidden');
-    }
-
-    function nextExamQuestion() {
-      if (appState.examIndex + 1 < appState.examQuestions.length) {
-        appState.examIndex += 1;
-        renderExamQuestion();
-      } else {
-        finishExam();
-      }
-    }
-
-    function finishExam() {
-      clearInterval(appState.examTimerId);
-      document.getElementById('exam-active-view').classList.add('hidden');
-      document.getElementById('exam-result-view').classList.remove('hidden');
-
-      const total = appState.examQuestions.length;
-      const pct = Math.round((appState.examScore / total) * 100);
-      let grade = 'F';
-      let gradeStyle = 'bg-rose-500/20 border-rose-400 text-rose-300';
-      let remark = 'ยังต้องฝึกทบทวนอีกนิด ลองกดส่งข้อที่ผิดไปย้ำในควิซนะ!';
-
-      if (pct >= 90) {
-        grade = 'S';
-        gradeStyle = 'bg-amber-400/20 border-amber-300 text-amber-300';
-        remark = 'สุดยอดระดับเทพ! แม่นยำพร้อมลุยสนามสอบจริง!';
-      } else if (pct >= 80) {
-        grade = 'A';
-        gradeStyle = 'bg-emerald-500/20 border-emerald-400 text-emerald-300';
-        remark = 'ยอดเยี่ยมมาก! ความจำแม่นยำสูงมาก';
-      } else if (pct >= 70) {
-        grade = 'B';
-        gradeStyle = 'bg-indigo-500/20 border-indigo-400 text-indigo-300';
-        remark = 'ผ่านเกณฑ์ดี! เก็บรายละเอียดข้อที่ผิดอีกนิดจะเป๊ะเลย';
-      } else if (pct >= 50) {
-        grade = 'C';
-        gradeStyle = 'bg-sky-500/20 border-sky-400 text-sky-300';
-        remark = 'พอใช้ได้ ลองทบทวนข้อที่พลาดด้านล่างอีกครั้งครับ';
-      }
-
-      const gradeEl = document.getElementById('exam-grade-badge');
-      gradeEl.textContent = grade;
-      gradeEl.className = `w-20 h-20 mx-auto rounded-3xl border-2 flex items-center justify-center text-4xl font-black shadow-lg ${gradeStyle}`;
-
-      document.getElementById('exam-score-big').textContent = `${appState.examScore} / ${total} คะแนน (${pct}%)`;
-      document.getElementById('exam-result-summary').textContent = `ใช้เวลา ${formatExamTime(appState.examSeconds)} • ${remark}`;
-
-      const mistakesSec = document.getElementById('exam-mistakes-section');
-      const mistakesList = document.getElementById('exam-mistakes-list');
-      const pushBtn = document.getElementById('push-mistakes-btn');
-
-      if (appState.examMistakes.length === 0) {
-        mistakesSec.classList.add('hidden');
-      } else {
-        mistakesSec.classList.remove('hidden');
-        pushBtn.disabled = false;
-        pushBtn.textContent = `🔥 ส่ง ${appState.examMistakes.length} ข้อที่ผิดไปย้ำในควิซ (+5)`;
-        mistakesList.innerHTML = '';
-
-        appState.examMistakes.forEach(m => {
-          const row = document.createElement('div');
-          row.className = 'p-3 rounded-2xl bg-slate-950 border border-slate-800 flex items-center justify-between gap-2';
-          row.innerHTML = `
-            <div class="min-w-0">
-              <div class="jp-font text-base font-bold text-white">${m.prompt}</div>
-              <div class="text-[11px] text-rose-400">คุณตอบ: ${m.userAnswer}</div>
-              <div class="text-xs text-emerald-400 font-semibold">เฉลย: ${m.correctDisplay}</div>
-            </div>
-            <button type="button" class="p-2 rounded-xl bg-slate-900 border border-slate-700 text-slate-300 text-xs shrink-0">🔊</button>
-          `;
-          row.querySelector('button').onclick = () => speakJP(m.speakText);
-          mistakesList.appendChild(row);
-        });
-      }
-    }
-
-    function pushExamMistakesToWeakness() {
-      let updatedCount = 0;
-      appState.examMistakes.forEach(m => {
-        if (m.sourceType === 'katakana') {
-          const meta = getKanaMeta(m.sourceId);
-          meta.weight = Math.min(MAX_WEIGHT, meta.weight + 5);
-          meta.mistakes = (meta.mistakes || 0) + 1;
-          updatedCount += 1;
-        } else if (m.sourceType === 'vocab') {
-          const meta = getVocabMeta(m.sourceId);
-          meta.weight = Math.min(MAX_WEIGHT, meta.weight + 5);
-          meta.mastered = false;
-          meta.mistakes = (meta.mistakes || 0) + 1;
-          updatedCount += 1;
-        }
-      });
-
-      saveAppState();
-      playSFX('boost');
-      const btn = document.getElementById('push-mistakes-btn');
-      btn.disabled = true;
-      btn.textContent = '✅ ส่งเข้าลิสต์จุดอ่อนแล้ว!';
-      showToast(`🔥 บวกน้ำหนักจุดอ่อนให้ ${updatedCount} รายการเรียบร้อย!`);
-    }
-
-    function speakExamCurrent() {
-      const q = appState.examQuestions[appState.examIndex];
-      if (q) speakJP(q.speakText);
-    }
-
-    // =========================================================================
-    // 11. BOTTOM TAB NAVIGATION & INIT
-    // =========================================================================
     function switchTab(tabName) {
       appState.activeTab = tabName;
-      ['flashcard', 'speak', 'chars', 'quiz', 'exam'].forEach(t => {
+      ['flashcard', 'speak', 'chars', 'quiz', 'exam', 'dashboard'].forEach(t => {
         document.getElementById(`tab-${t}`).classList.toggle('hidden', t !== tabName);
         document.getElementById(`nav-${t}`).className = (t === tabName)
           ? 'flex flex-col items-center py-1 text-indigo-400 transition'
@@ -3023,6 +3339,7 @@
         if (!appState.quizTarget) nextQuizQuestion();
         else renderQuizQuestion();
       }
+      if (tabName === 'dashboard') renderDashboard();
     }
 
     // Boot Application
